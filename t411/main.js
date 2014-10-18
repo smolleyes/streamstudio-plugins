@@ -3,6 +3,7 @@
 var t411 = {};
 t411.engine_name = 'T411';
 t411.initialized = false;
+t411.type="video";
 
 /********************* Node modules *************************/
 

@@ -3,6 +3,7 @@
 var songza = {};
 songza.engine_name = 'Songza';
 songza.defaultSearchType = 'populars';
+songza.type="audio";
 
 /********************* Node modules *************************/
 

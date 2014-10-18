@@ -3,6 +3,7 @@
 
 var cpb = {};
 cpb.engine_name = 'Cpasbien';
+cpb.type="video";
 
 
 /********************* Node modules *************************/
@@ -32,44 +33,39 @@ cpb.init = function(gui,ht5) {
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = obj.link;
         var id = obj.id;
-        if($('#cpb_play_'+id).length === 0) {
-			$(this).parent().parent().find('.mvthumb').append('<a id="cpb_play_'+id+'" data="" class="play_cpb_torrent"> \
-					<img src="images/play-overlay.png" class="overlay" /> \
-					</a>');
-        }
+        $('.highlight').toggleClass('highlight','false');
+		$(this).closest('li').toggleClass('highlight','true');
         $.get(link, function(res) {
             var table = $("div.torrent", res).html();
             var name = path.basename($('.download-torrent a',res)[0].href);
             obj.torrent = 'http://www.cpasbien.pe/_torrents/'+name;
-            $('#fbxMsg').empty().remove();
+            $('#fbxMsg').empty();
+            $('#fbxMsg').append('<div id="fbxMsg_header"><h3>'+obj.title+'</h3><a href="#" id="closePreview">X</a></div><div id="fbxMsg_downloads" class="well"></div><div id="fbxMsg_content"></div>');
             $('#preloadTorrent').remove();
-            $('.mejs-overlay-button').hide();
-            $('.mejs-container').append('<div id="fbxMsg"><a href="" id="closePreview">X</a>'+table+'</div>');
+			$('.mejs-overlay-button').hide();
             $('.download-torrent').remove();
-            $('#fbxMsg').hide().fadeIn(2000);
-            if($('#cpb_downlink_'+obj.id).length === 0) {
-				$('#cpb_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
-				var n = '<a href="'+obj.torrent+'" id="cpb_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_torrentFile"><img src="images/down_arrow.png" width="16" height="16" /><span class="downloadText">'+_("Download")+'</span></a>';
-				$('#torrent_'+id).append(n);
-				if(cpb.gui.freeboxAvailable) {
-					var r = '<a href="'+obj.torrent+'" id="cpb_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_torrentFile_fbx" style="margin-left:10px;"><img src="images/down_arrow.png" width="16" height="16" /><span class="downloadText">'+_("Télécharger avec freebox")+'</span></a>';
-					$('#torrent_'+id).append(r);
-				}
+            // add play button
+			$('#fbxMsg_downloads').append('<button type="button" id="cpb_play_'+id+'" data="" class="play_cpb_torrent btn btn-success" style="margin-right:20px;"> \
+											<span class="glyphicon glyphicon-play-circle"><span class="fbxMsg_glyphText">'+_("Start playing")+'</span></span>\
+										  </button>');
+			$('#cpb_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
+			// downloads buttons
+			$('#fbxMsg_downloads').append('<button type="button" class="downloadText btn btn-info" href="'+obj.torrent+'" id="cpb_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_torrentFile"><span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span></span></button>');
+			if(cpb.gui.freeboxAvailable) {
+				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="downloadText btn btn-info" id="cpb_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_torrentFile_fbx"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
 			}
+			$('#fbxMsg_content').append(table);
+            $('#fbxMsg').slideDown();
         })
     });
     
     $(ht5.document).off('click','.play_cpb_torrent');
     $(ht5.document).on('click','.play_cpb_torrent',function(e){
         e.preventDefault();
-        console.log('play clicked')
-        $('#fbxMsg').remove();
-        $('.highlight').toggleClass('highlight','false');
-        $(this).closest('li').toggleClass('highlight','true');
-        var p = $('.highlight').position().top;
-        $('#left-component').scrollTop(p+13);
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         cpb.gui.getTorrent(obj.torrent);
+        $('#fbxMsg').slideUp();
+        $('#playerToggle')[0].click();
     });
     
     $(ht5.document).off('click','.download_torrentFile');
@@ -263,9 +259,9 @@ function print_videos(videos) {
       $("#pagination").show();
   } else {
 	if (searchType !== 'search') {
-		cpb.gui.init_pagination(0,30,false,true,0);
+		cpb.gui.init_pagination(totalItems,30,false,true,totalPages);
 	} else {
-		cpb.gui.init_pagination(totalItems,30,true,true,totalPages);
+		cpb.gui.init_pagination(0,30,true,true,0);
 	}	
   }
     
@@ -276,20 +272,21 @@ function print_videos(videos) {
 			var img = $(".affiche img",res).attr('src');
 			video.id = ((Math.random() * 1e6) | 0);
 			var html = '<li class="list-row" style="margin:0;padding:0;"> \
-					<div class="mvthumb"> \
+							<div class="mvthumb"> \
 								<img src="'+img+'" style="float:left;width:100px;height:100px;" /> \
+							</div> \
+							<div style="margin: 0 0 0 105px;"> \
+								<a href="#" class="preload_cpb_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
+								<div class="item-info"> \
+									<span><b>Taille: </b>'+video.size+'</span> \
 								</div> \
-					<div style="margin: 0 0 0 105px;padding-top:10px;"> \
-									<a href="#" class="preload_cpb_torrent" data="'+encodeURIComponent(JSON.stringify(video))+'" style="font-size:16px;font-weight:bold;">'+video.title+'</a> \
-									<div> \
-							<span><b>Taille:</b> '+video.size+' </span> \
-							<span style="margin-left:50px;"><b>Sources:</b> '+video.seeders+' </span> \
-						  </div>  \
-									<div id="torrent_'+video.id+'"> \
-										<a class="open_in_browser" title="'+("Open in %s",cpb.engine_name)+'" href="'+video.link+'"><img style="margin-top:8px;" src="images/export.png" /></a> \
-									</div> \
+								<div class="item-info"> \
+									<span><b>Sources: </b>'+video.seeders+'</span> \
 								</div> \
-							</li>';
+							</div>  \
+							<div id="torrent_'+video.id+'"> \
+							</div> \
+						</li>';
 				$("#cpb_cont").append(html);
 			});
 	});

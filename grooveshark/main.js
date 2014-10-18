@@ -4,6 +4,7 @@ var gshark = {};
 gshark.engine_name = 'Grooveshark';
 gshark.initialized = false;
 gshark.position = null;
+gshark.type="audio";
 
 /********************* Node modules *************************/
 
@@ -29,12 +30,14 @@ gshark.init = function(gui,ht5) {
 		$('#loading').show();
 		$('#items_container').empty().hide();
 		gshark.page = gui.Window.open('http://html5.grooveshark.com/#!/popular', {
-				  "position":"center",
-				  "width": 640,
-				  "height": 800,
+				  position:'center',
+				  width: 640,
+				  height: 800,
+				  "frame": false,
+				  "toolbar":false,
 				  "show": true
 				});
-		gshark.page.on('loading', function(){
+		gshark.page.on('document-end', function(){
 			console.log('gshark page loaded');
 			gshark.page.hide();
 			gs_win = gshark.page;
@@ -172,9 +175,6 @@ gshark.playlistsCount = 0;
 gshark.songsCount = 0;
 gshark.ignoreSection = false;
 
-// fix css for search menu
-$('#search').css({"position":"fixed","z-index": "500","top": "74px","width": "46%","background": "white","overflow": "auto","height":"25px"});
-
 }
 
 gshark.search = function(query,options) {
@@ -260,12 +260,12 @@ gshark.get_songs = function(more,position) {
 		song.id = $(itemjs).attr("data-song-id");
 		song.thumbnail = $(itemjs).find("img").attr("src").replace("40_","500_");
 		if ($('#gshark_item_'+song.id).length === 1) {return;}
-		var html = '<li class="youtube_item"> \
+		var html = '<li class="youtube_item" style="height:235px;"> \
 						<div class="left"> \
 							<img src="'+song.thumbnail+'" class="video_thumbnail"> \
 						</div> \
 						<div style="position: relative;overflow:auto;margin-left:5px;"> \
-							<div class="item_infos" style="position: relative;top: -10px;padding-left:5px;"> \
+							<div class="item_infos" style="position: relative;top: 5px;padding-left:5px;"> \
 								<span style="display:none;" class="video_length">'+song.duration+'</span> \
 								<div> \
 									<p> \

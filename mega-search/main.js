@@ -3,6 +3,7 @@
 var megaSearch = {};
 megaSearch.engine_name = 'Mega-search';
 megaSearch.initialized = false;
+megaSearch.type="video";
 
 /********************* Node modules *************************/
 

@@ -3,7 +3,7 @@
 
 var tpb = {};
 tpb.engine_name = 'Thepiratebay';
-
+tpb.type="video";
 
 /********************* Node modules *************************/
 

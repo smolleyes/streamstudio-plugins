@@ -3,7 +3,7 @@
 
 var yp = {};
 yp.engine_name = 'Youporn';
-
+yp.type="video";
 
 /********************* Node modules *************************/
 

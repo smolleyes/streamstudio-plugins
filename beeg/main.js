@@ -3,6 +3,7 @@
 
 var bg = {};
 bg.engine_name = 'Beeg';
+bg.type="video";
 // menus needed by the module and menu(s) loaded by default
 bg.menuEntries = ["searchTypes","categories"];
 bg.defaultMenus = ["searchTypes"];

@@ -3,7 +3,7 @@
 
 var omgTorrent = {};
 omgTorrent.engine_name = 'Omgtorrent';
-
+omgTorrent.type="video";
 
 /********************* Node modules *************************/
 

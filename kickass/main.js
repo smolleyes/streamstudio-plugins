@@ -4,6 +4,7 @@
 var kick = {};
 kick.engine_name = 'kickass';
 var kick_eng=require('kickass-torrent');
+kick.type="video";
 
 /********************* Node modules *************************/
 
