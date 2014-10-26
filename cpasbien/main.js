@@ -33,7 +33,7 @@ cpb.init = function(gui,ht5) {
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = obj.link;
         var id = obj.id;
-        $('.highlight').removeClass('highlight');
+        $('.highlight').removeClass('highlight well');
 		$(this).closest('li').addClass('highlight well');
         $.get(link, function(res) {
             var table = $("div.torrent", res).html();
@@ -271,7 +271,7 @@ function print_videos(videos) {
 			video.id = ((Math.random() * 1e6) | 0);
 			var html = '<li class="list-row" style="margin:0;padding:0;"> \
 							<div class="mvthumb"> \
-								<img src="'+img+'" style="float:left;width:100px;height:100px;" /> \
+								<img src="'+img+'" style="float:left;width:100px;height:125px;" /> \
 							</div> \
 							<div style="margin: 0 0 0 105px;"> \
 								<a href="#" class="preload_cpb_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \

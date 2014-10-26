@@ -33,7 +33,7 @@ omgTorrent.init = function(gui,ht5) {
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = obj.link;
         var id = obj.id;
-        $('.highlight').removeClass('highlight');
+        $('.highlight').removeClass('highlight well');
 		$(this).closest('li').addClass('highlight well');
      $.get(link, function(res) {
         var table = $(".infos_fiche", res).html();
