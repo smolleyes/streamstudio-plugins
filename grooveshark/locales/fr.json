@@ -21,5 +21,13 @@
 	"playlists found...": "Playlists trouvées...",
 	"albums found...": "albums found...",
 	"No results found...": "Aucun résultat trouvé...",
-	"<p>Please select a sub-category...</p>": "<p>Please select a sub-category...</p>"
+	"<p>Please select a sub-category...</p>": "<p>Please select a sub-category...</p>",
+	"available songs": "available songs",
+	"Album: ": "Album: ",
+	"Duration: ": "Duration: ",
+	"available albums": "available albums",
+	"Tracks: ": "Tracks: ",
+	"available playlists": "available playlists",
+	"Author: ": "Author: ",
+	"Populars": "Populars"
 }
