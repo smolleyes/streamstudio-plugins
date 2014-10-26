@@ -103,9 +103,9 @@ t411.init = function(gui,ht5,notif) {
 										  </button>');
 			$('#t411_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
 			// downloads buttons
-			$('#fbxMsg_downloads').append('<button type="button" class="downloadText btn btn-info" href="'+obj.torrent+'" id="t411_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_t411_torrentFile"><span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span></span></button>');
+			$('#fbxMsg_downloads').append('<button type="button" class="download_t411_torrentFile downloadText btn btn-info" href="'+obj.torrent+'" id="t411_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'"><span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span></span></button>');
 			if(t411.gui.freeboxAvailable) {
-				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="downloadText btn btn-info" id="omg_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_t411_torrentFile_fbx"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
+				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="download_t411_torrentFile_fbx downloadText btn btn-info" id="omg_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
 			}
 			// clean preview
 			$('#fbxMsg_content').append(table);

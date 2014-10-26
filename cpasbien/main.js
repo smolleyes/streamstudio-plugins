@@ -50,9 +50,9 @@ cpb.init = function(gui,ht5) {
 										  </button>');
 			$('#cpb_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
 			// downloads buttons
-			$('#fbxMsg_downloads').append('<button type="button" class="downloadText btn btn-info" href="'+obj.torrent+'" id="cpb_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_torrentFile"><span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span></span></button>');
+			$('#fbxMsg_downloads').append('<button type="button" class="download_cpb_torrentFile downloadText btn btn-info" href="'+obj.torrent+'" id="cpb_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'"><span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span></span></button>');
 			if(cpb.gui.freeboxAvailable) {
-				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="downloadText btn btn-info" id="cpb_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_torrentFile_fbx"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
+				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="download_cpb_torrentFile_fbx downloadText btn btn-info" id="cpb_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
 			}
 			// clean preview
 			$('#fbxMsg_content').append(table);
@@ -73,15 +73,15 @@ cpb.init = function(gui,ht5) {
         $('#playerToggle')[0].click();
     });
     
-    $(ht5.document).off('click','.download_torrentFile');
-    $(ht5.document).on('click','.download_torrentFile',function(e){
+    $(ht5.document).off('click','.download_cpb_torrentFile');
+    $(ht5.document).on('click','.download_cpb_torrentFile',function(e){
         e.preventDefault();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         cpb.gui.getAuthTorrent(obj.torrent,false,false);
     });
      
-    $(ht5.document).off('click','.download_torrentFile_fbx');
-    $(ht5.document).on('click','.download_torrentFile_fbx',function(e){
+    $(ht5.document).off('click','.download_cpb_torrentFile_fbx');
+    $(ht5.document).on('click','.download_cpb_torrentFile_fbx',function(e){
         e.preventDefault();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         cpb.gui.getAuthTorrent(obj.torrent,false,true);

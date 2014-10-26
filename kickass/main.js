@@ -54,9 +54,9 @@ kick.init = function(gui,ht5) {
 										  </button>');
 			$('#kick_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
 			// downloads buttons
-			$('#fbxMsg_downloads').append('<button type="button" class="downloadText btn btn-info" href="'+obj.torrent+'" id="kick_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_kick_torrentFile"><span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span></span></button>');
+			$('#fbxMsg_downloads').append('<button type="button" class="download_kick_torrentFile downloadText btn btn-info" href="'+obj.torrent+'" id="kick_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" ><span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span></span></button>');
 			if(kick.gui.freeboxAvailable) {
-				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="downloadText btn btn-info" id="kick_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_kick_torrentFile_fbx"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
+				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="download_kick_torrentFile_fbx downloadText btn btn-info" id="kick_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
 			}
 			// clean preview
 			$('#fbxMsg_content').append(table);
