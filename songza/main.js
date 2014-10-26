@@ -42,7 +42,7 @@ songza.init = function(gui,ht5) {
 	$(ht5.document).on('click','.load_station',function(e){
 		e.preventDefault();
 		$('#loading').show();
-		$("#loading p").empty().append(_("Loading stations..."));
+		$("#loading p").empty().append(_("Loading songs..."));
 		$("#search").hide();
 		$('#items_container').empty().append('<ul id="songza_cont" class="list" style="margin:0;"></ul>').show();
 		var station = JSON.parse(decodeURIComponent($(this).attr("data")));
@@ -65,9 +65,6 @@ songza.init = function(gui,ht5) {
 		$('#fbxMsg').empty().remove();
 		$('.mejs-container').append('<div id="fbxMsg"><div><img src="'+song.cover_url+' /><span>'+song.title+'</span>"</div></div>');
 		songza.gui.startPlay(media);
-		$('#songza_item_'+song.song.id).closest('.youtube_item').toggleClass('highlight','true');
-		var p = $('#songza_item_'+song.song.id).parent().parent().position().top;
-		$('#left-component').scrollTop(p+11);
 	});
 }
 
@@ -114,9 +111,11 @@ songza.search_type_changed = function() {
 	} else if (songza.searchType === 'populars') {
 		$("#searchFilters_select").show();
 		$("#searchFilters_label").show();
+		$('#video_search_btn').click();
 	} else {
 		$("#searchFilters_select").hide();
 		$("#searchFilters_label").hide();
+		$('#video_search_btn').click();
 	}
 }
 
@@ -135,25 +134,32 @@ songza.search = function (query, options, gui){
 		var req;
 		if (songza.searchType === 'search') {
 			$.get('http://anonymouse.org/cgi-bin/anon-www.cgi/http://songza.com/api/1/search/artist?query='+query,function(res) {
+				$("#loading p").empty().append(_("Searching for %s",query));
 				songza.analyse_search_artists(res,query);
 			});
 			return;
 		}
 		if (songza.searchType === 'populars') {
 			$.get('http://songza.com/api/1/chart/name/songza/'+songza.searchFilter,function(res) {
+				$("#loading p").empty().append(_("Loading populars playlist..."));
 				songza.load_stations(res);
 			});
 			return;
 		} else if (songza.searchType === 'genres') {
 			req=http.get('http://songza.com/api/1/gallery/tag/genres');
+			$("#loading p").empty().append(_("Loading genres playlists..."));
 		} else if (songza.searchType === 'activities') {
 			req=http.get('http://songza.com/api/1/gallery/tag/activities');
+			$("#loading p").empty().append(_("Loading activities playlists..."));
 		} else if (songza.searchType === 'decades') {
 			req=http.get('http://songza.com/api/1/gallery/tag/decades');
+			$("#loading p").empty().append(_("Loading decades playlists..."));
 		} else if (songza.searchType === 'moods') {
 			req=http.get('http://songza.com/api/1/gallery/tag/moods');
+			$("#loading p").empty().append(_("Loading moods playlists..."));
 		} else if (songza.searchType === 'culture') {
 			req=http.get('http://songza.com/api/1/gallery/tag/culture');
+			$("#loading p").empty().append(_("Loading culture playlists..."));
 		}
 		req.on('response',function(response) { 
 			var data = new Array(); 
@@ -224,39 +230,29 @@ songza.analyse_search = function(datas,query) {
 
 songza.load_genre = function(datas) {
 	$('#loading').hide();
-	$("#loading p").empty().append(_("Loading stations..."));
 	$("#search").show();
 	$('#items_container').empty().append('<ul id="songza_cont" class="list" style="margin:0;"></ul>').show();
-	$("#search_results p").empty().append(_('Stations in the %s section ...',songza.searchType));
+	$("#search_results p").empty().append(_('Stations in the %s section ...',$('#searchTypes_select option:selected').text()));
 	$.each(datas,function(index,genre) {
 		if ($('#songza_item_'+genre.id).length === 1) {return;}
-		var html = '<li class="youtube_item"> \
-			<div class="left"> \
-				<img src="images/Playlist.png" class="video_thumbnail"> \
+		var html = '<li class="list-row"> \
+			<div class="mvthumb"> \
+				<img src="images/Playlist.png" style="float:left;width:100px;height:100px;" /> \
 			</div> \
-			<div class="item_infos"> \
-				<span class="video_length" style="display:none;"></span> \
-				<div> \
-					<p style="margin-top:20px;"> \
-						<a class="load_genre" data="'+encodeURIComponent(JSON.stringify(genre))+'"> \
-							<b>'+genre.name+'</b> \
-						</a> \
-					</p> \
-				<div> \
-					<span> \
-						<b>'+_("Total stations : ")+'</b>'+genre.station_ids.length+'</span> \
-					<span style="margin-left:10px;"> \
-						<b style="display:none;">'+_("Views: ")+'</b> \
-					</span> \
+			<div style="margin: 0 0 0 105px;"> \
+				<a href="#" class="load_genre item-title" data="'+encodeURIComponent(JSON.stringify(genre))+'">'+genre.name+'</a> \
+				<div class="item-info"> \
+					<b>'+_("Total stations : ")+'</b>'+genre.station_ids.length+' \
 				</div> \
-			</div> \
+			</div>  \
 			<div id="songza_item_'+genre.id+'"> \
 			</div> \
-			<a class="open_in_browser" alt="'+_("Open in songza")+'" title="'+_("Open in songza")+'" href="http://songza.com/discover/genres/'+genre.slug+'/"> \
-				<img style="margin-top:8px;" src="images/export.png"> \
-			</a> \
 		</li>';
 		$("#songza_cont").append(html);
+		$('#loading').hide();
+		$("#loading p").empty().append(_("Loading songs..."));
+		$("#search").show();
+		$('#items_container').show();
 	});
 }
 
@@ -265,41 +261,29 @@ songza.load_genre_stations = function(datas) {
 		$("#search_results p").empty().append(_('Browsing %s section ...',datas.name));
 	}
 	$('#items_container').empty().append('<ul id="songza_cont" class="list" style="margin:0;"></ul>');
-	console.log(datas);
 	$.each(datas.station_ids,function(index,id) {
 		$.get('http://anonymouse.org/cgi-bin/anon-www.cgi/http://songza.com/api/1/station/'+id,function(res) {
 			var station=res;
 			if ($('#songza_item_'+station.id).length === 1) {return;}
-			var station = res;
-			var html = '<li class="youtube_item"> \
-				<div class="left"> \
-					<img src="'+station.cover_url+'" class="video_thumbnail"> \
+			var html = '<li class="list-row"> \
+			<div class="mvthumb"> \
+				<img src="'+station.cover_url+'" style="float:left;width:100px;height:100px;" /> \
+			</div> \
+			<div style="margin: 0 0 0 105px;"> \
+				<a href="#" class="load_station item-title" data="'+encodeURIComponent(JSON.stringify(station))+'">'+station.name+'</a> \
+				<div class="item-info"> \
+					<b>'+_("Total sounds: ")+'</b>'+station.song_count+' \
 				</div> \
-				<div class="item_infos"> \
-					<span class="video_length" style="display:none;"></span> \
-					<div> \
-						<p style="margin-top:20px;"> \
-							<a class="load_station" data="'+encodeURIComponent(JSON.stringify(station))+'"> \
-								<b>'+station.name+'</b> \
-							</a> \
-						</p> \
-					<div> \
-						<span> \
-							<b>'+_("Sounds total: ")+'</b>'+station.song_count+'</span> \
-						<span style="margin-left:10px;"> \
-							<b>'+_("Creator: ")+'</b>'+station.creator_name+' \
-						</span> \
-					</div> \
+				<div class="item-info"> \
+					<b>'+_("Creator: ")+'</b>'+station.creator_name+' \
 				</div> \
-				<div id="songza_item_'+station.id+'"> \
-				</div> \
-				<a class="open_in_browser" alt="'+_("Open in songza")+'" title="'+_("Open in songza")+'" href="'+station.url+'/"> \
-					<img style="margin-top:8px;" src="images/export.png"> \
-				</a> \
-			</li>';
+			</div>  \
+			<div id="songza_item_'+station.id+'"> \
+			</div> \
+		</li>';
 			$("#songza_cont").append(html);
 			$('#loading').hide();
-			$("#loading p").empty().append(_("Loading stations..."));
+			$("#loading p").empty().append(_("Loading songs..."));
 			$("#search").show();
 			$('#items_container').show();
 		});
@@ -307,39 +291,29 @@ songza.load_genre_stations = function(datas) {
 }
 
 songza.load_stations = function(stations) {
-	$("#search_results p").empty().append(_('Stations in the %s section ...',songza.searchType));
+	$("#search_results p").empty().append(_('Stations in the %s section ...',$('#searchTypes_select option:selected').text()));
 	$('#items_container').empty().append('<ul id="songza_cont" class="list" style="margin:0;"></ul>');
 	$.each(stations,function(index,station) {
 		if ($('#songza_item_'+station.id).length === 1) {return;}
-		var html = '<li class="youtube_item"> \
-			<div class="left"> \
-				<img src="'+station.cover_url+'" class="video_thumbnail"> \
+		var html = '<li class="list-row"> \
+			<div class="mvthumb"> \
+				<img src="'+station.cover_url+'" style="float:left;width:100px;height:100px;" /> \
 			</div> \
-			<div class="item_infos"> \
-				<span class="video_length" style="display:none;"></span> \
-				<div> \
-					<p style="margin-top:20px;"> \
-						<a class="load_station" data="'+encodeURIComponent(JSON.stringify(station))+'"> \
-							<b>'+station.name+'</b> \
-						</a> \
-					</p> \
-				<div> \
-					<span> \
-						<b>'+_("Sounds total: ")+'</b>'+station.song_count+'</span> \
-					<span style="margin-left:10px;"> \
-						<b>'+_("Creator: ")+'</b>'+station.creator_name+' \
-					</span> \
+			<div style="margin: 0 0 0 105px;"> \
+				<a href="#" class="load_station item-title" data="'+encodeURIComponent(JSON.stringify(station))+'">'+station.name+'</a> \
+				<div class="item-info"> \
+					<b>'+_("Total sounds: ")+'</b>'+station.song_count+' \
 				</div> \
-			</div> \
+				<div class="item-info"> \
+					<b>'+_("Creator: ")+'</b>'+station.creator_name+' \
+				</div> \
+			</div>  \
 			<div id="songza_item_'+station.id+'"> \
 			</div> \
-			<a class="open_in_browser" alt="'+_("Open in songza")+'" title="'+_("Open in songza")+'" href="'+station.url+'/"> \
-				<img style="margin-top:8px;" src="images/export.png"> \
-			</a> \
 		</li>';
 		$("#songza_cont").append(html);
 		$('#loading').hide();
-		$("#loading p").empty().append(_("Loading stations..."));
+		$("#loading p").empty().append(_("Loading songs..."));
 		$("#search").show();
 		$('#items_container').show();
 	});
@@ -350,36 +324,27 @@ songza.load_next = function(id) {
 		$("#search_results p").empty().append(_('All songs already loaded in the playlist...'));
 		return;
 	}
-	$('.highlight').toggleClass('highlight','false');
+	$('.highlight').removeClass('highlight well');
 	$.get('http://www.unblockpirate.com/index.php?q='+songza.gui.Base64.encode('http://songza.com/api/1/station/'+id+'/next'),function(res) {
 		if ($('#songza_item_'+res.song.id).length === 1) {return;}
-		var html = '<li class="youtube_item"> \
-			<div class="left"> \
-				<img src="'+res.song.cover_url+'" class="video_thumbnail"> \
+		var html = '<li class="list-row"> \
+			<div class="mvthumb"> \
+				<img src="'+res.song.cover_url+'" style="float:left;width:100px;height:100px;" /> \
 			</div> \
-			<div class="item_infos"> \
-				<span class="video_length" style="display:none;"></span> \
-				<div> \
-					<p style="margin-top:20px;"> \
-						<a class="load_song" data="'+encodeURIComponent(JSON.stringify(res))+'"> \
-							<b>'+res.song.title+'</b> \
-						</a> \
-					</p> \
-				<div> \
-					<span> \
-						<b>'+_("Artist: ")+'</b>'+res.song.artist.name+'</span> \
-					<span style="margin-left:10px;"> \
-						<b>'+_("album: ")+'</b>'+res.song.album+' \
-					</span> \
+			<div style="margin: 0 0 0 105px;"> \
+				<a href="#" class="load_song item-title" data="'+encodeURIComponent(JSON.stringify(res))+'">'+res.song.title+'</a> \
+				<div class="item-info"> \
+					<b>'+_("Artist: ")+'</b>'+res.song.artist.name+' \
 				</div> \
-			</div> \
+				<div class="item-info"> \
+					<b>'+_("album: ")+'</b>'+res.song.album+' \
+				</div> \
+			</div>  \
 			<div id="songza_item_'+res.song.id+'"> \
-				<div class="resolutions_container"><a class="video_link" style="display:none;" href="'+res.listen_url+'" alt="360p"><span></span></a><a href="'+res.listen_url+'" alt="'+res.song.artist.name+' - '+res.song.title+'.mp3::'+res.song.id+'" title="Download" class="download_file"><img src="images/down_arrow.png" width="16" height="16" />Download mp3</a></div> \
 			</div> \
 		</li>';
 		$("#songza_cont").append(html);
 		$('#loading').hide();
-		$("#loading p").empty().append(_("Loading stations..."));
 		$("#search").show();
 		$('#items_container').show();
 		var media= {};
@@ -387,16 +352,15 @@ songza.load_next = function(id) {
 		media.title = res.song.artist.name +' - '+ res.song.title;
 		media.type='object.item.audioItem.musicTrack';
 		songza.gui.startPlay(media);
-		$('#songza_item_'+res.song.id).closest('.youtube_item').toggleClass('highlight','true');
+		$('#songza_item_'+res.song.id).closest('.list-row').addClass('highlight well');
 		$('.mejs-overlay-button').hide();
-		$('#fbxMsg').empty().remove();
+		$('#fbxMsg').empty();
 		$('.mejs-container').append('<div id="fbxMsg"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: -100px;position: relative;top: 50%;margin-top: -100px;" src="'+res.song.cover_url+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
-		var p = $('.highlight').position().top;
-    $('#left-component').scrollTop(p+13);
 	});
 }
 
 songza.play_next = function() {
+	$("#search_results p").empty().append(_('Loading song...'));
 	songza.load_next(songza.current_station_id);
 }
 

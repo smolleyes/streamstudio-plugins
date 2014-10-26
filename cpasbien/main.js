@@ -19,7 +19,7 @@ var _ = i18n.__;
 /****************************/
 
 // module global vars
-var searchType = 'search';
+var searchType = 'navigation';
 
 // init module
 cpb.init = function(gui,ht5) {
@@ -54,7 +54,12 @@ cpb.init = function(gui,ht5) {
 			if(cpb.gui.freeboxAvailable) {
 				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="downloadText btn btn-info" id="cpb_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_torrentFile_fbx"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
 			}
+			// clean preview
 			$('#fbxMsg_content').append(table);
+			$($('#fbxMsg_content fieldset')[1]).remove();
+			$('#fbxMsg_content .download-torrent').remove();
+			$('#fbxMsg_header img').remove();
+			// show
             $('#fbxMsg').slideDown();
         })
     });
@@ -71,7 +76,6 @@ cpb.init = function(gui,ht5) {
     $(ht5.document).off('click','.download_torrentFile');
     $(ht5.document).on('click','.download_torrentFile',function(e){
         e.preventDefault();
-        console.log('download torrent clicked')
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         cpb.gui.getAuthTorrent(obj.torrent,false,false);
     });
@@ -79,7 +83,6 @@ cpb.init = function(gui,ht5) {
     $(ht5.document).off('click','.download_torrentFile_fbx');
     $(ht5.document).on('click','.download_torrentFile_fbx',function(e){
         e.preventDefault();
-        console.log('download torrent clicked')
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         cpb.gui.getAuthTorrent(obj.torrent,false,true);
     });
@@ -107,7 +110,7 @@ cpb.menuEntries = ["searchTypes","orderBy","categories"];
 cpb.defaultMenus = ["searchTypes","orderBy"];
 // searchTypes menus and default entry
 cpb.searchTypes = JSON.parse('{"'+_("Search")+'":"search","'+_("Navigation")+'":"navigation"}');
-cpb.defaultSearchType = 'search';
+cpb.defaultSearchType = 'navigation';
 // orderBy filters and default entry
 cpb.orderBy_filters = JSON.parse('{"'+_("Date")+'":"date","'+_("Seeds")+'":"seeds"}');
 cpb.defaultOrderBy = 'date';
@@ -116,7 +119,8 @@ cpb.category_filters = JSON.parse('{"'+_("Movies")+'":"films","'+_("Series")+'":
 cpb.defaultCategory = 'films';
 // others params
 cpb.has_related = false;
-cpb.categoriesLoaded = false;
+
+cpb.categoriesLoaded = true;
 
 }
 
@@ -187,13 +191,6 @@ cpb.search_type_changed = function() {
 	searchType = $("#searchTypes_select").val();
 	category = $("#categories_select").val();
 	if (searchType === 'navigation') {
-		if(cpb.categoriesLoaded === false) {
-			$.each(cpb.category_filters, function(key, value){
-				$('#categories_select').append('<option value="'+value+'">'+key+'</option>');
-			});
-			cpb.categoriesLoaded = true;
-			category = $("#categories_select").val();
-		}
 		$("#orderBy_select").hide();
 		$("#orderBy_label").hide();
 		$("#categories_label").show();
@@ -201,6 +198,7 @@ cpb.search_type_changed = function() {
 		$("#dateTypes_select").hide();
 		$("#searchFilters_select").hide();
 		$('#video_search_query').prop('disabled', true);
+		$('#video_search_btn').click();
 	} else {
 		$("#dateTypes_select").hide();
 		$("#searchFilters_label").hide();

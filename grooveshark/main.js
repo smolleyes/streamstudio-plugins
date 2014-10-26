@@ -51,9 +51,11 @@ gshark.init = function(gui,ht5) {
 			media.type='object.item.audioItem.musicTrack';
 			gshark.gui.startPlay(media);
 			$('#gshark_item_'+song.id).closest('.list-row').addClass('highlight well');
-			if (ht5.engine.engine_name === 'Grooveshark') {
-				$('#mep_0').append('<img id="cover" src="'+song.thumbnail.replace('120_','')+'" height="360" width="360" style="position: absolute;top: 50%;left: 50%;width: 360px;height: 360px;margin-top: -180px;margin-left: -180px;"/>');
+			var img = song.thumbnail;
+			if (img.indexOf('album.png') == -1 ) {
+				img = song.thumbnail.replace('120_','');
 			}
+			$('.mejs-container').append('<div id="fbxMsg"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: -100px;position: relative;top: 50%;margin-top: -100px;" src="'+img+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
 		});
 	});
 	
