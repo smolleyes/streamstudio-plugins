@@ -33,8 +33,8 @@ cpb.init = function(gui,ht5) {
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = obj.link;
         var id = obj.id;
-        $('.highlight').toggleClass('highlight','false');
-		$(this).closest('li').toggleClass('highlight','true');
+        $('.highlight').removeClass('highlight');
+		$(this).closest('li').addClass('highlight well');
         $.get(link, function(res) {
             var table = $("div.torrent", res).html();
             var name = path.basename($('.download-torrent a',res)[0].href);
@@ -249,19 +249,19 @@ function print_videos(videos) {
     totalPages = Math.round(videos[0].totalItems / 30);
   }
   if (cpb.gui.current_page === 1) {
-      if (searchType === 'search') {
-        cpb.gui.init_pagination(totalItems,30,false,true,totalPages);
-      } else {
-        cpb.gui.init_pagination(0,30,true,true,0);
-      }
-      $("#pagination").show();
-  } else {
-	if (searchType !== 'search') {
+	  if (searchType === 'search') {
 		cpb.gui.init_pagination(totalItems,30,false,true,totalPages);
-	} else {
+  } else {
 		cpb.gui.init_pagination(0,30,true,true,0);
-	}	
   }
+  $("#pagination").show();
+  } else {
+	  if (searchType !== 'search') {
+		  cpb.gui.init_pagination(0,30,true,true,0);
+	  } else {
+		  cpb.gui.init_pagination(totalItems,30,false,true,0);
+	  }
+	}
     
     // load videos in the playlist
 	$('#items_container').empty().append('<ul id="cpb_cont" class="list" style="margin:0;"></ul>').show();
@@ -276,10 +276,10 @@ function print_videos(videos) {
 							<div style="margin: 0 0 0 105px;"> \
 								<a href="#" class="preload_cpb_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
 								<div class="item-info"> \
-									<span><b>Taille: </b>'+video.size+'</span> \
+									<span><b>'+_("Size: ")+'</b>'+video.size+'</span> \
 								</div> \
 								<div class="item-info"> \
-									<span><b>Sources: </b>'+video.seeders+'</span> \
+									<span><b>'+_("Seeders: ")+'</b>'+video.seeders+'</span> \
 								</div> \
 							</div>  \
 							<div id="torrent_'+video.id+'"> \

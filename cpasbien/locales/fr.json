@@ -25,5 +25,8 @@
 	"Open in Mega-search": "Open in Mega-search",
 	"Download": "Télécharger",
 	"Télécharger avec freebox": "Télécharger avec freebox",
-	"Start playing" : "Démarrer la lecture"
+	"Start playing": "Démarrer la lecture",
+	"Around %s results found": "Around %s results found",
+	"Size: " : "Taille: ",
+	"Seeders: " : "Sources: "
 }

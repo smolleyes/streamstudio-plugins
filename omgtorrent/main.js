@@ -18,7 +18,7 @@ var _ = i18n.__;
 /****************************/
 
 // module global vars
-var searchType = 'search';
+var searchType = 'navigation';
 
 // init module
 omgTorrent.init = function(gui,ht5) {
@@ -33,31 +33,31 @@ omgTorrent.init = function(gui,ht5) {
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = obj.link;
         var id = obj.id;
-        if($('#omg_play_'+id).length === 0) {
-         $(this).parent().parent().find('.mvthumb').append('<a href="#" id="omg_play_'+id+'" data="" class="play_omg_torrent"> \
-           <img src="images/play-overlay.png" class="overlay" /> \
-           </a>');
-     }
+        $('.highlight').removeClass('highlight');
+		$(this).closest('li').addClass('highlight well');
      $.get(link, function(res) {
         var table = $(".infos_fiche", res).html();
         obj.torrent = 'http://www.omgtorrent.com'+$('#lien_dl',res).attr("href");
-        $('#fbxMsg').empty().remove();
-        $('#preloadTorrent').remove();
-        $('.mejs-overlay-button').hide();
-        $('.mejs-container').append('<div id="fbxMsg"><a href="" id="closePreview">X</a>'+table+'</div>');
-        $('a [src="/img/icone_maj.png"]').parent().remove();
-        $($('#fbxMsg img')[0]).attr('src','images/s.png');
-        $($('#fbxMsg img')[1]).attr('src','images/c.png');
-        $('#fbxMsg').hide().fadeIn(2000);
-        if($('#omg_downlink_'+obj.id).length === 0) {
-            $('#omg_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
-            var n = '<a href="'+obj.torrent+'" id="omg_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_omgTorrentFile"><img src="images/down_arrow.png" width="16" height="16" /><span class="downloadText">'+_("Download")+'</span></a>';
-            $('#torrent_'+id).append(n);
-            if(omgTorrent.gui.freeboxAvailable) {
-               var r = '<a href="'+obj.torrent+'" id="omg_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_omgTorrentFile_fbx" style="margin-left:10px;"><img src="images/down_arrow.png" width="16" height="16" /><span class="downloadText">'+_("Télécharger avec freebox")+'</span></a>';
-               $('#torrent_'+id).append(r);
-           }
-       }
+        $('#fbxMsg').empty();
+            $('#fbxMsg').append('<div id="fbxMsg_header"><h3>'+obj.title+'</h3><a href="#" id="closePreview">X</a></div><div id="fbxMsg_downloads" class="well"></div><div id="fbxMsg_content"></div>');
+            $('#preloadTorrent').remove();
+			$('.mejs-overlay-button').hide();
+            $('.download-torrent').remove();
+            // add play button
+			$('#fbxMsg_downloads').append('<button type="button" id="omg_play_'+id+'" data="" class="play_omg_torrent btn btn-success" style="margin-right:20px;"> \
+											<span class="glyphicon glyphicon-play-circle"><span class="fbxMsg_glyphText">'+_("Start playing")+'</span></span>\
+										  </button>');
+			$('#omg_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
+			// downloads buttons
+			$('#fbxMsg_downloads').append('<button type="button" class="downloadText btn btn-info" href="'+obj.torrent+'" id="omg_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_omgTorrentFile"><span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span></span></button>');
+			if(omgTorrent.gui.freeboxAvailable) {
+				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="downloadText btn btn-info" id="omg_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_omgTorrentFile_fbx"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
+			}
+			// clean preview
+			$('#fbxMsg_content').append($(table).html().replace(/"\/img/g,'"http://omgtorrent.com/img'));
+			$($('#fbxMsg_content img')[1]).remove()
+			// show
+            $('#fbxMsg').slideDown();
    }).error(function(err){
      alert('can t load page '+obj.torrent)
  })
@@ -66,14 +66,10 @@ omgTorrent.init = function(gui,ht5) {
 $(ht5.document).off('click','.play_omg_torrent');
 $(ht5.document).on('click','.play_omg_torrent',function(e){
     e.preventDefault();
-    console.log('play clicked')
-    $('#fbxMsg').remove();
-    $('.highlight').toggleClass('highlight','false');
-    $(this).closest('li').toggleClass('highlight','true');
-    var p = $('.highlight').position().top;
-    $('#left-component').scrollTop(p+13);
     var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
     omgTorrent.gui.getTorrent(obj.torrent);
+    $('#fbxMsg').slideUp();
+    $('#playerToggle')[0].click();
 });
 
 $(ht5.document).off('click','.download_omgTorrentFile');
@@ -116,7 +112,7 @@ omgTorrent.menuEntries = ["searchTypes","orderBy","categories"];
 omgTorrent.defaultMenus = ["searchTypes","orderBy"];
 // searchTypes menus and default entry
 omgTorrent.searchTypes = JSON.parse('{"'+_("Search")+'":"search","'+_("Navigation")+'":"navigation"}');
-omgTorrent.defaultSearchType = 'search';
+omgTorrent.defaultSearchType = 'navigation';
 // orderBy filters and default entry
 omgTorrent.orderBy_filters = JSON.parse('{"'+_("Date")+'":"id","'+_("Seeds")+'":"seeders"}');
 omgTorrent.defaultOrderBy = 'id';
@@ -191,9 +187,9 @@ function analyseResults(videos,list) {
     } else {
         infos.link = 'http://www.omgtorrent.com/films'+$(this).find('a')[0].href.replace(/.*\/films/,'').replace('file://','');
         infos.title = $($(this).find('a')[0]).text();
-        infos.seeds = $(this).find('.sources').text();
-        infos.leechers = $(this).find('.clients').text();
-        infos.size = '';
+        infos.seeds = $(this).find('td')[3].innerHTML;
+        infos.leechers = $(this).find('td')[4].innerHTML;
+        infos.size = $(this).find('td')[2].innerHTML;;
         storeVideosInfos(videos,infos,index);
     }
 });
@@ -258,7 +254,7 @@ function print_videos(videos) {
   var totalItems = videos[0].totalItems;
   var totalPages = 1;
   if (videos[0].totalItems > 30) {
-    totalPages = videos[0].totalItems / 30;
+    totalPages = Math.round(videos[0].totalItems / 30);
 }
 if (omgTorrent.gui.current_page === 1) {
   if (searchType === 'search') {
@@ -270,6 +266,8 @@ $("#pagination").show();
 } else {
   if (searchType !== 'search') {
       omgTorrent.gui.init_pagination(0,30,true,true,0);
+  } else {
+	omgTorrent.gui.init_pagination(totalItems,30,false,true,0);
   }
 }
 
@@ -280,7 +278,7 @@ $("#pagination").show();
             video.id = ((Math.random() * 1e6) | 0);
             try {
                 var img = $(".film_img",res).attr('src');
-                var css = 'float:left;height:125px;width:100px;margin-top:5px;'
+                var css = 'float:left;height:125px;width:100px'
             } catch(err) {
                 var img = "images/omgtorrent.png";
                 var css = 'float:left;height:45px;width:100px;margin-top:20px;'
@@ -289,25 +287,26 @@ $("#pagination").show();
               var img = "images/omgtorrent.png";
               var css = 'float:left;height:45px;width:100px;margin-top:20px;'
             }
-            var html = '<li class="list-row" style="margin:0;padding:0;"> \
-            <div class="mvthumb"> \
-            <img src="'+img+'" style="'+css+'" /> \
-            </div> \
-            <div style="margin: 0 0 0 105px;padding-top:10px;"> \
-            <a href="#" class="preload_omg_torrent" data="'+encodeURIComponent(JSON.stringify(video))+'" style="font-size:16px;font-weight:bold;">'+video.title+'</a> \
-            <div> \
-            <div> \
-            <span><b>Taille:</b> '+video.size+' </span> \
-            <span><b>Sources:</b> '+video.seeds+' </span> \
-            <span><b>Client:</b> '+video.leechers+'</span> \
-            </div>  \
-            <div id="torrent_'+video.id+'"> \
-            <a class="open_in_browser" title="'+("Open in %s",omgTorrent.engine_name)+'" href="'+video.link+'"><img style="margin-top:8px;" src="images/export.png" /></a> \
-            </div> \
-            </div> \
-            </div> \
-            </li>';
-            $("#omgtorrent_cont").append(html);
+            var html = '<li class="list-row" style="margin:0;padding:0;height:170px;"> \
+							<div class="mvthumb"> \
+								<img src="'+img+'" style="'+css+'" /> \
+							</div> \
+							<div style="margin: 0 0 0 105px;"> \
+								<a href="#" class="preload_omg_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
+								<div class="item-info"> \
+									<span><b>'+_("Size: ")+'</b>'+video.size+'</span> \
+								</div> \
+								<div class="item-info"> \
+									<span><b>'+_("Seeders: ")+'</b>'+video.seeds+'</span> \
+								</div> \
+								<div class="item-info"> \
+									<span><b>'+_("leechers: ")+'</b>'+video.leechers+'</span> \
+								</div> \
+							</div>  \
+							<div id="torrent_'+video.id+'"> \
+							</div> \
+						</li>';
+				$("#omgtorrent_cont").append(html);
         });
     });
 }
