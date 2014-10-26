@@ -1,7 +1,7 @@
 {
-	"Songs": "Sons",
+	"Songs": "Morceaux",
 	"Albums": "Albums",
-	"Playlists": "Playlists",
+	"Playlists": "Listes de lecture",
 	"Popular": "Populaires",
 	"Date": "Date",
 	"Title": "Titre",
@@ -19,15 +19,15 @@
 	"Open in grooveshark": "Ouvrir dans grooveshark",
 	"results found...": "Résultats trouvés...",
 	"playlists found...": "Playlists trouvées...",
-	"albums found...": "albums found...",
+	"albums found...": "albums trouvés...",
 	"No results found...": "Aucun résultat trouvé...",
 	"<p>Please select a sub-category...</p>": "<p>Please select a sub-category...</p>",
-	"available songs": "available songs",
+	"available songs": "morceaux disponibles",
 	"Album: ": "Album: ",
-	"Duration: ": "Duration: ",
-	"available albums": "available albums",
-	"Tracks: ": "Tracks: ",
-	"available playlists": "available playlists",
-	"Author: ": "Author: ",
-	"Populars": "Populars"
+	"Duration: ": "Duée: ",
+	"available albums": "albums disponibles",
+	"Tracks: ": "Pistes: ",
+	"available playlists": "listes de lecture disponibles",
+	"Author: ": "Auteur: ",
+	"Populars": "Populaires"
 }
