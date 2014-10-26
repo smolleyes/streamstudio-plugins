@@ -33,41 +33,39 @@ kick.init = function(gui,ht5) {
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = obj.link;
         var id = obj.id;
-        if($('#kick_play_'+id).length === 0) {
-			$(this).parent().parent().find('.mvthumb').append('<a id="kick_play_'+id+'" data="" class="play_kick_torrent"> \
-					<img src="images/play-overlay.png" class="overlay" /> \
-					</a>');
-        }
+        $('.highlight').removeClass('highlight well');
+		$(this).closest('li').addClass('highlight well');
         $.get(link, function(res) {
             var table = $("#movieinfo", res).html();
             if(table == undefined) {
-				var table = $("#tab-main", res).html();
+				var table = $("#tab-main", res).html().replace(/"\/img/g,'"http://kickass.to/img').replace(/"\/\//g,'"http://');
 			}
             table += $("#desc", res).html();
             var name = obj.title;
             obj.torrent = obj.torrentLink;
-            $('#fbxMsg').empty().remove();
+            $('#fbxMsg').empty();
+            $('#fbxMsg').append('<div id="fbxMsg_header"><h3>'+obj.title+'</h3><a href="#" id="closePreview">X</a></div><div id="fbxMsg_downloads" class="well"></div><div id="fbxMsg_content"></div>');
             $('#preloadTorrent').remove();
-            $('.mejs-overlay-button').hide();
-            $('.mejs-container').append('<div id="fbxMsg"><a href="" id="closePreview" style="float:left;">X</a><h3 style="margin-left:20px;"><b>'+name+'</b></h3><div>'+table.replace(/src="\/\//g,'src="http://')+'</div></div>');
+			$('.mejs-overlay-button').hide();
             $('.download-torrent').remove();
-            $('#fbxMsg').hide().fadeIn(2000);
-            $('#fbxMsg').find('b,span,p,table,tr,td').css('color', 'white');
-            $('#fbxMsg').find('a,h1,h2,h3').css('color', 'orange');
-            $($('#fbxMsg').find('div')[0]).css('margin-top', '10px');
-            if($('#kick_downlink_'+obj.id).length === 0) {
-				$('#kick_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
-				var n = '<a href="'+obj.torrent+'" id="kick_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_torrentFile"><img src="images/down_arrow.png" width="16" height="16" /><span class="downloadText">'+_("Download")+'</span></a>';
-				$('#torrent_'+id).append(n);
-				if(kick.gui.freeboxAvailable) {
-					var r = '<a href="'+obj.torrent+'" id="kick_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_torrentFile_fbx" style="margin-left:10px;"><img src="images/down_arrow.png" width="16" height="16" /><span class="downloadText">'+_("Télécharger avec freebox")+'</span></a>';
-					$('#torrent_'+id).append(r);
-				}
+            // add play button
+			$('#fbxMsg_downloads').append('<button type="button" id="kick_play_'+id+'" data="" class="play_kick_torrent btn btn-success" style="margin-right:20px;"> \
+											<span class="glyphicon glyphicon-play-circle"><span class="fbxMsg_glyphText">'+_("Start playing")+'</span></span>\
+										  </button>');
+			$('#kick_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
+			// downloads buttons
+			$('#fbxMsg_downloads').append('<button type="button" class="downloadText btn btn-info" href="'+obj.torrent+'" id="kick_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_kick_torrentFile"><span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span></span></button>');
+			if(kick.gui.freeboxAvailable) {
+				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="downloadText btn btn-info" id="kick_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_kick_torrentFile_fbx"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
 			}
+			// clean preview
+			$('#fbxMsg_content').append(table);
+			// show
+            $('#fbxMsg').slideDown();
         })
     });
     
-    $(ht5.document).on('click','#fbxMsg a',function(e) {
+    $(ht5.document).on('click','#fbxMsg_content a',function(e) {
 		e.preventDefault();
 		ht5.gui.Window.open('http://kickass.to'+$(this).attr('href').replace(/(.*)?\/\//,''),{"always-on-top":true,position:"center",toolbar:false,height:800,width:1024});
 	})
@@ -75,17 +73,13 @@ kick.init = function(gui,ht5) {
     $(ht5.document).off('click','.play_kick_torrent');
     $(ht5.document).on('click','.play_kick_torrent',function(e){
         e.preventDefault();
-        console.log('play clicked')
-        $('#fbxMsg').remove();
-        $('.highlight').toggleClass('highlight','false');
-        $(this).closest('li').toggleClass('highlight','true');
-        var p = $('.highlight').position().top;
-        $('#left-component').scrollTop(p+13);
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         kick.gui.getTorrent(obj.torrent);
+        $('#fbxMsg').slideUp();
+        $('#playerToggle')[0].click();
     });
     
-    $(ht5.document).off('click','.download_torrentFile');
+    $(ht5.document).off('click','.download_kick_torrentFile');
     $(ht5.document).on('click','.download_torrentFile',function(e){
         e.preventDefault();
         console.log('download torrent clicked')
@@ -93,7 +87,7 @@ kick.init = function(gui,ht5) {
         kick.gui.getAuthTorrent(obj.torrent,false,false)
     });
      
-    $(ht5.document).off('click','.download_torrentFile_fbx');
+    $(ht5.document).off('click','.download_kick_torrentFile_fbx');
     $(ht5.document).on('click','.download_torrentFile_fbx',function(e){
         e.preventDefault();
         console.log('download torrent clicked')
@@ -292,21 +286,25 @@ function print_videos(videos) {
 	        	var img = "images/kick.png";
 	        }
 			var html = '<li class="list-row" style="margin:0;padding:0;"> \
-	            <div class="mvthumb"> \
-							<img src="'+img.replace('file:','http:')+'" style="float:left;width:100px;height:100px;" /> \
+							<div class="mvthumb"> \
+								<img src="'+img.replace('file:','http:')+'" style="float:left;width:100px;height:100px;" /> \
 							</div> \
-	            <div style="margin: 0 0 0 105px;padding-top:10px;"> \
-								<a href="#" class="preload_kick_torrent" data="'+encodeURIComponent(JSON.stringify(video))+'" style="font-size:16px;font-weight:bold;">'+video.title+'</a> \
-								<div> \
-								<span><b>Taille:</b> '+video.size+' </span> \
-								<span style="margin-left:50px;"><b>Sources:</b> '+video.seeders+' </span> \
-							  </div>  \
-								<div id="torrent_'+video.id+'"> \
-									<a class="open_in_browser" title="'+("Open in %s",kick.engine_name)+'" href="'+video.link+'"><img style="margin-top:8px;" src="images/export.png" /></a> \
+							<div style="margin: 0 0 0 105px;"> \
+								<a href="#" class="preload_kick_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
+								<div class="item-info"> \
+									<span><b>'+_("Size: ")+'</b>'+video.size+'</span> \
 								</div> \
+								<div class="item-info"> \
+									<span><b>'+_("Seeders: ")+'</b>'+video.seeders+'</span> \
+								</div> \
+								<div class="item-info"> \
+									<span><b>'+_("Leechers: ")+'</b>'+video.leechs+'</span> \
+								</div> \
+							</div>  \
+							<div id="torrent_'+video.id+'"> \
 							</div> \
 						</li>';
-			$("#kick_cont").append(html);
+				$("#kick_cont").append(html);
 		});
 	});
 }

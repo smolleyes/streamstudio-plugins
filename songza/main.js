@@ -355,7 +355,7 @@ songza.load_next = function(id) {
 		$('#songza_item_'+res.song.id).closest('.list-row').addClass('highlight well');
 		$('.mejs-overlay-button').hide();
 		$('#fbxMsg').empty();
-		$('.mejs-container').append('<div id="fbxMsg"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: -100px;position: relative;top: 50%;margin-top: -100px;" src="'+res.song.cover_url+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
+		$('.mejs-container').append('<div id="fbxMsg" style="height:calc(100% - 60px);"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: -100px;position: relative;top: 50%;margin-top: -100px;" src="'+res.song.cover_url+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
 	});
 }
 

@@ -37,5 +37,8 @@
 	"%s results found for %s": "%s résultats trouvés pour %s",
 	"Size: ": "Taille: ",
 	"Uploaded: ": "Uploadé: ",
-	"Télécharger avec freebox": "Télécharger avec freebox"
+	"Télécharger avec freebox": "Télécharger avec freebox",
+	"Seeders: ": "Sources: ",
+	"Leechers: ": "Clients: ",
+	"Start playing": "Démarrer la lecture"
 }

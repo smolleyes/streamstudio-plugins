@@ -33,20 +33,11 @@ tpb.init = function(gui,ht5) {
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = obj.link;
         var id = ((Math.random() * 1e6) | 0);
-        if($('#tpb_play_'+id).length === 0) {
-			$(this).parent().parent().find('.mvthumb').append('<a href="#" id="tpb_play_'+id+'" data="" class="play_tpb_torrent"> \
-                <img src="images/play-overlay.png" class="overlay" /> \
-                </a>');
-        }
-        if($('#tpb_downlink_'+obj.id).length === 0) {
-			if(tpb.gui.freeboxAvailable) {
-				var r = '<a href="'+obj.magnet+'" id="tpb_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_pirateTorrentFile_fbx" style="margin-left:10px;"><img src="images/down_arrow.png" width="16" height="16" /><span class="downloadText">'+_("Télécharger avec freebox")+'</span></a>';
-				$('#torrent_'+obj.id).append(r);
-			}
-		}
+		$('.highlight').removeClass('highlight well');
+		$(this).closest('li').addClass('highlight well');
         $.get(link, function(res) {
             var title = $("#title", res).html();
-            var info = $(".nfo", res).html();
+            var table = $(".nfo", res).html();
             var img = 'http:'+$(".torpicture", res).find('img').attr('src');
             var showImg = 'block';
             if (img === "http:undefined") {
@@ -55,27 +46,36 @@ tpb.init = function(gui,ht5) {
 			}
             var name = obj.title;
             obj.torrent = obj.magnet;
-            $('#fbxMsg').empty().remove();
+            
+            $('#fbxMsg').empty();
+            $('#fbxMsg').append('<div id="fbxMsg_header"><h3>'+obj.title+'</h3><a href="#" id="closePreview">X</a></div><div id="fbxMsg_downloads" class="well"></div><div class="nano"><div id="fbxMsg_content" class="nano-content"></div></div>');
             $('#preloadTorrent').remove();
-            $('.mejs-overlay-button').hide();
-            $('.mejs-container').append('<div id="fbxMsg"><a href="" id="closePreview">X</a><div style="padding:20px;"><h2>'+title+'</h2><img src="'+img+'"style="margin:0 10px 10px 0;display:'+showImg+';float:left;width:150px;height:200px;" />'+info+'</div></div>');
-            $('#tpb_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
+			$('.mejs-overlay-button').hide();
             $('.download-torrent').remove();
-            $('#fbxMsg').hide().fadeIn(2000);
+            // add play button
+			$('#fbxMsg_downloads').append('<button type="button" id="tpb_play_'+id+'" data="" class="play_tpb_torrent btn btn-success" style="margin-right:20px;"> \
+											<span class="glyphicon glyphicon-play-circle"><span class="fbxMsg_glyphText">'+_("Start playing")+'</span></span>\
+										  </button>');
+			$('#tpb_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
+			// downloads buttons
+			$('#fbxMsg_downloads').append('<button type="button" class="downloadText btn btn-info" href="'+obj.torrent+'" id="tpb_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_tpb_torrentFile"><span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span></span></button>');
+			if(tpb.gui.freeboxAvailable) {
+				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="downloadText btn btn-info" id="tpb_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'" class="download_tpb_torrentFile_fbx"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
+			}
+			// clean preview
+			$('#fbxMsg_content').append('<div><img src="'+img+'"style="margin:0 10px 10px 0;display:'+showImg+';float:left;width:150px;height:200px;" />'+table+'</div>"');
+			// show
+            $('#fbxMsg').slideDown('slow',function() { setTimeout(function() {t411.gui.updateScroller() },1000); $('#fbxMsg_content a').css('color','black') });
         })
     });
     
     $(ht5.document).off('click','.play_tpb_torrent');
     $(ht5.document).on('click','.play_tpb_torrent',function(e){
         e.preventDefault();
-        console.log('play clicked')
-        $('#fbxMsg').remove();
-        $('.highlight').toggleClass('highlight','false');
-        $(this).closest('li').toggleClass('highlight','true');
-        var p = $('.highlight').position().top;
-        $('#left-component').scrollTop(p+13);
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         tpb.gui.getTorrent(obj.torrent);
+        $('#fbxMsg').slideUp();
+        $('#playerToggle')[0].click();
     });
     
     $(ht5.document).off('click','.download_pirateTorrentFile');
@@ -166,7 +166,7 @@ function analyseResults(videos,list) {
       var infos = {};
       infos.link = item.link;
       infos.magnet = item.magnetLink;
-      infos.title = item.name;
+      infos.title = item.name.replace(/\./g,' ');
       infos.size = item.size;
       infos.seeders = item.seeders;
       infos.leechers = item.leechers;
@@ -244,21 +244,27 @@ function print_videos(videos) {
 	$.each(videos[0].items,function(index,video) {
 		video.id = ((Math.random() * 1e6) | 0);
 		var html = '<li class="list-row" style="margin:0;padding:0;"> \
-						<div class="mvthumb"> \
-							<img src="images/tpb.gif" style="float:left;width:100px;height:100px;" /> \
-						</div> \
-						<div style="margin: 0 0 0 105px;padding-top:10px;"> \
-							<a href="#" class="preload_tpb_torrent" data="'+encodeURIComponent(JSON.stringify(video))+'" style="font-size:16px;font-weight:bold;">'+video.title+'</a> \
-							<div> \
-								<span>'+_('Uploaded: ')+''+video.date+'</span> <span style="position: absolute;left: 280px;">'+_('Size: ')+''+video.size+'</span> <br/>\
-								<span>Seeders: '+video.seeders+'</span> <span style="position: absolute;left: 280px;">leechers: '+video.seeders+'</span>\
+							<div class="mvthumb"> \
+								<img src="images/tpb.gif" style="float:left;width:100px;height:100px;" /> \
 							</div> \
-							<div style="margin-top:10px;" id="torrent_'+video.id+'"> \
-								<a class="open_in_browser" title="'+_("Open in %s",tpb.engine_name)+'" href="'+video.link+'"><img style="margin-top:8px;" src="images/export.png" /></a> \
-								<a href="'+video.magnet+'" title="'+ _("Download")+'" class="download_pirateTorrentFile"><img src="images/down_arrow.png" width="16" height="16" /><span class="downloadText">'+_("Download")+'</span></a> \
+							<div style="margin: 0 0 0 105px;"> \
+								<a href="#" class="preload_tpb_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
+								<div class="item-info"> \
+									<span><b>'+_("Uploaded: ")+'</b>'+video.date+'</span> \
+								</div> \
+								<div class="item-info"> \
+									<span><b>'+_("Size: ")+'</b>'+video.size+'</span> \
+								</div> \
+								<div class="item-info"> \
+									<span><b>'+_("Seeders: ")+'</b>'+video.seeders+'</span> \
+								</div> \
+								<div class="item-info"> \
+									<span><b>'+_("Leechers: ")+'</b>'+video.leechers+'</span> \
+								</div> \
+							</div>  \
+							<div id="torrent_'+video.id+'"> \
 							</div> \
-						</div> \
-					</li>';
+						</li>';					
 		$("#tpb_cont").append(html);
 	});
 }

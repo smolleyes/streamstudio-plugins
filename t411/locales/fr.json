@@ -35,7 +35,7 @@
 	"Please login to the website with the Always connected option checked then close the window to continue... !": "Connectez vous ou enregistrez un compte sur la page suivante en COCHANT \"rester connecté\" puis fermez la fenêtre, cliquez Ok pour continuer",
 	"Ok": "Ok",
 	"Top 100": "Top 100",
-	"Size: ": "Size: ",
-	"Seeders: ": "Seeders: ",
-	"Start playing": "Start playing"
+	"Size: ": "Taille: ",
+	"Seeders: ": "Source: ",
+	"Start playing": "Démarrer la lecture"
 }

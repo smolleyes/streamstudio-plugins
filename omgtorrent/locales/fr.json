@@ -27,7 +27,7 @@
 	"Series": "Séries",
 	"Télécharger avec freebox": "Télécharger avec freebox",
 	"Size: ": "Size: ",
-	"Seeders: ": "Seeders: ",
-	"leechers: ": "leechers: ",
-	"Start playing": "Start playing"
+	"Seeders: ": "Sources: ",
+	"leechers: ": "Clients: ",
+	"Start playing": "Démarrer la lecture"
 }
