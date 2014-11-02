@@ -55,7 +55,7 @@ gshark.init = function(gui,ht5) {
 			if (img.indexOf('album.png') == -1 ) {
 				img = song.thumbnail.replace('120_','');
 			}
-			$('.mejs-container').append('<div id="fbxMsg" style="height:calc(100% - 60px);"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: -100px;position: relative;top: 50%;margin-top: -100px;" src="'+img+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
+			$('.mejs-container').append('<div id="fbxMsg" style="height:calc(100% - 60px);"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: -200px;position: relative;top: 50%;margin-top: -150px;" src="'+img+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
 		});
 	});
 	
@@ -162,7 +162,7 @@ gshark.searchSongs = function(query) {
 		$('#items_container').show();
 		var list = __.chain(songs)
 		  .sortBy(function(d) { return d.SongName })
-		  .uniq(function(d) { return d.SongName })
+		  .uniq(function(d) { return d.SongName.toLowerCase() })
 		  .value()
 		gshark.print_songs(list);
 	});
@@ -202,7 +202,7 @@ gshark.getAlbumSongs = function(id) {
 		$('#items_container').show();
 		var list = __.chain(songs)
 		  .sortBy(function(d) { return d.Name })
-		  .uniq(function(d) { return d.Name })
+		  .uniq(function(d) { return d.Name.toLowerCase() })
 		  .value()
 		gshark.print_songs(list);
 	});
@@ -215,7 +215,7 @@ gshark.getPlaylistSongs = function(id) {
 		$('#items_container').show();
 		var list = __.chain(songs)
 		  .sortBy(function(d) { return d.Name })
-		  .uniq(function(d) { return d.Name })
+		  .uniq(function(d) { return d.Name.toLowerCase() })
 		  .value()
 		gshark.print_songs(list);
 	});
