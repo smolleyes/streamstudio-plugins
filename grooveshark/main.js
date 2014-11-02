@@ -115,7 +115,7 @@ if ($.inArray(gshark.gui.settings.locale, localeList) >-1) {
 
 // engine config
 gshark.menuEntries = ["searchTypes","categories"];
-gshark.defaultSearchType = 'popular';
+gshark.defaultSearchType = 'search';
 gshark.defaultMenus = ["searchTypes"];
 gshark.searchTypes = JSON.parse('{"'+_("Songs")+'":"songs","'+_("Albums")+'":"albums","'+_("Playlists")+'":"playlists","'+_("Populars")+'":"popular"}');
 //gshark.orderBy_filters = JSON.parse('{"'+_("Date")+'":"age","'+_("Track number")+'":"track","'+_("Name")+'":"name"}');
@@ -124,7 +124,7 @@ var totalItems = 0;
 var currentSearch = "";
 gshark.search_type_changed();
 gshark.initialized = true;
-gshark.searchType = 'popular';
+gshark.searchType = 'search';
 gshark.searchInit = false;
 gshark.albumsCount = 0;
 gshark.playlistsCount = 0;
@@ -160,7 +160,11 @@ gshark.searchSongs = function(query) {
 		$('#search').show();
 		$('#loading').hide();
 		$('#items_container').show();
-		gshark.print_songs(songs);
+		var list = __.chain(songs)
+		  .sortBy(function(d) { return d.SongName })
+		  .uniq(function(d) { return d.SongName })
+		  .value()
+		gshark.print_songs(list);
 	});
 }
 
@@ -196,7 +200,11 @@ gshark.getAlbumSongs = function(id) {
 		$('#search').show();
 		$('#loading').hide();
 		$('#items_container').show();
-		gshark.print_songs(songs);
+		var list = __.chain(songs)
+		  .sortBy(function(d) { return d.Name })
+		  .uniq(function(d) { return d.Name })
+		  .value()
+		gshark.print_songs(list);
 	});
 }
 
@@ -205,7 +213,11 @@ gshark.getPlaylistSongs = function(id) {
 		$('#search').show();
 		$('#loading').hide();
 		$('#items_container').show();
-		gshark.print_songs(songs);
+		var list = __.chain(songs)
+		  .sortBy(function(d) { return d.Name })
+		  .uniq(function(d) { return d.Name })
+		  .value()
+		gshark.print_songs(list);
 	});
 }
 
