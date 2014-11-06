@@ -66,6 +66,15 @@ songza.init = function(gui,ht5) {
 		$('.mejs-container').append('<div id="fbxMsg"><div><img src="'+song.cover_url+' /><span>'+song.title+'</span>"</div></div>');
 		songza.gui.startPlay(media);
 	});
+	
+	$(ht5.document).off('click','.download_sgFile');
+	$(ht5.document).on('click','.download_sgFile',function(e){
+		e.preventDefault();
+		var song = JSON.parse(decodeURIComponent($(this).attr("data")));
+			var title = song.title+'.mp3';
+			var id = song.id;
+			songza.gui.downloadFile(song.link,title,id,false);
+	});
 }
 
 function loadEngine() {
@@ -186,6 +195,7 @@ songza.search = function (query, options, gui){
 		console.log(err);
 	}
 }
+
 
 songza.analyse_search_artists = function(datas,query) {
 	if(datas.length === 0 ) {
@@ -325,8 +335,13 @@ songza.load_next = function(id) {
 		return;
 	}
 	$('.highlight').removeClass('highlight well');
+	console.log('http://www.unblockpirate.com/index.php?q='+songza.gui.Base64.encode('http://songza.com/api/1/station/'+id+'/next'));
 	$.get('http://www.unblockpirate.com/index.php?q='+songza.gui.Base64.encode('http://songza.com/api/1/station/'+id+'/next'),function(res) {
 		if ($('#songza_item_'+res.song.id).length === 1) {return;}
+		var media= {};
+		media.link = res.listen_url;
+		media.id = res.song.id;
+		media.title = res.song.artist.name +' - '+ res.song.title;
 		var html = '<li class="list-row"> \
 			<div class="mvthumb"> \
 				<img src="'+res.song.cover_url+'" style="float:left;width:100px;height:100px;" /> \
@@ -341,6 +356,7 @@ songza.load_next = function(id) {
 				</div> \
 			</div>  \
 			<div id="songza_item_'+res.song.id+'"> \
+				<a class="download_sgFile" style="margin-left:5px;" href="#" data="'+encodeURIComponent(JSON.stringify(media))+'" title="Download"><img src="images/down_arrow.png" width="16" height="16" />'+_("Download")+' mp3</a> \
 			</div> \
 		</li>';
 		$("#songza_cont").append(html);
