@@ -260,7 +260,6 @@ songza.load_genre = function(datas) {
 		</li>';
 		$("#songza_cont").append(html);
 		$('#loading').hide();
-		$("#loading p").empty().append(_("Loading songs..."));
 		$("#search").show();
 		$('#items_container').show();
 	});
@@ -293,7 +292,6 @@ songza.load_genre_stations = function(datas) {
 		</li>';
 			$("#songza_cont").append(html);
 			$('#loading').hide();
-			$("#loading p").empty().append(_("Loading songs..."));
 			$("#search").show();
 			$('#items_container').show();
 		});
@@ -322,8 +320,7 @@ songza.load_stations = function(stations) {
 			</div> \
 		</li>';
 		$("#songza_cont").append(html);
-		$('#loading').hide();
-		$("#loading p").empty().append(_("Loading songs..."));
+		$('#loading').hide();	
 		$("#search").show();
 		$('#items_container').show();
 	});
@@ -334,8 +331,11 @@ songza.load_next = function(id) {
 		$("#search_results p").empty().append(_('All songs already loaded in the playlist...'));
 		return;
 	}
+	$("#loading p").empty().append(_("Loading next song..."))
+	$("#search").hide();
+	$("#pagination").hide();
+	$("#loading").show();	
 	$('.highlight').removeClass('highlight well');
-	console.log('http://www.unblockpirate.com/index.php?q='+songza.gui.Base64.encode('http://songza.com/api/1/station/'+id+'/next'));
 	$.get('http://www.unblockpirate.com/index.php?q='+songza.gui.Base64.encode('http://songza.com/api/1/station/'+id+'/next'),function(res) {
 		if ($('#songza_item_'+res.song.id).length === 1) {return;}
 		var media= {};
@@ -376,7 +376,6 @@ songza.load_next = function(id) {
 }
 
 songza.play_next = function() {
-	$("#search_results p").empty().append(_('Loading song...'));
 	songza.load_next(songza.current_station_id);
 }
 
