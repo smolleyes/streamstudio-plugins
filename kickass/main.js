@@ -80,7 +80,7 @@ kick.init = function(gui,ht5) {
     });
     
     $(ht5.document).off('click','.download_kick_torrentFile');
-    $(ht5.document).on('click','.download_torrentFile',function(e){
+    $(ht5.document).on('click','.download_kick_torrentFile',function(e){
         e.preventDefault();
         console.log('download torrent clicked')
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
@@ -88,7 +88,7 @@ kick.init = function(gui,ht5) {
     });
      
     $(ht5.document).off('click','.download_kick_torrentFile_fbx');
-    $(ht5.document).on('click','.download_torrentFile_fbx',function(e){
+    $(ht5.document).on('click','.download_kick_torrentFile_fbx',function(e){
         e.preventDefault();
         console.log('download torrent clicked')
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
