@@ -36,9 +36,9 @@ cpb.init = function(gui,ht5) {
         $('.highlight').removeClass('highlight well');
 		$(this).closest('li').addClass('highlight well');
         $.get(link, function(res) {
-            var table = $("div.torrent", res).html();
-            var name = path.basename($('.download-torrent a',res)[0].href);
-            obj.torrent = 'http://www.cpasbien.pe/_torrents/'+name;
+            var table = $("#gauche", res).html();
+            var name = $(".h2fiche", res).text();
+            obj.torrent = 'http://www.cpasbien.pe'+$("a#telecharger",res).attr('href');
             $('#fbxMsg').empty();
             $('#fbxMsg').append('<div id="fbxMsg_header"><h3>'+obj.title+'</h3><a href="#" id="closePreview">X</a></div><div id="fbxMsg_downloads" class="well"></div><div id="fbxMsg_content"></div>');
             $('#preloadTorrent').remove();
@@ -56,9 +56,10 @@ cpb.init = function(gui,ht5) {
 			}
 			// clean preview
 			$('#fbxMsg_content').append(table);
-			$($('#fbxMsg_content fieldset')[1]).remove();
-			$('#fbxMsg_content .download-torrent').remove();
-			$('#fbxMsg_header img').remove();
+			$('#fbxMsg_content .h2fiche').remove();
+			$('#fbxMsg_content #telecharger').remove();
+			$('#fbxMsg_content #infosficher').remove();
+			$('#fbxMsg_content #banner3').remove();
 			// show
             $('#fbxMsg').slideDown();
         })
@@ -133,44 +134,64 @@ cpb.search = function (query, options,gui) {
       page = 0;
       cpb.gui.current_page = 1;
     }
-    var query = query.replace(/ /g,'+');
+    var query = query.replace(/ /g,'-');
     var url;
     var videos = {};
     if(options.searchType === "search") {
-      url='http://www.cpasbien.me/recherche/'+query+'/page-'+page+',trie-'+options.orderBy+'-d';
+      url='http://www.cpasbien.pe/recherche/'+query+'/page-'+page+',trie-'+options.orderBy+'-d';
       $.get(url,function(res){
-        var list=$('.listing-torrent > table > tbody > tr',res);
-        if(list.length === 0 ) {
-            $('#loading').hide();
-            $("#search_results p").empty().append(_("No results found..."));
-            $("#search").show();
-            $("#pagination").hide();
-            return;
-        }
-        try {
-          videos.totalItems = parseInt($($('#recherche th.titre',res)[0]).text().split(':').pop().trim().split(' ')[0]);
-          analyseResults(videos,list);
-        } catch(err) {
-          videos.totalItems = list.length;
-          analyseResults(videos,list);
-        }
+        var mlist=$('#centre div',res);
+        var list = [];
+        $.each(mlist,function(index,item) {
+			if($(this).hasClass('ligne0') || $(this).hasClass('ligne1')){
+				list.push(item);
+			}
+			if(index+1 === mlist.length) {
+				if(list.length === 0 ) {
+					$('#loading').hide();
+					$("#search_results p").empty().append(_("No results found..."));
+					$("#search").show();
+					$("#pagination").hide();
+					return;
+				}
+				try {
+				  videos.totalItems = parseInt($($('#pagination a',res)[$('#pagination a',res).length - 2]).text()) * 30;
+				  analyseResults(videos,list);
+				} catch(err) {
+				  videos.totalItems = list.length;
+				  analyseResults(videos,list);
+				}
+			}
+		});
       });
     } else {
       url='http://www.cpasbien.me/view_cat.php?categorie='+options.category+'&page='+page+'';
       $.get(url,function(res){
-        var list=$('.listing-torrent > table > tbody > tr',res);
-        if(list.length === 0 ) {
-            $('#loading').hide();
-            $("#search_results p").empty().append(_("No results found..."));
-            $("#search").show();
-            $("#pagination").hide();
-            return;
-        }
-        videos.totalItems = $('th.titre', res)[0].innerHTML.split(':')[1].trim().replace(' torrents','').replace(/[\)\(]/g,'').replace(/<a.*/,'').trim();
-        analyseResults(videos,list);
+        var mlist=$('#centre div',res);
+        var list = [];
+        $.each(mlist,function(index,item) {
+			if($(this).hasClass('ligne0') || $(this).hasClass('ligne1')){
+				list.push(item);
+			}
+			if(index+1 === mlist.length) {
+				if(list.length === 0 ) {
+					$('#loading').hide();
+					$("#search_results p").empty().append(_("No results found..."));
+					$("#search").show();
+					$("#pagination").hide();
+					return;
+				}
+				try {
+				  videos.totalItems = parseInt($($('#pagination a',res)[$('#pagination a',res).length - 2]).text()) * 30;
+				  analyseResults(videos,list);
+				} catch(err) {
+				  videos.totalItems = list.length;
+				  analyseResults(videos,list);
+				}
+			}
+		});
       });
     }
-    console.log(url);
 }
 
 function analyseResults(videos,list) {
@@ -180,9 +201,9 @@ function analyseResults(videos,list) {
       var infos = {};
       infos.link = $(this).find('a')[0].href;
       infos.title = $(this).find('a')[0].innerHTML;
-      infos.size = $(this).find('td')[1].innerHTML;
-      infos.seeders = $(this).find('td')[2].innerHTML;
-      infos.leechers = $(this).find('td')[3].innerHTML;
+      infos.size = $(this).find('.poid').text();
+      infos.seeders = $(this).find('.up').text();
+      infos.leechers = $(this).find('.down').text();
       storeVideosInfos(videos,infos,index);
   });
 }
@@ -267,7 +288,7 @@ function print_videos(videos) {
 	$('#items_container').empty().append('<ul id="cpb_cont" class="list" style="margin:0;"></ul>').show();
 	$.each(videos[0].items,function(index,video) {
 		$.get(video.link,function(res) {
-			var img = $(".affiche img",res).attr('src');
+			var img = $("#bigcover img",res).attr('src');
 			video.id = ((Math.random() * 1e6) | 0);
 			var html = '<li class="list-row" style="margin:0;padding:0;"> \
 							<div class="mvthumb"> \

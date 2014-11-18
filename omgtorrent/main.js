@@ -145,9 +145,9 @@ omgTorrent.search = function (query, options,gui) {
       var videos = {};
       var list;
       if(searchType === 'search') {
-          list=$($('table.table_corps',res)[0]).find('tr:not(#table_entete)');
+          list=$($('table.table_corps',res)[0]).find('tr:not(.table_entete)');
       } else {
-          list=$('.table_corps tr:not("#table_entete")',res);
+          list=$('.table_corps tr:not(".table_entete")',res);
       }
       if(list.length === 0 || $('.message.erreur',res).length > 0) {
           $('#loading').hide();
@@ -277,7 +277,7 @@ $("#pagination").show();
         $.get(video.link,function(res) {
             video.id = ((Math.random() * 1e6) | 0);
             try {
-                var img = $(".film_img",res).attr('src');
+                var img = 'http://www.omgtorrent.com'+$(".film_img",res).attr('src');
                 var css = 'float:left;height:125px;width:100px'
             } catch(err) {
                 var img = "images/omgtorrent.png";

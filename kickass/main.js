@@ -38,7 +38,7 @@ kick.init = function(gui,ht5) {
         $.get(link, function(res) {
             var table = $("#movieinfo", res).html();
             if(table == undefined) {
-				var table = $("#tab-main", res).html().replace(/"\/img/g,'"http://kickass.to/img').replace(/"\/\//g,'"http://');
+				var table = $("#tab-main", res).html().replace(/"\/img/g,'"http://kickass.so/img').replace(/"\/\//g,'"http://');
 			}
             table += $("#desc", res).html();
             var name = obj.title;
@@ -67,7 +67,7 @@ kick.init = function(gui,ht5) {
     
     $(ht5.document).on('click','#fbxMsg_content a',function(e) {
 		e.preventDefault();
-		ht5.gui.Window.open('http://kickass.to'+$(this).attr('href').replace(/(.*)?\/\//,''),{"always-on-top":true,position:"center",toolbar:false,height:800,width:1024});
+		ht5.gui.Window.open('http://kickass.so'+$(this).attr('href').replace(/(.*)?\/\//,''),{"always-on-top":true,position:"center",toolbar:false,height:800,width:1024});
 	})
     
     $(ht5.document).off('click','.play_kick_torrent');
@@ -145,7 +145,7 @@ kick.search = function (query, options,gui) {
 			field:''+options.orderBy+'',//seeders, leechers, time_add, files_count, empty for best match
 			order:'desc',//asc or desc
 			page: page,//page count, obviously
-			url: 'http://kickass.to',//changes site default url (http://kick.to)
+			url: 'http://kickass.so',//changes site default url (http://kick.to)
 		},function(e, data){
 			console.log(data)
 			if(e || data.total_results == 0) {
