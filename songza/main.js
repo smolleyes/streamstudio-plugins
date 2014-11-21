@@ -208,7 +208,7 @@ songza.analyse_search_artists = function(datas,query) {
 	stations.station_ids = [];
 	$.each(datas,function(index,s) {
 		var link = encodeURIComponent(songza.gui.Base64.toBase64('http://songza.com/artist/'+s.id+'/'));
-		$.get('http://onlineproxyfree.com/index.php?q='+link+'/&hl=2ed',function(res){
+		$.get('http://www.unblockpirate.com/index.php?q='+link,function(res){
 			var list = $("li.playable", res);
 			$.each(list,function(index2,s) {
 				var id = $(this).attr('data-sz-station-id');
