@@ -287,11 +287,22 @@ function print_videos(videos) {
     // load videos in the playlist
 	$('#items_container').empty().append('<ul id="cpb_cont" class="list" style="margin:0;"></ul>').show();
 	$.each(videos[0].items,function(index,video) {
+		var viewed = "none";
+		cpb.gui.sdb.find({"title":video.title},function(err,result){
+  			if(!err){
+    			if(result.length > 0 ) {
+    				viewed = "block"
+    			}
+  			} else { 
+  				console.log(err)
+  			}
+		})
 		$.get(video.link,function(res) {
 			var img = $("#bigcover img",res).attr('src');
 			video.id = ((Math.random() * 1e6) | 0);
 			var html = '<li class="list-row" style="margin:0;padding:0;"> \
 							<div class="mvthumb"> \
+								<span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
 								<img src="'+img+'" style="float:left;width:100px;height:125px;" /> \
 							</div> \
 							<div style="margin: 0 0 0 105px;"> \
@@ -307,7 +318,7 @@ function print_videos(videos) {
 							</div> \
 						</li>';
 				$("#cpb_cont").append(html);
-			});
+		});
 	});
 }
 

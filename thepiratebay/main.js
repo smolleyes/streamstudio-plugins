@@ -245,10 +245,21 @@ function print_videos(videos) {
     // load videos in the playlist
 	$('#items_container').empty().append('<ul id="tpb_cont" class="list" style="margin:0;"></ul>').show();
 	$.each(videos[0].items,function(index,video) {
+    var viewed = "none";
+    tpb.gui.sdb.find({"title":video.title},function(err,result){
+        if(!err){
+          if(result.length > 0 ) {
+            viewed = "block"
+          }
+        } else { 
+          console.log(err)
+        }
+    })
 		video.id = ((Math.random() * 1e6) | 0);
 		var html = '<li class="list-row" style="margin:0;padding:0;"> \
 							<div class="mvthumb"> \
-								<img src="images/tpb.gif" style="float:left;width:100px;height:100px;" /> \
+                <span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
+								<img src="images/tpb.gif" style="float:left;width:100px;height:125px;" /> \
 							</div> \
 							<div style="margin: 0 0 0 105px;"> \
 								<a href="#" class="preload_tpb_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \

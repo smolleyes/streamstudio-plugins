@@ -179,7 +179,7 @@ function analyseResults(videos,list) {
 		  var infos = {};
 		  infos.torrentLink = item.torrentLink;
 		  infos.link = item.guid;
-		  infos.title = item.title;
+		  infos.title = item.title.replace(/\./g,' ');
 		  infos.seeders = item.seeds;
 		  infos.leechs = item.leechs;
 		  var converted_size = Math.floor( Math.log(item.size) / Math.log(1024) );
@@ -275,6 +275,16 @@ function print_videos(videos) {
     // load videos in the playlist
 	$('#items_container').empty().append('<ul id="kick_cont" class="list" style="margin:0;"></ul>').show();
 	$.each(videos[0].items,function(index,video) {
+		var viewed = "none";
+		kick.gui.sdb.find({"title":video.title},function(err,result){
+  			if(!err){
+    			if(result.length > 0 ) {
+    				viewed = "block"
+    			}
+  			} else { 
+  				console.log(err)
+  			}
+		})
 		$.get(video.link,function(res) {
 	        video.id = ((Math.random() * 1e6) | 0);
 	        try {
@@ -287,7 +297,8 @@ function print_videos(videos) {
 	        }
 			var html = '<li class="list-row" style="margin:0;padding:0;"> \
 							<div class="mvthumb"> \
-								<img src="'+img.replace('file:','http:')+'" style="float:left;width:100px;height:100px;" /> \
+								<span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
+								<img src="'+img.replace('file:','http:')+'" style="float:left;width:100px;height:125px;" /> \
 							</div> \
 							<div style="margin: 0 0 0 105px;"> \
 								<a href="#" class="preload_kick_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
