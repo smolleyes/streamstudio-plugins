@@ -38,5 +38,6 @@
 	"Size: ": "Taille: ",
 	"Seeders: ": "Source: ",
 	"Start playing": "Démarrer la lecture",
-	"Already watched" : "Déjà visionné"
+	"Already watched": "Déjà visionné",
+	"showing %s results on 100 (scroll to show more...)": "%s résultats affichés sur 100 (scrollez pour en afficher plus...)"
 }

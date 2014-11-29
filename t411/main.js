@@ -4,6 +4,9 @@ var t411 = {};
 t411.engine_name = 'T411';
 t411.initialized = false;
 t411.type="video";
+t411.topArray = [];
+t411.lazyStart = 0;
+t411.lazyLength = 0;
 
 /********************* Node modules *************************/
 
@@ -16,15 +19,7 @@ var _ = i18n.__;
 /****************************/
 
 // global var
-var has_more = true;
 var t411_win;
-var old_count = 0;
-var sectionsList = new Array('Japanimation','Mangas','Dramas','VF','VF HD','VO/VOST','VO/VOST HD','Album Complet','OST / BO','Singles','Compilation Musical','VO/VOSTFR','Albums','Compilations Musicales','OST','Section Adulte (+18)','Films Adulte','Livres Adulte','BD Adulte','Films DVDRip & BDRip','Films VO & VOSTFR','Films TS, R5, Cam, DVDScreen','BluRay 720p, 1080p','Films HD 720p, 1080p, 3D','Films HD 720p, 1080p, 3D.','Séries TV','Dessins animés','Documentaires, Spectacles, Concerts, Émissions TV, Sports','Musique','Musique HQ / Flac','Clips Musicaux','Manga','Drama','Section ADULTE','Romans, Livres','Presse, Magazine','Bande dessinée', 'Romans','Livres','Livres Audio');
-var scannedLinks = 0;
-var totalFiles = 0;
-var folderList = [];
-var linksList = [];
-var boardList=[];
 var videos_responses = new Array();
 
 t411.init = function(gui,ht5,notif) {
@@ -109,6 +104,7 @@ t411.init = function(gui,ht5,notif) {
 			}
 			// clean preview
 			$('#fbxMsg_content').append(table);
+			$('#fbxMsg_content a').attr('href','#');
 			// show
             $('#fbxMsg').slideDown('slow',function() { setTimeout(function() {t411.gui.updateScroller() },1000); $('#fbxMsg_content a,b,span,p,u,tr,td,table,thead').css('color','white') });
         })
@@ -172,59 +168,11 @@ t411.defaultOrderBy = 'seeders';
 
 }
 
-t411.loadMenus = function() {
-    var sublist = [];
-    var i = 0;
-    boardList = new Array();
-    scanSublist = false;
-    $.get('http://t411.me/index.php',function(res){
-      $('#categories_select').empty();
-      var content = $('#main_content', res);
-      var sections = $(content).find('.windowbg2');
-      var subList = [];
-      $.each(sections,function(index,name){
-        var id = $(this).attr('id');
-        var name = $(this).find('td.info a.subject').text();
-        var href = $(this).find('td.info a.subject').attr('href');
-        if ($(content).find('tr#'+id+'_children').length !== 0) {
-          subList.push(id);
-        } else {
-          if(in_array(name,sectionsList) !== -1){
-            $('#categories_select').append('<option value="'+name+'::'+href+'">'+name+'</option>');
-			var bid = href.match(/board=(.*?)\./).pop();
-			boardList.push("&brd%5B"+bid+"%5D="+bid);
-          }
-        }
-        if (index+1 === sections.length){
-          $.each(subList,function(index,item){
-            var name = $(content).find('tr#'+item+' a.subject').text();
-            var href = $(content).find('tr#'+item+' a.subject').attr('href');
-            if(in_array(name,sectionsList) !== -1){
-              $('#categories_select').append('<option value=""></option>');
-              $('#categories_select').append('<option value="">'+name+'</option>');
-              $('#categories_select').append('<option value="">--------------------------</option>');
-              var l = $(content).find('tr#'+item+'_children a');
-              $.each(l,function(index,res) {
-                var subname = $(this).text();
-                var subhref = $(this).attr('href');
-                if(subname !== '') {
-                  $('#categories_select').append('<option value="'+subname+'::'+subhref+'">'+subname+'</option>');
-				  var bid = href.match(/board=(.*?)\./).pop();
-				  boardList.push("&brd%5B"+bid+"%5D="+bid);
-                }
-                //if (l.length === index+1) {
-                    //t411.search_type_changed();
-                //}
-              });
-            }
-          });
-        }
-      });
-    });
-}
 
 t411.search = function(query,options) {
   t411.currentSearch = query;
+  t411.lazyStart = 0;
+  t411.lazyLength = 0;
   videos_responses = new Array();
   if (t411.searchType === 'top100') {
       var link = "http://www.t411.me/top/100/";
@@ -286,7 +234,7 @@ function analyseResults(videos,list) {
   $.each(list,function(index,item) {
       var infos = {};
       infos.link = $($(this).find('td')[1]).find('a').attr('href');
-      infos.title = $($(this).find('td')[1]).find('a').text();
+      infos.title = $($(this).find('td')[1]).find('a').text().replace(/\./g,' ');
       infos.seeders = $($(this).find('td')[7]).text();
       infos.size = $($(this).find('td')[5]).text();
       storeVideosInfos(videos,infos,index);
@@ -302,7 +250,6 @@ function storeVideosInfos(video,infos,num) {
         videos_responses = new Array();
     }
 }
-
 
 // functions
 function print_videos(videos) {
@@ -320,21 +267,65 @@ function print_videos(videos) {
   if (t411.gui.current_page === 1) {
       if (t411.searchType === 'search') {
         t411.gui.init_pagination(totalItems,50,false,true,totalPages);
-      } else {
-        t411.gui.init_pagination(100,100,false,true,0);
+        $("#pagination").show();
       }
-      $("#pagination").show();
   } else {
 	if (t411.searchType !== 'search') {
 		t411.gui.init_pagination(totalItems,50,false,true,0);
-	} else {
-		t411.gui.init_pagination(0,50,false,true,0);
-	}	
+		$("#pagination").show();
+	}
   }
-    
-    // load videos in the playlist
-	$('#items_container').empty().append('<ul id="t411_cont" class="list" style="margin:0;"></ul>').show();
-	$.each(videos[0].items,function(index,video) {
+  $('#items_container').empty().append('<ul id="t411_cont" class="list" style="margin:0;"></ul>').show();
+  var list;
+  if (t411.searchType === 'top100') {
+	  t411.topArray = videos[0].items;
+	  t411.lazyLength = 100;
+	  list = videos[0].items.slice(0,10);
+	  t411.lazyStart = 10;
+	  appendVideos(list);
+  } else {
+	  t411.topArray = videos[0].items;
+	  t411.lazyLength = videos[0].items.length;
+	  if(t411.lazyLength < 10 ) {
+		  t411.lazyStart = t411.lazyLength;
+		  list = videos[0].items;
+	  } else {
+		  t411.lazyStart = 10;
+		  list = videos[0].items.slice(0,10);
+	  }
+	  appendVideos(list);
+  }
+}
+
+t411.loadMore = function() {
+	var list;
+	if (t411.searchType === 'top100') {
+		list = t411.topArray.slice(t411.lazyStart, t411.lazyStart + 10);
+		t411.lazyStart += 10;
+		appendVideos(list);
+	} else {
+		if (t411.lazyStart + 10 > t411.lazyLength) {
+			list = t411.topArray.slice(t411.lazyStart,t411.lazyLength);
+			t411.lazyStart = t411.lazyLength;
+		} else {
+			list = t411.topArray.slice(t411.lazyStart, t411.lazyStart + 10);
+			t411.lazyStart += 10;
+		}
+		appendVideos(list);
+	}
+}
+
+
+function appendVideos(list) {
+	// load videos in the playlist
+	$.each(list,function(index,video) {
+		if(t411.gui.engine['engine_name'] !== 'T411') {
+			$('#loading').hide();
+			$("#loading p").empty().append(_("Loading videos..."));
+			$("#search").hide();
+			$("#pagination").hide();
+			return false;
+		}
     var viewed = "none";
     t411.gui.sdb.find({"title":video.title},function(err,result){
         if(!err){
@@ -345,7 +336,7 @@ function print_videos(videos) {
           console.log(err)
         }
     })
-		$.get('http:'+video.link,function(res) {
+		var req = $.get('http:'+video.link,function(res) {
         video.id = ((Math.random() * 1e6) | 0);
         try {
             var img = $($('article',res).find('img')[0]).attr('src');
@@ -373,31 +364,16 @@ function print_videos(videos) {
 							</div> \
 						</li>';
 				$("#t411_cont").append(html);
+				if (t411.searchType === 'top100') {
+					$("#search_results").empty().append('<p>'+_("showing %s results on 100 (scroll to show more...)",$("#t411_cont li").length)+'</p>');
+				}
       });
 	});
 }
 
-
-t411.loadSearchItems = function(listMain) {
-    $('#items_container').empty().append('<ul id="t411_cont" class="list" style="margin:0;"></ul>');
-    $.each(listMain,function(index1,data) {
-      var img = $($('.bbc_img',data)[0]).attr('src');
-      var list = $('a.bbc_link',data);
-      var item = {};
-      //item.title = $($('span.bbc_color',data)[0]).text(); 
-      item.id=((Math.random() * 1e6) | 0);
-      item.itemId = 't411_item_'+item.id;
-      item.title = $($('h5 a',data)[1]).text();
-      var section = $($('h5 a',data)[0]).text();
-      item.link = $($('h5 a',data)[1]).attr('href').match(/(.*?).msg/)[0].replace('.msg','');
-      if (in_array(section,sectionsList) !== -1) {
-          t411.addContainer(item);
-      }
-    });
-}
-
 t411.search_type_changed = function() {
     t411.searchType = $("#searchTypes_select option:selected").val();
+    t411.lazyStart = 0;
     if (t411.searchType === 'top100') {
         $('#video_search_query').prop('disabled', true);
         $('#orderBy_label').hide();
@@ -409,165 +385,6 @@ t411.search_type_changed = function() {
        $('#orderBy_select').show();
     }
 }
-
-t411.printSingleItem = function(item) {
-  try {
-    $('#loading').hide();
-    $("#loading p").empty().append("Loading videos...");
-    $("#search").show();
-    $("#items_container").show();
-    var elem = item[0];
-    var html = '<div class="youtube_item"> \
-              <div class="left"> \
-                <img src="'+elem.thumbnail+'" class="video_thumbnail"> \
-                <a href="#" data="'+encodeURIComponent(JSON.stringify(elem))+'" class="play"> \
-                <img src="images/play-overlay.png" class="overlay" style="top: 10px;margin-left: -10px;"/> \
-                </a>\
-              </div> \
-              <div style="position: relative;overflow:auto;margin-left:5px;"> \
-                <div class="item_infos" style="position: relative;top: -10px;padding-left:5px;"> \
-                  <span style="display:none;" class="video_length"></span> \
-                  <div style="margin-right:120px;"> \
-                    <p> \
-                      <a href="#" class="play" data="'+encodeURIComponent(JSON.stringify(elem))+'"> \
-                        <b>'+elem.title+'</b> \
-                      </a> \
-                    </p> \
-                  </div> \
-                  <div> \
-					<span><b>Taille:</b> '+video.size+' </span> \
-					<span><b>Sources:</b> '+video.seeds+' </span> \
-				  </div>  \
-                </div> \
-                <a class="open_in_browser" alt="'+_("Open in t411")+'" title="'+_("Open in t411")+'" href="'+elem.baseLink+'"> \
-                  <img style="margin-left:5px;" src="images/export.png"> \
-                </a> \
-                <a id="reportLink" style="display:none;" href="'+elem.reportLink+'"></a> \
-                <a href="#" data="'+encodeURIComponent(JSON.stringify(elem))+'" title="'+ _("Download")+'" class="download_megafile"><img src="images/down_arrow.png" width="16" height="16" /><span style="position:relative;top:-4px;">'+ _("Download")+'</span></a> \
-              </div> \
-            </div>';
-      if ($('#'+elem.id).length !== 0) {
-            $('#'+elem.id).empty().append(html);
-      } else {
-          $('#items_container').append(html);
-      }
-    }catch(err) {
-      console.log('printSinglePageItem error: ' + err);
-    }
-}
-
-
-function in_array(needle, haystack){
-    var found = 0;
-    for (var i=0, len=haystack.length;i<len;i++) {
-        if (haystack[i] == needle) return i;
-            found++;
-    }
-    return -1;
-}
-
-function d64(s) {
-s += '=='.substr((2-s.length*3)&3)
-s = s.replace(/-/g,'+').replace(/_/g,'/').replace(/,/g,'')
-return new Buffer(s, 'base64')
-}
-
-function from256to128(s) {
-  var o = new Buffer(16)
-  for (var i = 0; i < 16; i++) {
-    o[i] = s[i] ^ s[i + 16]
-  }
-  return o
-}
-
-function decrypter(maCleDeCryptage, maChaineCrypter){
-  maCleDeCryptage = node_crypto.createHash('md5').update(maCleDeCryptage).digest("hex");
-  letter = -1;
-  newstr = '';
-  maChaineCrypter = base64_decode(maChaineCrypter);
-  strlen = maChaineCrypter.length;
-  for ( i = 0; i < strlen; i++ ) {
-    letter+=1;
-    if ( letter > 31 ){
-      letter = 0;
-    }
-    neword = ord(maChaineCrypter[i]) - ord(maCleDeCryptage[letter]);
-    if ( neword < 1 ){
-      neword += 256;
-    }
-    //console.log(neword)
-    newstr += chr(neword);
-    
-    if(i+1 == strlen) {
-      return newstr;
-    }
-  }
-}
-
-
-function chr(n) {
-    return String.fromCharCode(n);
-}
-
-function ord(ch) {
-    //console.log("ask: "+ch +" return: " + ch.charCodeAt(0))
-    return ch.charCodeAt(0);
-}
-
-function base64_decode(data) {
-  //  discuss at: http://phpjs.org/functions/base64_decode/
-  // original by: Tyler Akins (http://rumkin.com)
-  // improved by: Thunder.m
-  // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-  // improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-  //    input by: Aman Gupta
-  //    input by: Brett Zamir (http://brett-zamir.me)
-  // bugfixed by: Onno Marsman
-  // bugfixed by: Pellentesque Malesuada
-  // bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-  //   example 1: base64_decode('S2V2aW4gdmFuIFpvbm5ldmVsZA==');
-  //   returns 1: 'Kevin van Zonneveld'
-  //   example 2: base64_decode('YQ===');
-  //   returns 2: 'a'
-
-  var b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-  var o1, o2, o3, h1, h2, h3, h4, bits, i = 0,
-    ac = 0,
-    dec = '',
-    tmp_arr = [];
-
-  if (!data) {
-    return data;
-  }
-
-  data += '';
-
-  do { // unpack four hexets into three octets using index points in b64
-    h1 = b64.indexOf(data.charAt(i++));
-    h2 = b64.indexOf(data.charAt(i++));
-    h3 = b64.indexOf(data.charAt(i++));
-    h4 = b64.indexOf(data.charAt(i++));
-
-    bits = h1 << 18 | h2 << 12 | h3 << 6 | h4;
-
-    o1 = bits >> 16 & 0xff;
-    o2 = bits >> 8 & 0xff;
-    o3 = bits & 0xff;
-
-    if (h3 == 64) {
-      tmp_arr[ac++] = String.fromCharCode(o1);
-    } else if (h4 == 64) {
-      tmp_arr[ac++] = String.fromCharCode(o1, o2);
-    } else {
-      tmp_arr[ac++] = String.fromCharCode(o1, o2, o3);
-    }
-  } while (i < data.length);
-
-  dec = tmp_arr.join('');
-
-  return dec.replace(/\0+$/, '');
-}
-
 
 
 module.exports = t411;
