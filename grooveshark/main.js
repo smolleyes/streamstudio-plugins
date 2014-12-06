@@ -52,10 +52,15 @@ gshark.init = function(gui,ht5) {
 			gshark.gui.startPlay(media);
 			$('#gshark_item_'+song.id).closest('.list-row').addClass('highlight well');
 			var img = song.thumbnail;
-			if (img.indexOf('album.png') == -1 ) {
-				img = song.thumbnail.replace('120_','');
-			}
-			$('.mejs-container').append('<div id="fbxMsg" style="height:calc(100% - 60px);"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: -200px;position: relative;top: 50%;margin-top: -150px;" src="'+img+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
+			var marg = "-65px";
+			var top = "-150px";
+			//if (img.indexOf('album.png') == -1 ) {
+				////img = song.thumbnail.replace('120_','');
+				//marg = "-250px";
+				//top = "-250px"
+			//}
+			
+			$('.mejs-container').append('<div id="fbxMsg" style="height:calc(100% - 60px);"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: '+marg+';position: relative;top: 50%;margin-top: -150px;" src="'+img+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
 		});
 	});
 	

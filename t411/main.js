@@ -159,7 +159,7 @@ if ($.inArray(t411.gui.settings.locale, localeList) >-1) {
 t411.menuEntries = ["searchTypes","orderBy"];
 t411.defaultMenus = ["searchTypes","orderBy"];
 // searchTypes menus and default entry
-t411.searchTypes = JSON.parse('{"'+_("Search")+'":"search","'+_("Top 100")+'":"top100"}');
+t411.searchTypes = JSON.parse('{"'+_("Search")+'":"search","'+_("Top 100")+'":"navigation"}');
 t411.defaultSearchType = 'search';
 // orderBy filters and default entry
 t411.orderBy_filters = JSON.parse('{"'+_("Date")+'":"added","'+_("Seeds")+'":"seeders","'+_("Size")+'":"size"}');
@@ -174,7 +174,7 @@ t411.search = function(query,options) {
   t411.lazyStart = 0;
   t411.lazyLength = 0;
   videos_responses = new Array();
-  if (t411.searchType === 'top100') {
+  if (t411.searchType === 'navigation') {
       var link = "http://www.t411.me/top/100/";
       var videos = {};
     $.get(link,function(res){
@@ -261,7 +261,7 @@ function print_videos(videos) {
 	
   $('#items_container').empty().append('<ul id="t411_cont" class="list" style="margin:0;"></ul>').show();
   var list;
-  if (t411.searchType === 'top100') {
+  if (t411.searchType === 'navigation') {
 	  t411.topArray = videos[0].items;
 	  t411.lazyLength = 100;
 	  list = videos[0].items.slice(0,10);
@@ -283,7 +283,8 @@ function print_videos(videos) {
 
 t411.loadMore = function() {
 	var list;
-	if (t411.searchType === 'top100') {
+	
+	if (t411.searchType === 'navigation') {
 		list = t411.topArray.slice(t411.lazyStart, t411.lazyStart + 10);
 		t411.lazyStart += 10;
 		appendVideos(list);
@@ -348,7 +349,7 @@ function appendVideos(list) {
 							</div> \
 						</li>';
 				$("#t411_cont").append(html);
-				if (t411.searchType === 'top100') {
+				if (t411.searchType === 'navigation') {
 					$("#search_results").empty().append('<p>'+_("showing %s results on 100 (scroll to show more...)",$("#t411_cont li").length)+'</p>');
 				}
       });
@@ -358,7 +359,7 @@ function appendVideos(list) {
 t411.search_type_changed = function() {
     t411.searchType = $("#searchTypes_select option:selected").val();
     t411.lazyStart = 0;
-    if (t411.searchType === 'top100') {
+    if (t411.searchType === 'navigation') {
         $('#video_search_query').prop('disabled', true);
         $('#orderBy_label').hide();
         $('#orderBy_select').hide();
