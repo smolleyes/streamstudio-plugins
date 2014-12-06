@@ -195,6 +195,7 @@ t411.search = function(query,options) {
 	  }
    });
   } else {
+	  console.log(query,options)
     if (query !== '') {
         var method = NaN;
         $('#loading').show();
@@ -212,10 +213,10 @@ t411.search = function(query,options) {
               return;
 		  }
           try {
-			  videos.totalItems = parseInt($('.pagebar a',res).last().prev().text().split('-')[1].trim());
+			  t411.totalItems = parseInt($('.pagebar a',res).last().prev().text().split('-')[1].trim());
 			  analyseResults(videos,list);
 		  } catch(err) {
-			 videos.totalItems = list.length;
+			 t411.totalItems = list.length;
 			 analyseResults(videos,list);
 		  }
       });
@@ -255,26 +256,9 @@ function storeVideosInfos(video,infos,num) {
 function print_videos(videos) {
 	$('#loading').hide();
 	$("#loading p").empty().append(_("Loading videos..."));
+	$("#search_results p").empty().append(_("%s results found",t411.totalItems));
 	$("#search").show();
-	$("#pagination").show();
 	
-  // init pagination if needed
-  var totalItems = videos[0].totalItems;
-  var totalPages = 1;
-  if (videos[0].totalItems > 50) {
-    totalPages = Math.round(videos[0].totalItems / 50);
-  }
-  if (t411.gui.current_page === 1) {
-      if (t411.searchType === 'search') {
-        t411.gui.init_pagination(totalItems,50,false,true,totalPages);
-        $("#pagination").show();
-      }
-  } else {
-	if (t411.searchType !== 'search') {
-		t411.gui.init_pagination(totalItems,50,false,true,0);
-		$("#pagination").show();
-	}
-  }
   $('#items_container').empty().append('<ul id="t411_cont" class="list" style="margin:0;"></ul>').show();
   var list;
   if (t411.searchType === 'top100') {
@@ -359,7 +343,7 @@ function appendVideos(list) {
 								<div class="item-info"> \
 									<span><b>'+_("Seeders: ")+'</b>'+video.seeders+'</span> \
 								</div> \
-							</div>  \
+							</div>  \
 							<div id="torrent_'+video.id+'"> \
 							</div> \
 						</li>';

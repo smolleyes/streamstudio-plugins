@@ -5,6 +5,10 @@ var kick = {};
 kick.engine_name = 'kickass';
 var kick_eng=require('kickass-torrent');
 kick.type="video";
+kick.totalPages = 0;
+kick.currentPage = 0;
+kick.itemsCount = 0;
+kick.pageLoading = false;
 
 /********************* Node modules *************************/
 
@@ -15,6 +19,7 @@ var os = require('os');
 var i18n = require("i18n");
 var fs = require('fs');
 var _ = i18n.__;
+var Iterator = require('iterator').Iterator;
 
 /****************************/
 
@@ -131,12 +136,15 @@ kick.categoriesLoaded = true;
 // search videos
 kick.search = function (query, options,gui) {
     kick.gui = gui;
-    videos_responses = new Array();
-    var page = options.currentPage;
-    if(isNaN(page)) {
-      page = 0;
-      kick.gui.current_page = 1;
-    }
+    kick.pageLoading = true;
+	var page = options.currentPage;
+	if(page == 1) {
+		$('#items_container').empty().append('<ul id="kick_cont" class="list" style="margin:0;"></ul>').show();
+		kick.itemsCount = 0;
+	}
+	kick.gui.current_page += 1;
+	// plugin page must match gui current page for lazy loading
+	kick.currentPage = kick.gui.current_page;
     var url;
     var videos = {};
     if(options.searchType === "search") {
@@ -147,7 +155,6 @@ kick.search = function (query, options,gui) {
 			page: page,//page count, obviously
 			url: 'http://kickass.so',//changes site default url (http://kick.to)
 		},function(e, data){
-			console.log(data)
 			if(e || data.total_results == 0) {
 				$('#loading').hide();
 				$("#search_results p").empty().append(_("No results found..."));
@@ -162,35 +169,38 @@ kick.search = function (query, options,gui) {
 					$("#pagination").hide();
 					return;	
 				} else {
-					videos.totalItems = data.total_results;
+					// add new items to total items count for lazy loading
+					kick.itemsCount += 25;
+					kick.totalItems = data.total_results;
+					kick.totalPages = kick.totalItems / 25;
 					var list = data.list;
-					analyseResults(videos,list);
+					analyseResults(list);
 				}
 			}
 		})
     }
 }
 
-function analyseResults(videos,list) {
-  videos.total = list.length;
-  videos.items = [];
-  $.each(list,function(index,item) {
-	  try {
-		  var infos = {};
-		  infos.torrentLink = item.torrentLink;
-		  infos.link = item.guid;
-		  infos.title = item.title.replace(/\./g,' ');
-		  infos.seeders = item.seeds;
-		  infos.leechs = item.leechs;
-		  var converted_size = Math.floor( Math.log(item.size) / Math.log(1024) );
-		  infos.size = ( item.size / Math.pow(1024, converted_size) ).toFixed(2) + ' ' + ['B', 'KB', 'MB', 'GB', 'TB'][converted_size];
-		  console.log(infos)
-		  storeVideosInfos(videos,infos,index);
-	  } catch(err) { console.log(err); }
-  });
+function analyseResults(list) {
+	Iterator.iterate(list).forEach(function (item) {
+		var video = {};
+		video.torrentLink = item.torrentLink;
+		video.link = item.guid;
+		video.title = item.title.replace(/\./g,' ');
+		video.seeders = item.seeds;
+		video.leechs = item.leechs;
+		var converted_size = Math.floor( Math.log(item.size) / Math.log(1024) );
+		video.size = ( item.size / Math.pow(1024, converted_size) ).toFixed(2) + ' ' + ['B', 'KB', 'MB', 'GB', 'TB'][converted_size];
+		appendVideo(video);
+	});
+	$('#loading').hide();
+	$('#search_results p').empty().append(_("%s results founds", kick.totalItems)).show();
+	$('#search').show();
 }
 
 kick.search_type_changed = function() {
+	kick.gui.current_page = 1;
+	$('#items_container').empty();
 	searchType = $("#searchTypes_select").val();
 	category = $("#categories_select").val();
 	if (searchType === 'navigation') {
@@ -233,90 +243,57 @@ kick.play_next = function() {
 	}
 }
 
-// store videos and return it in the right order...
-function storeVideosInfos(video,infos,num) {
-    video.items.push(infos); 
-    videos_responses[num]=video;
-    if (videos_responses.length == video.total) {
-        print_videos(videos_responses);
-        videos_responses = new Array();
-    }
+kick.loadMore = function() {
+	kick.pageLoading = true;
+	kick.gui.changePage();
 }
 
-
 // functions
-function print_videos(videos) {
-	$('#loading').hide();
-	$("#loading p").empty().append(_("Loading videos..."));
-	$("#search").show();
-	$("#pagination").show();
-	
-	// init pagination if needed
-  var totalItems = videos[0].totalItems;
-  var totalPages = 1;
-  if (videos[0].totalItems > 25) {
-    totalPages = Math.round(videos[0].totalItems / 25);
-  }
-  if (kick.gui.current_page === 1) {
-      if (searchType === 'search') {
-        kick.gui.init_pagination(totalItems,25,false,true,totalPages);
-      } else {
-        kick.gui.init_pagination(0,25,true,true,0);
-      }
-      $("#pagination").show();
-  } else {
-	if (searchType !== 'search') {
-		kick.gui.init_pagination(0,25,false,true,0);
-	} else {
-		kick.gui.init_pagination(totalItems,25,true,true,totalPages);
-	}	
-  }
-    
-    // load videos in the playlist
-	$('#items_container').empty().append('<ul id="kick_cont" class="list" style="margin:0;"></ul>').show();
-	$.each(videos[0].items,function(index,video) {
-		var viewed = "none";
-		kick.gui.sdb.find({"title":video.title},function(err,result){
-  			if(!err){
-    			if(result.length > 0 ) {
-    				viewed = "block"
-    			}
-  			} else { 
-  				console.log(err)
-  			}
-		})
-		$.get(video.link,function(res) {
-	        video.id = ((Math.random() * 1e6) | 0);
-	        try {
-	            var img = 'http:'+$('.movieCover img',res).attr('src');
-	        } catch(err) {
-	            var img = "images/kick.png";
-	        }
-	        if(img === "http:undefined") {
-	        	var img = "images/kick.png";
-	        }
-			var html = '<li class="list-row" style="margin:0;padding:0;"> \
-							<div class="mvthumb"> \
-								<span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
-								<img src="'+img.replace('file:','http:')+'" style="float:left;width:100px;height:125px;" /> \
+function appendVideo(video) {
+	var viewed = "none";
+	kick.gui.sdb.find({"title":video.title},function(err,result){
+		if(!err){
+			if(result.length > 0 ) {
+				viewed = "block"
+			}
+		} else { 
+			console.log(err)
+		}
+	})
+	$.get(video.link,function(res) {
+        video.id = ((Math.random() * 1e6) | 0);
+        try {
+            var img = 'http:'+$('.movieCover img',res).attr('src');
+        } catch(err) {
+            var img = "images/kick.png";
+        }
+        if(img === "http:undefined") {
+        	var img = "images/kick.png";
+        }
+		var html = '<li class="list-row" style="margin:0;padding:0;"> \
+						<div class="mvthumb"> \
+							<span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
+							<img src="'+img.replace('file:','http:')+'" style="float:left;width:100px;height:125px;" /> \
+						</div> \
+						<div style="margin: 0 0 0 105px;"> \
+							<a href="#" class="preload_kick_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
+							<div class="item-info"> \
+								<span><b>'+_("Size: ")+'</b>'+video.size+'</span> \
 							</div> \
-							<div style="margin: 0 0 0 105px;"> \
-								<a href="#" class="preload_kick_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
-								<div class="item-info"> \
-									<span><b>'+_("Size: ")+'</b>'+video.size+'</span> \
-								</div> \
-								<div class="item-info"> \
-									<span><b>'+_("Seeders: ")+'</b>'+video.seeders+'</span> \
-								</div> \
-								<div class="item-info"> \
-									<span><b>'+_("Leechers: ")+'</b>'+video.leechs+'</span> \
-								</div> \
-							</div>  \
-							<div id="torrent_'+video.id+'"> \
+							<div class="item-info"> \
+								<span><b>'+_("Seeders: ")+'</b>'+video.seeders+'</span> \
 							</div> \
-						</li>';
-				$("#kick_cont").append(html);
-		});
+							<div class="item-info"> \
+								<span><b>'+_("Leechers: ")+'</b>'+video.leechs+'</span> \
+							</div> \
+						</div>  \
+						<div id="torrent_'+video.id+'"> \
+						</div> \
+					</li>';
+			$("#kick_cont").append(html);
+			if($('#items_container ul li').length === kick.itemsCount) {
+				kick.pageLoading = false;
+			}
 	});
 }
 

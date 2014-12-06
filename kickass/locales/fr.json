@@ -30,5 +30,6 @@
 	"Seeders: ": "Sources: ",
 	"Leechers: ": "Clients: ",
 	"Start playing": "Démarrer la lecture",
-	"Already watched" : "Déjà visionné"
+	"Already watched": "Déjà visionné",
+	"%s results founds": "%s résultats trouvés"
 }

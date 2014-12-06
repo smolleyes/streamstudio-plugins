@@ -4,6 +4,10 @@
 var omgTorrent = {};
 omgTorrent.engine_name = 'Omgtorrent';
 omgTorrent.type="video";
+omgTorrent.totalPages = 0;
+omgTorrent.currentPage = 0;
+omgTorrent.itemsCount = 0;
+omgTorrent.pageLoading = false;
 
 /********************* Node modules *************************/
 
@@ -14,6 +18,7 @@ var os = require('os');
 var i18n = require("i18n");
 var fs = require('fs');
 var _ = i18n.__;
+var Iterator = require('iterator').Iterator;
 
 /****************************/
 
@@ -128,12 +133,15 @@ omgTorrent.categoriesLoaded = false;
 // search videos
 omgTorrent.search = function (query, options,gui) {
     omgTorrent.gui = gui;
-    videos_responses = new Array();
-    var page = options.currentPage;
-    if(isNaN(page)) {
-      page = 1;
-      omgTorrent.gui.current_page = 1;
-  }
+    omgTorrent.pageLoading = true;
+	var page = options.currentPage;
+	if(page == 1) {
+		$('#items_container').empty().append('<ul id="omgtorrent_cont" class="list" style="margin:0;"></ul>').show();
+		omgTorrent.itemsCount = 0;
+	}
+	omgTorrent.gui.current_page += 1;
+	// plugin page must match gui current page for lazy loading
+	omgTorrent.currentPage = omgTorrent.gui.current_page;
   var url;
   if(searchType === 'search') {
       url='http://www.omgtorrent.com/recherche/?order='+options.orderBy+'&orderby=desc&query='+encodeURIComponent(query)+'&page='+page;
@@ -141,62 +149,66 @@ omgTorrent.search = function (query, options,gui) {
       var category = options.category;
       url='http://www.omgtorrent.com/'+category+'/?order='+options.orderBy+'&orderby=desc&page='+page;
   }
-  $.get(url,function(res){
+  $.when($.ajax(url)).then(function(data, textStatus, jqXHR ) {
       var videos = {};
       var list;
       if(searchType === 'search') {
-          list=$($('table.table_corps',res)[0]).find('tr:not(.table_entete)');
+          list=$($('table.table_corps',data)[0]).find('tr:not(.table_entete)').get();
       } else {
-          list=$('.table_corps tr:not(".table_entete")',res);
+          list=$('.table_corps tr:not(".table_entete")',data).get();
       }
-      if(list.length === 0 || $('.message.erreur',res).length > 0) {
+      if(list.length === 0 || $('.message.erreur',data).length > 0) {
           $('#loading').hide();
-          $("#search_results p").empty().append(_("No results found..."));
+          $("#search_dataults p").empty().append(_("No dataults found..."));
           $("#search").show();
           $("#pagination").hide();
           return;
       }
+      // add new items to total items count for lazy loading
+	  omgTorrent.itemsCount += list.length;
       try {
-        var number = parseInt($('.nav a', res).last().prev().text());
-        if (isNaN(number)) {
-          videos.totalItems = list.length;
-      } else {
-          videos.totalItems = parseInt(number) * 30;
+		  var number = parseInt($('.nav a', data).last().prev().text());
+		  if (isNaN(number)) {
+              omgTorrent.totalItems = list.length;
+              omgTorrent.totalPages = 1;
+		  } else {
+			  omgTorrent.totalPages = parseInt(number);
+			  omgTorrent.totalItems = omgTorrent.totalPages * 30;
+		  }
+		  analyseResults(list);
+	  } catch(err) {
+          omgTorrent.totalItems = list.length;
+          omgTorrent.totalPages = 1;
+          analyseResults(list);
       }
-      analyseResults(videos,list);
-  } catch(err) {
-    videos.totalItems = list.length;
-    analyseResults(videos,list);
-}
-});
+    });
 }
 
-function analyseResults(videos,list) {
-  videos.total = list.length;
-  videos.items = [];
-  $.each(list,function(index,item) {
-     var infos = {};
-     if(searchType === 'search') {
-        infos.cat = $(this).find('td')[0].innerHTML;
-        infos.link = 'http://www.omgtorrent.com/films'+$(this).find('a')[0].href.replace(/.*\/films/,'').replace('file://','');
-        infos.title = $(this).find('a')[0].innerHTML;
-        infos.seeds = $(this).find('td')[3].innerHTML;
-        infos.leechers = $(this).find('td')[4].innerHTML;
-        infos.size = $(this).find('td')[2].innerHTML;
-        storeVideosInfos(videos,infos,index);
-    } else {
-        infos.link = 'http://www.omgtorrent.com/films'+$(this).find('a')[0].href.replace(/.*\/films/,'').replace('file://','');
-        infos.title = $($(this).find('a')[0]).text();
-        infos.seeds = $(this).find('td')[3].innerHTML;
-        infos.leechers = $(this).find('td')[4].innerHTML;
-        infos.size = $(this).find('td')[2].innerHTML;;
-        storeVideosInfos(videos,infos,index);
-    }
-});
+function analyseResults(list) {
+	Iterator.iterate(list).forEach(function (item) { 
+		var video = {};
+		video.cat = $(item).find('td')[0].innerHTML;
+		video.link = 'http://www.omgtorrent.com/films'+$(item).find('a')[0].href.replace(/.*\/films/,'').replace('file://','');
+		video.title = $(item).find('a')[0].innerHTML;
+		video.seeds = $(item).find('td')[3].innerHTML;
+		video.leechers = $(item).find('td')[4].innerHTML;
+		video.size = $(item).find('td')[2].innerHTML;
+		appendVideo(video);
+    });
+    $('#loading').hide();
+	if(searchType === 'navigation') {
+		$('#search_results p').empty().append(_("%s availables videos", omgTorrent.totalItems)).show();
+		$('#search').show();
+	} else {
+		$('#search_results p').empty().append(_("%s results founds", omgTorrent.totalItems)).show();
+		$('#search').show();
+	}
 }
 
 omgTorrent.search_type_changed = function() {
 	searchType = $("#searchTypes_select").val();
+	omgTorrent.gui.current_page = 1;
+	$('#items_container').empty();
 	if(searchType === 'search') {
 		$("#categories_select").hide();
 		$("#categories_label").hide();
@@ -211,7 +223,7 @@ omgTorrent.search_type_changed = function() {
          $("#categories_select").val(omgTorrent.defaultCategory);
          omgTorrent.categoriesLoaded = true;
          $('#video_search_query').prop('disabled', true);
-         $('#video_search_btn')[0].click();
+         $('#video_search_btn').click();
      }
      $("#categories_select").show();
      $("#categories_label").show();
@@ -232,94 +244,61 @@ omgTorrent.play_next = function() {
 	}
 }
 
-// store videos and return it in the right order...
-function storeVideosInfos(video,infos,num) {
-    video.items.push(infos); 
-    videos_responses[num]=video;
-    if (videos_responses.length == video.total) {
-        print_videos(videos_responses);
-        videos_responses = new Array();
-    }
-}
-
-
 // functions
-function print_videos(videos) {
-	$('#loading').hide();
-	$("#loading p").empty().append(_("Loading videos..."));
-	$("#search").show();
-  $("#pagination").show();
-
-	// init pagination if needed
-  var totalItems = videos[0].totalItems;
-  var totalPages = 1;
-  if (videos[0].totalItems > 30) {
-    totalPages = Math.round(videos[0].totalItems / 30);
-}
-if (omgTorrent.gui.current_page === 1) {
-  if (searchType === 'search') {
-    omgTorrent.gui.init_pagination(totalItems,30,false,true,totalPages);
-} else {
-    omgTorrent.gui.init_pagination(0,30,true,true,0);
-}
-$("#pagination").show();
-} else {
-  if (searchType !== 'search') {
-      omgTorrent.gui.init_pagination(0,30,true,true,0);
-  } else {
-	omgTorrent.gui.init_pagination(totalItems,30,false,true,0);
-  }
-}
-
-    // load videos in the playlist
-    $('#items_container').empty().append('<ul id="omgtorrent_cont" class="list" style="margin:0;"></ul>').show();
-    $.each(videos[0].items,function(index,video) {
-        var viewed = "none";
-        omgTorrent.gui.sdb.find({"title":video.title},function(err,result){
-            if(!err){
-              if(result.length > 0 ) {
-                viewed = "block"
-              }
-            } else { 
-              console.log(err)
-            }
-        })
-        $.get(video.link,function(res) {
-            video.id = ((Math.random() * 1e6) | 0);
-            try {
-                var img = 'http://www.omgtorrent.com'+$(".film_img",res).attr('src');
-                var css = 'float:left;height:125px;width:100px'
-            } catch(err) {
-                var img = "images/omgtorrent.png";
-                var css = 'float:left;height:45px;width:100px;margin-top:20px;'
-            }
-            if(img == undefined) {
-              var img = "images/omgtorrent.png";
-              var css = 'float:left;height:45px;width:100px;margin-top:20px;'
-            }
-            var html = '<li class="list-row" style="margin:0;padding:0;height:170px;"> \
-							<div class="mvthumb"> \
-                <span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
-								<img src="'+img+'" style="'+css+'" /> \
+function appendVideo(video) {
+	var viewed = "none";
+	omgTorrent.gui.sdb.find({"title":video.title},function(err,result){
+		if(!err){
+		  if(result.length > 0 ) {
+			viewed = "block"
+		  }
+		} else { 
+		  console.log(err)
+		}
+	})
+	$.get(video.link,function(res) {
+		video.id = ((Math.random() * 1e6) | 0);
+		try {
+			var img = 'http://www.omgtorrent.com'+$(".film_img",res).attr('src');
+			var css = 'float:left;height:125px;width:100px'
+		} catch(err) {
+			var img = "images/omgtorrent.png";
+			var css = 'float:left;height:45px;width:100px;margin-top:20px;'
+		}
+		if(img == undefined) {
+		  var img = "images/omgtorrent.png";
+		  var css = 'float:left;height:45px;width:100px;margin-top:20px;'
+		}
+		var html = '<li class="list-row" style="margin:0;padding:0;height:170px;"> \
+						<div class="mvthumb"> \
+			<span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
+							<img src="'+img+'" style="'+css+'" /> \
+						</div> \
+						<div style="margin: 0 0 0 105px;"> \
+							<a href="#" class="preload_omg_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
+							<div class="item-info"> \
+								<span><b>'+_("Size: ")+'</b>'+video.size+'</span> \
 							</div> \
-							<div style="margin: 0 0 0 105px;"> \
-								<a href="#" class="preload_omg_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
-								<div class="item-info"> \
-									<span><b>'+_("Size: ")+'</b>'+video.size+'</span> \
-								</div> \
-								<div class="item-info"> \
-									<span><b>'+_("Seeders: ")+'</b>'+video.seeds+'</span> \
-								</div> \
-								<div class="item-info"> \
-									<span><b>'+_("leechers: ")+'</b>'+video.leechers+'</span> \
-								</div> \
-							</div>  \
-							<div id="torrent_'+video.id+'"> \
+							<div class="item-info"> \
+								<span><b>'+_("Seeders: ")+'</b>'+video.seeds+'</span> \
 							</div> \
-						</li>';
-				$("#omgtorrent_cont").append(html);
-        });
-    });
+							<div class="item-info"> \
+								<span><b>'+_("leechers: ")+'</b>'+video.leechers+'</span> \
+							</div> \
+						</div>  \
+						<div id="torrent_'+video.id+'"> \
+						</div> \
+					</li>';
+			$("#omgtorrent_cont").append(html);
+			if($('#items_container ul li').length === omgTorrent.itemsCount) {
+				omgTorrent.pageLoading = false;
+			}
+	});
+}
+
+omgTorrent.loadMore = function() {
+	omgTorrent.pageLoading = true;
+	omgTorrent.gui.changePage();
 }
 
 module.exports = omgTorrent;

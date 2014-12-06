@@ -4,6 +4,10 @@
 var tpb = {};
 tpb.engine_name = 'Thepiratebay';
 tpb.type="video";
+tpb.totalPages = 0;
+tpb.currentPage = 0;
+tpb.itemsCount = 0;
+tpb.pageLoading = false;
 
 /********************* Node modules *************************/
 
@@ -15,6 +19,7 @@ var i18n = require("i18n");
 var fs = require('fs');
 var piratebay = require('thepiratebay');
 var _ = i18n.__;
+var Iterator = require('iterator').Iterator;
 
 /****************************/
 
@@ -129,13 +134,15 @@ tpb.search_type_changed();
 // search videos
 tpb.search = function (query, options,gui) {
     tpb.gui = gui;
-    tpb.itemsByPage = 30;
-    videos_responses = new Array();
-    var page = options.currentPage - 1;
-    if(isNaN(page)) {
-      page = 0;
-      tpb.gui.current_page = 1;
-    }
+    tpb.pageLoading = true;
+	var page = options.currentPage;
+	if(page == 1) {
+		$('#items_container').empty().append('<ul id="tpb_cont" class="list" style="margin:0;"></ul>').show();
+		tpb.itemsCount = 0;
+	}
+	tpb.gui.current_page += 1;
+	// plugin page must match gui current page for lazy loading
+	tpb.currentPage = tpb.gui.current_page;
     var videos = {};
 	piratebay.search(query, {
 		category: '0',
@@ -149,11 +156,19 @@ tpb.search = function (query, options,gui) {
             $("#pagination").hide();
             return;
         }
-		tpb.itemsByPage = results[0].byPage;
-		videos.totalItems = results[0].total;
-		$("#search_results p").empty().append(_("%s results found for %s",videos.totalItems,query));
-		analyseResults(videos,results);
+        // add new items to total items count for lazy loading
+		tpb.itemsByPage = parseInt(results[0].byPage);
+		tpb.itemsCount += 30;
+		tpb.totalItems = parseInt(results[0].total);
+		if (tpb.totalItems < 30) {
+			tpb.totalPages = 1;
+		} else {
+			tpb.totalPages = tpb.totalItems / 30;
+		}
+		$("#search_results p").empty().append(_("%s results found for %s",tpb.totalItems,query));
+		analyseResults(results);
 	}).catch(function(err){
+		console.log(err)
 		$('#loading').hide();
         $("#search_results p").empty().append(_("No results found..."));
         $("#search").show();
@@ -162,23 +177,26 @@ tpb.search = function (query, options,gui) {
 	});
 }
 
-function analyseResults(videos,list) {
-  videos.total = list.length;
-  videos.items = [];
-  $.each(list,function(index,item) {
-      var infos = {};
-      infos.link = item.link;
-      infos.magnet = item.magnetLink;
-      infos.title = item.name.replace(/\./g,' ');
-      infos.size = item.size;
-      infos.seeders = item.seeders;
-      infos.leechers = item.leechers;
-      infos.date = item.uploadDate;
-      storeVideosInfos(videos,infos,index);
-  });
+function analyseResults(list) {
+  Iterator.iterate(list).forEach(function (item) {
+		var video = {};
+		video.link = item.link;
+		video.magnet = item.magnetLink;
+		video.title = item.name.replace(/\./g,' ');
+		video.size = item.size;
+		video.seeders = item.seeders;
+		video.leechers = item.leechers;
+		video.date = item.uploadDate;
+		appendVideo(video);
+	});
+	$('#loading').hide();
+	$('#search_results p').empty().append(_("%s results founds", tpb.totalItems)).show();
+	$('#search').show();
 }
 
 tpb.search_type_changed = function() {
+	tpb.gui.current_page = 1;
+	$('#items_container').empty();
 	if(tpb.orderFiltersLoaded === false) {
 		$('#orderBy_select').empty();
         $.each(tpb.orderBy_filters, function(key, value){
@@ -212,39 +230,13 @@ tpb.play_next = function() {
 	}
 }
 
-// store videos and return it in the right order...
-function storeVideosInfos(video,infos,num) {
-    video.items.push(infos); 
-    videos_responses[num]=video;
-    if (videos_responses.length == video.total) {
-        print_videos(videos_responses);
-        videos_responses = new Array();
-    }
+tpb.loadMore = function() {
+	tpb.pageLoading = true;
+	tpb.gui.changePage();
 }
 
-
 // functions
-function print_videos(videos) {
-	$('#loading').hide();
-	$("#loading p").empty().append(_("Loading videos..."));
-	$("#search").show();
-	$("#pagination").show();
-	
-	// init pagination if needed
-  var totalItems = parseInt(videos[0].totalItems);
-  var totalPages = 1;
-  if (totalItems > 30) {
-    totalPages = Math.round(videos[0].totalItems / 30);
-  }
-  console.log(tpb.gui.current_page,totalItems,totalPages)
-  if (tpb.gui.current_page === 1) {
-		tpb.gui.init_pagination(totalItems,30,false,true,totalPages);
-		$("#pagination").show();
-  }
-    
-    // load videos in the playlist
-	$('#items_container').empty().append('<ul id="tpb_cont" class="list" style="margin:0;"></ul>').show();
-	$.each(videos[0].items,function(index,video) {
+function appendVideo(video) {
     var viewed = "none";
     tpb.gui.sdb.find({"title":video.title},function(err,result){
         if(!err){
@@ -280,7 +272,9 @@ function print_videos(videos) {
 							</div> \
 						</li>';					
 		$("#tpb_cont").append(html);
-	});
+		if($('#items_container ul li').length === tpb.itemsCount) {
+			tpb.pageLoading = false;
+		}
 }
 
 module.exports = tpb;

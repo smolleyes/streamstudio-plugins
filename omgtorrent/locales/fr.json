@@ -30,5 +30,8 @@
 	"Seeders: ": "Sources: ",
 	"leechers: ": "Clients: ",
 	"Start playing": "Démarrer la lecture",
-	"Already watched" : "Déjà visionné"
+	"Already watched": "Déjà visionné",
+	"%s availables videos": "%s films/épisodes disponibles",
+	"%s results founds": "%s résultats trouvés",
+	"No dataults found...": "No dataults found..."
 }

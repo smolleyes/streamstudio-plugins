@@ -4,7 +4,10 @@
 var cpb = {};
 cpb.engine_name = 'Cpasbien';
 cpb.type="video";
-
+cpb.totalPages = 0;
+cpb.currentPage = 0;
+cpb.itemsCount = 0;
+cpb.pageLoading = false;
 
 /********************* Node modules *************************/
 
@@ -61,6 +64,8 @@ cpb.init = function(gui,ht5) {
 			$('#fbxMsg_content #telecharger').remove();
 			$('#fbxMsg_content #infosficher').remove();
 			$('#fbxMsg_content #banner3').remove();
+			$('#fbxMsg_content h4').remove();
+			$('#fbxMsg_content .ligne0,.ligne1').remove();
 			// show
 			$('#fbxMsg').slideDown();
 		})
@@ -127,12 +132,22 @@ cpb.categoriesLoaded = true;
 // search videos
 cpb.search = function (query, options,gui) {
 	cpb.gui = gui;
-	videos_responses = new Array();
-	var page = options.currentPage - 1;
-	if(isNaN(page)) {
+	cpb.pageLoading = true;
+	var page;
+	try {
+		page = options.currentPage - 1;
+	} catch(err) {
 		page = 0;
 		cpb.gui.current_page = 1;
+	}	
+	if(page == 0) {
+		$('#items_container').empty().append('<ul id="cpb_cont" class="list" style="margin:0;"></ul>').show();
+		cpb.itemsCount = 0;
 	}
+	cpb.gui.current_page += 1;
+	// plugin page must match gui current page for lazy loading
+	cpb.currentPage = cpb.gui.current_page;
+	
 	var query = query.replace(/ /g,'-');
 	var url;
 	var videos = {};
@@ -141,7 +156,8 @@ cpb.search = function (query, options,gui) {
 	} else {
 		url='http://www.cpasbien.me/view_cat.php?categorie='+options.category+'&page='+page+'';
 	}
-	$.when($.ajax(url)).then(function( data, textStatus, jqXHR ) {
+	console.log(url)
+	$.when($.ajax(url)).then(function(data, textStatus, jqXHR ) {
 		var mlist=$('#centre div',data).get();
 		var list = [];
 		Iterator.iterate(mlist).forEach(function (item) {
@@ -156,33 +172,109 @@ cpb.search = function (query, options,gui) {
 			$("#pagination").hide();
 			return;
 		}
+		// add new items to total items count for lazy loading
+		cpb.itemsCount += list.length;
 		try {
-			videos.totalItems = parseInt($($('#pagination a',res)[$('#pagination a',res).length - 2]).text()) * 30;
-			analyseResults(videos,list);
+			cpb.totalPages = parseInt($($('#pagination a',data)[$('#pagination a',data).length - 2]).text())
+			if(isNaN(cpb.totalPages)) {
+				cpb.totalItems =  list.length;
+				cpb.totalPages = 1;
+			} else {
+				cpb.totalItems =  cpb.totalPages * 30;
+			}
+			analyseResults(list);
 		} catch(err) {
-			videos.totalItems = list.length;
-			analyseResults(videos,list);
+			cpb.totalItems = list.length;
+			cpb.totalPages = 1;
+			analyseResults(list);
 		}
 	});
 }
 
-function analyseResults(videos,list) {
-	videos.total = list.length;
-	videos.items = [];
-	$.each(list,function(index,item) {
-		var infos = {};
-		infos.link = $(this).find('a')[0].href;
-		infos.title = $(this).find('a')[0].innerHTML;
-		infos.size = $(this).find('.poid').text();
-		infos.seeders = $(this).find('.up').text();
-		infos.leechers = $(this).find('.down').text();
-		storeVideosInfos(videos,infos,index);
+function analyseResults(list) {
+	Iterator.iterate(list).forEach(function (item) {
+		var video = {};
+		video.link = $(item).find('a')[0].href;
+		video.title = $(item).find('a')[0].innerHTML;
+		video.size = $(item).find('.poid').text();
+		video.seeders = $(item).find('.up').text();
+		video.leechers = $(item).find('.down').text();
+		appendVideo(video);
+	});
+	$('#loading').hide();
+	var type = category !== 'series' ? 'movies' : 'chapters';
+	if(searchType === 'navigation') {
+		var type = category !== 'series' ? 'movies' : 'chapters'
+		$('#search_results p').empty().append(_("%s availables %s", cpb.totalItems,_(type))).show();
+		$('#search').show();
+	} else {
+		$('#search_results p').empty().append(_("%s results founds", cpb.totalItems,_(type))).show();
+		$('#search').show();
+	}
+}
+ 
+function appendVideo(video) {
+	var viewed = "none";
+	cpb.gui.sdb.find({"title":video.title},function(err,result){
+		if(!err){
+			if(result.length > 0 ) {
+				viewed = "block"
+			}
+		} else { 
+			console.log(err)
+		}
+	})
+	$.get(video.link,function(res) {
+		var img = $("#bigcover img",res).attr('src');
+		video.id = ((Math.random() * 1e6) | 0);
+		var html = '<li class="list-row" style="margin:0;padding:0;"> \
+		<div class="mvthumb"> \
+		<span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
+		<img src="'+img+'" style="float:left;width:100px;height:125px;" /> \
+		</div> \
+		<div style="margin: 0 0 0 105px;"> \
+		<a href="#" class="preload_cpb_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
+		<div class="item-info"> \
+		<span><b>'+_("Size: ")+'</b>'+video.size+'</span> \
+		</div> \
+		<div class="item-info"> \
+		<span><b>'+_("Seeders: ")+'</b>'+video.seeders+'</span> \
+		</div> \
+		</div>  \
+		<div id="torrent_'+video.id+'"> \
+		</div> \
+		</li>';
+		$("#cpb_cont").append(html);
+		if($('#items_container ul li').length === cpb.itemsCount) {
+			cpb.pageLoading = false;
+		}
 	});
 }
 
+cpb.loadMore = function() {
+	cpb.pageLoading = true;
+	cpb.gui.changePage();
+}
+
+cpb.play_next = function() {
+	try {
+		$("li.highlight").next().find("a.start_media").click();
+	} catch(err) {
+		console.log("end of playlist reached");
+		try {
+			cpb.gui.changePage();
+		} catch(err) {
+			console.log('no more videos to play');
+		}
+	}
+}
+
 cpb.search_type_changed = function() {
+	cpb.gui.current_page = 1;
+	$('#items_container').empty();
 	searchType = $("#searchTypes_select").val();
 	category = $("#categories_select").val();
+	$('#search').hide();
 	if (searchType === 'navigation') {
 		$("#orderBy_select").hide();
 		$("#orderBy_label").hide();
@@ -202,96 +294,6 @@ cpb.search_type_changed = function() {
 		$("#orderBy_select").show();
 		$('#video_search_query').prop('disabled', false);
 	}
-}
-
-cpb.play_next = function() {
-	try {
-		$("li.highlight").next().find("a.start_media").click();
-	} catch(err) {
-		console.log("end of playlist reached");
-		try {
-			cpb.gui.changePage();
-		} catch(err) {
-			console.log('no more videos to play');
-		}
-	}
-}
-
-// store videos and return it in the right order...
-function storeVideosInfos(video,infos,num) {
-	video.items.push(infos); 
-	videos_responses[num]=video;
-	if (videos_responses.length == video.total) {
-		print_videos(videos_responses);
-		videos_responses = new Array();
-	}
-}
-
-
-// functions
-function print_videos(videos) {
-	$('#loading').hide();
-	$("#loading p").empty().append(_("Loading videos..."));
-	$("#search").show();
-	$("#pagination").show();
-	
-	// init pagination if needed
-	var totalItems = videos[0].totalItems;
-	var totalPages = 1;
-	if (videos[0].totalItems > 30) {
-		totalPages = Math.round(videos[0].totalItems / 30);
-	}
-	if (cpb.gui.current_page === 1) {
-		if (searchType === 'search') {
-			cpb.gui.init_pagination(totalItems,30,false,true,totalPages);
-		} else {
-			cpb.gui.init_pagination(0,30,true,true,0);
-		}
-		$("#pagination").show();
-	} else {
-		if (searchType !== 'search') {
-			cpb.gui.init_pagination(0,30,true,true,0);
-		} else {
-			cpb.gui.init_pagination(totalItems,30,false,true,0);
-		}
-	}
-
-    // load videos in the playlist
-    $('#items_container').empty().append('<ul id="cpb_cont" class="list" style="margin:0;"></ul>').show();
-    $.each(videos[0].items,function(index,video) {
-    	var viewed = "none";
-    	cpb.gui.sdb.find({"title":video.title},function(err,result){
-    		if(!err){
-    			if(result.length > 0 ) {
-    				viewed = "block"
-    			}
-    		} else { 
-    			console.log(err)
-    		}
-    	})
-    	$.get(video.link,function(res) {
-    		var img = $("#bigcover img",res).attr('src');
-    		video.id = ((Math.random() * 1e6) | 0);
-    		var html = '<li class="list-row" style="margin:0;padding:0;"> \
-    		<div class="mvthumb"> \
-    		<span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
-    		<img src="'+img+'" style="float:left;width:100px;height:125px;" /> \
-    		</div> \
-    		<div style="margin: 0 0 0 105px;"> \
-    		<a href="#" class="preload_cpb_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
-    		<div class="item-info"> \
-    		<span><b>'+_("Size: ")+'</b>'+video.size+'</span> \
-    		</div> \
-    		<div class="item-info"> \
-    		<span><b>'+_("Seeders: ")+'</b>'+video.seeders+'</span> \
-    		</div> \
-    		</div>  \
-    		<div id="torrent_'+video.id+'"> \
-    		</div> \
-    		</li>';
-    		$("#cpb_cont").append(html);
-    	});
-    });
 }
 
 module.exports = cpb;
