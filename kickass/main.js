@@ -260,20 +260,11 @@ function appendVideo(video) {
 			console.log(err)
 		}
 	})
-	$.get(video.link,function(res) {
         video.id = ((Math.random() * 1e6) | 0);
-        try {
-            var img = 'http:'+$('.movieCover img',res).attr('src');
-        } catch(err) {
-            var img = "images/kick.png";
-        }
-        if(img === "http:undefined") {
-        	var img = "images/kick.png";
-        }
-		var html = '<li class="list-row" style="margin:0;padding:0;"> \
+		var html = '<li id="'+video.id+'" class="list-row" style="margin:0;padding:0;"> \
 						<div class="mvthumb"> \
 							<span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
-							<img src="'+img.replace('file:','http:')+'" style="float:left;width:100px;height:125px;" /> \
+							<img src="" style="float:left;width:100px;height:125px;" /> \
 						</div> \
 						<div style="margin: 0 0 0 105px;"> \
 							<a href="#" class="preload_kick_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
@@ -291,10 +282,20 @@ function appendVideo(video) {
 						</div> \
 					</li>';
 			$("#kick_cont").append(html);
+			$.get(video.link,function(res) { 
+				try {
+					var img = 'http:'+$('.movieCover img',res).attr('src');
+				} catch(err) {
+					var img = "images/kick.png";
+				}
+				if(img === "http:undefined") {
+					var img = "images/kick.png";
+				}
+				$('#'+video.id+' img').attr('src',img.replace('file:','http:'))
+			});
 			if($('#items_container ul li').length === kick.itemsCount) {
 				kick.pageLoading = false;
 			}
-	});
 }
 
 module.exports = kick;

@@ -321,20 +321,13 @@ function appendVideos(list) {
           console.log(err)
         }
     })
-		var req = $.get('http:'+video.link,function(res) {
+		
         video.id = ((Math.random() * 1e6) | 0);
-        try {
-            var img = $($('article',res).find('img')[0]).attr('src');
-            if(img.match(/wink|affiche_film|prez/) !== null) {
-				var img = $($('article',res).find('img')[1]).attr('src');
-			}
-        } catch(err) {
-            var img = "images/T411.png";
-        }
-		var html = '<li class="list-row" style="margin:0;padding:0;height:170px;"> \
+        
+		var html = '<li id="'+video.id+'" class="list-row" style="margin:0;padding:0;height:170px;"> \
 							<div class="mvthumb"> \
                 <span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
-								<img src="'+img+'" style="float:left;width:100px;height:125px;" /> \
+								<img src="" style="float:left;width:100px;height:125px;" /> \
 							</div> \
 							<div style="margin: 0 0 0 105px;"> \
 								<a href="#" class="preload_t411_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
@@ -349,10 +342,20 @@ function appendVideos(list) {
 							</div> \
 						</li>';
 				$("#t411_cont").append(html);
+				$.get('http:'+video.link,function(res) {
+					try {
+						var img = $($('article',res).find('img')[0]).attr('src');
+						if(img.match(/wink|affiche_film|prez/) !== null) {
+							var img = $($('article',res).find('img')[1]).attr('src');
+						}
+					} catch(err) {
+						var img = "images/T411.png";
+					}
+					$('#'+video.id+' img').attr('src',img)
+				});
 				if (t411.searchType === 'navigation') {
 					$("#search_results").empty().append('<p>'+_("showing %s results on 100 (scroll to show more...)",$("#t411_cont li").length)+'</p>');
 				}
-      });
 	});
 }
 

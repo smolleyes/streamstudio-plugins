@@ -192,13 +192,16 @@ cpb.search = function (query, options,gui) {
 }
 
 function analyseResults(list) {
-	Iterator.iterate(list).forEach(function (item) {
+	var arr = []
+	Iterator.iterate(list).forEach(function (item,index) {
 		var video = {};
 		video.link = $(item).find('a')[0].href;
 		video.title = $(item).find('a')[0].innerHTML;
 		video.size = $(item).find('.poid').text();
 		video.seeders = $(item).find('.up').text();
 		video.leechers = $(item).find('.down').text();
+		var c = checkDb(video);
+		video.viewed = c.next().value.length > 0 ? 'block' : 'none';
 		appendVideo(video);
 	});
 	$('#loading').hide();
@@ -212,25 +215,33 @@ function analyseResults(list) {
 		$('#search').show();
 	}
 }
+
+function wait(video,place) {
+	setTimeout(function() {
+		if($("#cpb_cont ul li").length + 1 !== place) {
+			wait(video,place)
+		} else {
+			appendVideo(video);
+		}
+	},100);
+}
+ 
+function* checkDb(video) {
+	try {
+		yield cpb.gui.sdb.find({"title":video.title});
+	} catch(err) {
+		return err;
+	}
+}
  
 function appendVideo(video) {
-	var viewed = "none";
-	cpb.gui.sdb.find({"title":video.title},function(err,result){
-		if(!err){
-			if(result.length > 0 ) {
-				viewed = "block"
-			}
-		} else { 
-			console.log(err)
-		}
-	})
-	$.get(video.link,function(res) {
+	    var res = video.html;
 		var img = $("#bigcover img",res).attr('src');
 		video.id = ((Math.random() * 1e6) | 0);
-		var html = '<li class="list-row" style="margin:0;padding:0;"> \
+		var html = '<li id="'+video.id+'" class="list-row" style="margin:0;padding:0;"> \
 		<div class="mvthumb"> \
-		<span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
-		<img src="'+img+'" style="float:left;width:100px;height:125px;" /> \
+		<span class="viewedItem" style="display:'+video.viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
+		<img src="" style="float:left;width:100px;height:125px;" /> \
 		</div> \
 		<div style="margin: 0 0 0 105px;"> \
 		<a href="#" class="preload_cpb_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
@@ -245,10 +256,13 @@ function appendVideo(video) {
 		</div> \
 		</li>';
 		$("#cpb_cont").append(html);
+		$.get(video.link,function(res) {
+			var img = $("#bigcover img",res).attr('src');
+			$('#'+video.id+' img').attr('src',img)
+		});
 		if($('#items_container ul li').length === cpb.itemsCount) {
 			cpb.pageLoading = false;
 		}
-	});
 }
 
 cpb.loadMore = function() {

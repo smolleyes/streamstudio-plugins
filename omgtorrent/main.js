@@ -256,23 +256,11 @@ function appendVideo(video) {
 		  console.log(err)
 		}
 	})
-	$.get(video.link,function(res) {
 		video.id = ((Math.random() * 1e6) | 0);
-		try {
-			var img = 'http://www.omgtorrent.com'+$(".film_img",res).attr('src');
-			var css = 'float:left;height:125px;width:100px'
-		} catch(err) {
-			var img = "images/omgtorrent.png";
-			var css = 'float:left;height:45px;width:100px;margin-top:20px;'
-		}
-		if(img == undefined) {
-		  var img = "images/omgtorrent.png";
-		  var css = 'float:left;height:45px;width:100px;margin-top:20px;'
-		}
-		var html = '<li class="list-row" style="margin:0;padding:0;height:170px;"> \
+		var html = '<li id="'+video.id+'" class="list-row" style="margin:0;padding:0;height:170px;"> \
 						<div class="mvthumb"> \
 			<span class="viewedItem" style="display:'+viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
-							<img src="'+img+'" style="'+css+'" /> \
+							<img src="" style="" /> \
 						</div> \
 						<div style="margin: 0 0 0 105px;"> \
 							<a href="#" class="preload_omg_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
@@ -290,10 +278,24 @@ function appendVideo(video) {
 						</div> \
 					</li>';
 			$("#omgtorrent_cont").append(html);
+			$.get(video.link,function(res) {
+				try {
+					var img = 'http://www.omgtorrent.com'+$(".film_img",res).attr('src');
+					var css = 'float:left;height:125px;width:100px'
+				} catch(err) {
+					var img = "images/omgtorrent.png";
+					var css = 'float:left;height:45px;width:100px;margin-top:20px;'
+				}
+				if($(".film_img",res).attr('src') == undefined) {
+				  var img = "images/omgtorrent.png";
+				  var css = 'float:left;height:45px;width:100px;margin-top:20px;'
+				}
+				$('#'+video.id+' img').attr('src',img)
+				$('#'+video.id+' img').attr('style',css)
+			});
 			if($('#items_container ul li').length === omgTorrent.itemsCount) {
 				omgTorrent.pageLoading = false;
 			}
-	});
 }
 
 omgTorrent.loadMore = function() {

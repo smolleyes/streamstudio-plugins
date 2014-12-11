@@ -60,7 +60,7 @@ gshark.init = function(gui,ht5) {
 				//top = "-250px"
 			//}
 			
-			$('.mejs-container').append('<div id="fbxMsg" style="height:calc(100% - 60px);"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: '+marg+';position: relative;top: 50%;margin-top: -150px;" src="'+img+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
+			$('.mejs-container').append('<div id="fbxMsg2" style="height:calc(100% - 75px);"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: '+marg+';position: relative;top: 50%;margin-top: -150px;" src="'+img+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
 		});
 	});
 	
