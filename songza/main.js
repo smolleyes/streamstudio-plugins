@@ -61,6 +61,7 @@ songza.init = function(gui,ht5) {
 		media.link = song.listen_url;
 		media.type='object.item.audioItem.musicTrack';
 		song.title = song.song.artist.name +' - '+ song.song.title;
+		media.title = song.title;
 		$('.mejs-overlay-button').hide();
 		$('#fbxMsg2').empty().remove();
 		$('.mejs-container').append('<div id="fbxMsg2"><div><img src="'+song.cover_url+' /><span>'+song.title+'</span>"</div></div>');
