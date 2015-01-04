@@ -42,7 +42,7 @@ cpb.init = function(gui,ht5) {
     	$.get(link, function(res) {
     		var table = $("#gauche", res).html();
     		var name = $(".h2fiche", res).text();
-    		obj.torrent = 'http://www.cpasbien.pe'+$("a#telecharger",res).attr('href');
+    		obj.torrent = 'http://www.cpasbien.pw'+$("a#telecharger",res).attr('href');
     		$('#fbxMsg').empty();
     		$('#fbxMsg').append('<div id="fbxMsg_header"><h3>'+obj.title+'</h3><a href="#" id="closePreview">X</a></div><div id="fbxMsg_downloads" class="well"></div><div id="fbxMsg_content"></div>');
     		$('#preloadTorrent').remove();
@@ -152,9 +152,9 @@ cpb.search = function (query, options,gui) {
 	var url;
 	var videos = {};
 	if(options.searchType === "search") {
-		url='http://www.cpasbien.pe/recherche/'+query+'/page-'+page+',trie-'+options.orderBy+'-d';
+		url='http://www.cpasbien.pw/recherche/'+query+'/page-'+page+',trie-'+options.orderBy+'-d';
 	} else {
-		url='http://www.cpasbien.me/view_cat.php?categorie='+options.category+'&page='+page+'';
+		url='http://www.cpasbien.pw/view_cat.php?categorie='+options.category+'&page='+page+'';
 	}
 	console.log(url)
 	$.when($.ajax(url)).then(function(data, textStatus, jqXHR ) {
