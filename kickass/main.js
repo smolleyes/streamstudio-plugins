@@ -35,6 +35,7 @@ kick.init = function(gui,ht5) {
     $(ht5.document).off('click','.preload_kick_torrent');
     $(ht5.document).on('click','.preload_kick_torrent',function(e){
         e.preventDefault();
+        kick.gui.initPlayer();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = obj.link;
         var id = obj.id;

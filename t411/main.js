@@ -78,6 +78,7 @@ t411.init = function(gui,ht5,notif) {
   $(ht5.document).off('click','.preload_t411_torrent');
   $(ht5.document).on('click','.preload_t411_torrent',function(e){
         e.preventDefault();
+        t411.gui.initPlayer();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = 'http://'+obj.link;
         var id = obj.id;
