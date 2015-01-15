@@ -52,16 +52,18 @@ songza.init = function(gui,ht5) {
 		songza.load_next(station.id);
 	});
 	
-	$(ht5.document).off('click','.load_song');
-	$(ht5.document).on('click','.load_song',function(e){
+	$(ht5.document).off('click','.load_gs_song');
+	$(ht5.document).on('click','.load_gs_song',function(e){
 		e.preventDefault();
 		$('.highlight').toggleClass('highlight','false');
 		var song = JSON.parse(decodeURIComponent($(this).attr("data")));
 		var media= {};
-		media.link = song.listen_url;
+		media.link = song.listen_url+"&external";
 		media.type='object.item.audioItem.musicTrack';
 		song.title = song.song.artist.name +' - '+ song.song.title;
 		media.title = song.title;
+		console.log("HEREEEEE")
+		console.log(media)
 		$('.mejs-overlay-button').hide();
 		$('#fbxMsg2').empty().remove();
 		$('.mejs-container').append('<div id="fbxMsg2"><div><img src="'+song.cover_url+' /><span>'+song.title+'</span>"</div></div>');
@@ -336,7 +338,7 @@ songza.load_next = function(id) {
 	$("#search").hide();
 	$("#pagination").hide();
 	$("#loading").show();	
-	$('.highlight').removeClass('highlight well');
+	$('#items_container .well').removeClass('highlight well');
 	$.get('http://www.unblockpirate.com/index.php?q='+songza.gui.Base64.encode('http://songza.com/api/1/station/'+id+'/next'),function(res) {
 		if ($('#songza_item_'+res.song.id).length === 1) {return;}
 		var media= {};
@@ -348,7 +350,7 @@ songza.load_next = function(id) {
 				<img src="'+res.song.cover_url+'" style="float:left;width:100px;height:100px;" /> \
 			</div> \
 			<div style="margin: 0 0 0 105px;"> \
-				<a href="#" class="load_song item-title" data="'+encodeURIComponent(JSON.stringify(res))+'">'+res.song.title+'</a> \
+				<a href="#" class="load_gs_song item-title" data="'+encodeURIComponent(JSON.stringify(res))+'">'+res.song.title+'</a> \
 				<div class="item-info"> \
 					<b>'+_("Artist: ")+'</b>'+res.song.artist.name+' \
 				</div> \
@@ -365,14 +367,18 @@ songza.load_next = function(id) {
 		$("#search").show();
 		$('#items_container').show();
 		var media= {};
-		media.link = res.listen_url;
+		media.link = res.listen_url+"&external";
 		media.title = res.song.artist.name +' - '+ res.song.title;
 		media.type='object.item.audioItem.musicTrack';
 		songza.gui.startPlay(media);
 		$('#songza_item_'+res.song.id).closest('.list-row').addClass('highlight well');
 		$('.mejs-overlay-button').hide();
 		$('#fbxMsg2').empty();
-		$('.mejs-container').append('<div id="fbxMsg2" style="height:calc(100% - 60px);"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: -100px;position: relative;top: 50%;margin-top: -100px;" src="'+res.song.cover_url+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
+		var pos = "50%";
+		if(songza.gui.transcoderEnabled) {
+			pos = '140px';
+		}
+		$('.mejs-container').append('<div id="fbxMsg2" style="height:calc(100% - 60px);"><div style="top:'+pos+';position: relative;"><img style="margin-left: 50%;left: -100px;position: relative;top: 50%;margin-top: -100px;" src="'+res.song.cover_url+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
 	});
 }
 

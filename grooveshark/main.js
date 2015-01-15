@@ -40,7 +40,7 @@ gshark.init = function(gui,ht5) {
 		var song = JSON.parse(decodeURIComponent($(this).attr("data")));
 		var id = song.id;
 		$('#gshark_item_'+id).empty().append("<p> Loading song, please wait...</p>")
-		$('.highlight').removeClass('highlight well');
+		$('#items_container .well').removeClass('highlight well');
 		GS.Grooveshark.getStreamingUrl(id, function(err, streamUrl) {
 			console.log("play: " + streamUrl)
 			$("#cover").remove();
@@ -59,8 +59,11 @@ gshark.init = function(gui,ht5) {
 				//marg = "-250px";
 				//top = "-250px"
 			//}
-			
-			$('.mejs-container').append('<div id="fbxMsg2" style="height:calc(100% - 75px);"><div style="top: 50%;position: relative;"><img style="margin-left: 50%;left: '+marg+';position: relative;top: 50%;margin-top: -150px;" src="'+img+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
+			var pos = "50%";
+			if(gshark.gui.transcoderEnabled) {
+				pos = '140px';
+			}
+			$('.mejs-container').append('<div id="fbxMsg2" style="height:calc(100% - 75px);"><div style="top: '+top+';position: relative;"><img style="margin-left: 50%;left: '+marg+';position: relative;top: 50%;margin-top: -150px;" src="'+img+'" /><h3 style="font-weight:bold;text-align: center;">'+media.title+'</h3></div></div>');
 		});
 	});
 	
