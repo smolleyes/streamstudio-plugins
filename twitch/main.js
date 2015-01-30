@@ -154,6 +154,7 @@ twitch.init = function(gui,ht5) {
     $(ht5.document).off('click','.playChannel');
     $(ht5.document).on('click','.playChannel',function(e){
         e.preventDefault();
+        twitch.gui.ffmpegLive = false;
         var obj = $(this).attr("data").split('::');
         var video = {};
         video.title = obj[0];
