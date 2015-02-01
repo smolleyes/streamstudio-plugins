@@ -73,7 +73,7 @@ $(ht5.document).off('click','.play_omg_torrent');
 $(ht5.document).on('click','.play_omg_torrent',function(e){
     e.preventDefault();
     var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
-    omgTorrent.gui.getTorrent(obj.torrent);
+    omgTorrent.gui.getAuthTorrent(obj.torrent,true,false);
     $('#fbxMsg').slideUp();
     $('#playerToggle')[0].click();
 });
