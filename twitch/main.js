@@ -166,7 +166,7 @@ twitch.init = function(gui,ht5) {
 
 function loadEngine() {
 /********************* Configure locales *********************/
-var localeList = ['en', 'fr'];
+var localeList = ['en', 'fr','de'];
 i18n.configure({
 	defaultLocale: 'en',
     locales:localeList,
