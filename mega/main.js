@@ -32,7 +32,7 @@ mega.init = function(gui,ht5) {
 		$(".mejs-overlay-loading").show();
 		var video = JSON.parse(decodeURIComponent($(this).attr("data")));
 		var stream = {};
-    stream.link = 'http://'+mega.gui.ipaddress+':8888/?file='+encodeURIComponent(video.link);
+    stream.link = 'http://'+mega.gui.ipaddress+':8887/?file='+encodeURIComponent(video.link);
     stream.title = video.title;
     mega.gui.startPlay(stream);
 	});
