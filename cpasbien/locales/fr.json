@@ -33,5 +33,7 @@
 	"%s results founds": "%s résultats trouvés",
 	"%s availables %s": "%s %s disponibles",
 	"movies": "films",
-	"chapters": "épisodes"
+	"chapters": "épisodes",
+	"Date ascending": "Date ascendant",
+	"Date descending": "Date descendant"
 }

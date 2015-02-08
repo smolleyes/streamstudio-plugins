@@ -120,7 +120,7 @@ cpb.defaultMenus = ["searchTypes","orderBy"];
 cpb.searchTypes = JSON.parse('{"'+_("Search")+'":"search","'+_("Navigation")+'":"navigation"}');
 cpb.defaultSearchType = 'navigation';
 // orderBy filters and default entry
-cpb.orderBy_filters = JSON.parse('{"'+_("Date")+'":"date","'+_("Seeds")+'":"seeds"}');
+cpb.orderBy_filters = JSON.parse('{"'+_("Date descending")+'":"date_desc","'+_("Date ascending")+'":"date_asc","'+_("Seeds")+'":"seeds"}');
 cpb.defaultOrderBy = 'date';
 // orderBy filters and default entry
 cpb.category_filters = JSON.parse('{"'+_("Movies")+'":"films","'+_("Series")+'":"series"}');
@@ -152,8 +152,15 @@ cpb.search = function (query, options,gui) {
 	var query = query.replace(/ /g,'-');
 	var url;
 	var videos = {};
+
 	if(options.searchType === "search") {
-		url='http://www.cpasbien.pw/recherche/'+query+'/page-'+page+',trie-'+options.orderBy+'-d';
+		if(options.orderBy ==="date_asc") {
+			url='http://www.cpasbien.pw/recherche/'+query+'/page-'+page+',trie-date-a';
+		} else if(options.orderBy ==="date_desc") {
+			url='http://www.cpasbien.pw/recherche/'+query+'/page-'+page+',trie-date-d';
+		} else {
+			url='http://www.cpasbien.pw/recherche/'+query+'/page-'+page+',trie-'+options.orderBy+'-d';
+		}
 	} else {
 		url='http://www.cpasbien.pw/view_cat.php?categorie='+options.category+'&page='+page+'';
 	}
