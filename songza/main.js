@@ -211,7 +211,7 @@ songza.analyse_search_artists = function(datas,query) {
 	stations.station_ids = [];
 	$.each(datas,function(index,s) {
 		var link = encodeURIComponent(songza.gui.Base64.toBase64('http://songza.com/artist/'+s.id+'/'));
-		$.get('http://www.unblockpirate.com/index.php?q='+link,function(res){
+		$.get('http://www.freeproxybrowse.com/index.php?q='+link,function(res){
 			var list = $("li.playable", res);
 			$.each(list,function(index2,s) {
 				var id = $(this).attr('data-sz-station-id');
@@ -339,7 +339,7 @@ songza.load_next = function(id) {
 	$("#pagination").hide();
 	$("#loading").show();	
 	$('#items_container .well').removeClass('highlight well');
-	$.get('http://www.unblockpirate.com/index.php?q='+songza.gui.Base64.encode('http://songza.com/api/1/station/'+id+'/next'),function(res) {
+	$.get('http://www.freeproxybrowse.com/index.php?q='+songza.gui.Base64.encode('http://songza.com/api/1/station/'+id+'/next')+'&hl=2ed',function(res) {
 		if ($('#songza_item_'+res.song.id).length === 1) {return;}
 		var media= {};
 		media.link = res.listen_url;
