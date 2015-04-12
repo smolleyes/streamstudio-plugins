@@ -35,5 +35,8 @@
 	"movies": "films",
 	"chapters": "épisodes",
 	"Date ascending": "Date ascendant",
-	"Date descending": "Date descendant"
+	"Date descending": "Date descendant",
+	"Keep torrent file after downloading ?": "Conserver les fichiers après téléchargement ?",
+	"Add to favorites": "Add to favorites",
+	"Already in your favorites": "Already in your favorites"
 }

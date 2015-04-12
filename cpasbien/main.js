@@ -34,50 +34,73 @@ cpb.init = function(gui,ht5) {
     $(ht5.document).off('click','.preload_cpb_torrent');
     $(ht5.document).on('click','.preload_cpb_torrent',function(e){
     	e.preventDefault();
-    	cpb.gui.initPlayer();
     	var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
     	var link = obj.link;
     	var id = obj.id;
-    	$('.highlight').removeClass('highlight well');
-    	$(this).closest('li').addClass('highlight well');
-    	$.get(link, function(res) {
-    		var table = $("#gauche", res).html();
-    		var name = $(".h2fiche", res).text();
-    		obj.torrent = 'http://www.cpasbien.pw'+$("a#telecharger",res).attr('href');
-    		$('#fbxMsg').empty();
-    		$('#fbxMsg').append('<div id="fbxMsg_header"><h3>'+obj.title+'</h3><a href="#" id="closePreview">X</a></div><div id="fbxMsg_downloads" class="well"></div><div id="fbxMsg_content"></div>');
-    		$('#preloadTorrent').remove();
-    		$('.mejs-overlay-button').hide();
-    		$('.download-torrent').remove();
-            // add play button
-            $('#fbxMsg_downloads').append('<button type="button" id="cpb_play_'+id+'" data="" class="play_cpb_torrent btn btn-success" style="margin-right:20px;"> \
-            	<span class="glyphicon glyphicon-play-circle"><span class="fbxMsg_glyphText">'+_("Start playing")+'</span></span>\
-            	</button>');
-            $('#cpb_play_'+id).attr('data',encodeURIComponent(JSON.stringify(obj)));
-			// downloads buttons
-			$('#fbxMsg_downloads').append('<button type="button" class="download_cpb_torrentFile downloadText btn btn-info" href="'+obj.torrent+'" id="cpb_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'"><span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span></span></button>');
-			if(cpb.gui.freeboxAvailable) {
-				$('#fbxMsg_downloads').append('<button type="button"  href="'+obj.torrent+'" class="download_cpb_torrentFile_fbx downloadText btn btn-info" id="cpb_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>');
+    	//$('.highlight').removeClass('highlight well');
+    	//$(this).closest('li').addClass('highlight well');
+		var html = '<div id="fbxMsg_header"> \
+			<h3>'+obj.title+'</h3> \
+			</div> \
+			<div id="fbxMsg_content" style="height:auto;"> \
+				<img src="'+obj.cover+'" /> \
+				<p style="margin-top:10px;font-weight:bold;">'+obj.synopsis+'</p> \
+			</div>';
+		cpb.gui.showPopup(html,'body')
+});
+
+$(ht5.document).off('mouseenter','#cpb_cont .list-row');
+$(ht5.document).on('mouseenter','#cpb_cont .list-row',function(e){
+	var self = $(this);
+	if($(this).find('.optionsTop').is(':hidden')) {
+		setTimeout(function() {
+			if ($("li:hover").attr('id') == self.attr('id')) {
+				self.find('.optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos').fadeIn("fast");
+				self.find('.coverPlayImg').fadeIn('fast');
 			}
-			// clean preview
-			$('#fbxMsg_content').append(table);
-			$('#fbxMsg_content .h2fiche').remove();
-			$('#fbxMsg_content #telecharger').remove();
-			$('#fbxMsg_content #infosficher').remove();
-			$('#fbxMsg_content #banner3').remove();
-			$('#fbxMsg_content h4').remove();
-			$('#fbxMsg_content .ligne0,.ligne1').remove();
-			// show
-			$('#fbxMsg').slideDown();
-		})
+		},100);
+	}
+});
+
+$(ht5.document).off('mouseleave','#cpb_cont .list-row');
+$(ht5.document).on('mouseleave','#cpb_cont .list-row',function(e){
+	if($(this).find('.optionsTop').is(':visible')) {
+		$(this).find('.optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos').fadeOut("fast");
+		$(this).find('.coverPlayImg').fadeOut("fast");
+	}
+});
+
+$(ht5.document).off('click','.preload_cpbPlay_torrent');
+$(ht5.document).on('click','.preload_cpbPlay_torrent',function(e){
+	e.preventDefault();
+	cpb.gui.activeItem($(this).closest('.list-row').find('.coverInfosTitle'));
+	var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
+	var link = obj.link;
+	var id = obj.id;
+	saveTorrent = false;
+	var html = '<div style="width:100%;height:100%;position:relative;top:0;left:0;'+obj.background+'"></div><div style="position: absolute;top: 50%;left: 50%;width: 500px;height: 500px;margin-top: -250px;margin-left: -250px;background: rgba(32, 32, 32, 0.63);border-radius: 3px;"><h3>'+obj.title+'</h3><br><img style="width:180;height:240px;" src="'+obj.cover+'" /><br><br> \
+	<button type="button" id="cpb_play_'+id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" class="closePopup play_cpb_torrent btn btn-success"> \
+    	<span class="glyphicon glyphicon-play-circle"><span class="fbxMsg_glyphText">'+_("Start playing")+'</span></span> \
+    </button>  \
+    <button type="button" class="closePopup download_cpb_torrentFile downloadText btn btn-info" href="'+obj.torrent+'" id="cpb_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'">  \
+    	<span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span>  \
+    	</span>  \
+    </button>';
+
+	if(cpb.gui.freeboxAvailable) {
+		html += '<button type="button"  href="'+obj.torrent+'" class="closePopup download_cpb_torrentFile_fbx downloadText btn btn-info" id="cpb_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>';
+	}
+	html += '<br/><br/><div><label>'+_("Keep torrent file after downloading ?")+'</label><input style="position:relative;left:10px;" type="checkbox" class="saveTorrentCheck" name="saveTorrentCheck"></input></div></div>';
+	// show
+	cpb.gui.showPopup(html,'body')
 });
 
 $(ht5.document).off('click','.play_cpb_torrent');
 $(ht5.document).on('click','.play_cpb_torrent',function(e){
 	e.preventDefault();
 	var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
-	cpb.gui.getTorrent(obj.torrent);
-	$('#fbxMsg').slideUp();
+	cpb.gui.getTorrent(obj.torrent,obj.cover);
+	cpb.gui.itemTitle = obj.title;
 	$('#playerToggle')[0].click();
 });
 
@@ -94,6 +117,18 @@ $(ht5.document).on('click','.download_cpb_torrentFile_fbx',function(e){
 	var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
 	cpb.gui.getAuthTorrent(obj.torrent,false,true);
 });
+
+$(ht5.document).off('click','.addToFavorites');
+$(ht5.document).on('click','.addToFavorites',function(e){
+	e.preventDefault();
+	$(this).removeClass('addToFavorites');
+	$(this).attr('title',_("Already in your favorites"));
+	$(this).find('i').css('color','#F8963F');
+	var title = $(this).attr("data");
+	$('#favoritesToggle')[0].click()
+	cpb.gui.addSerieToDb(title);
+});
+
 }
 
 function loadEngine() {
@@ -121,7 +156,7 @@ cpb.searchTypes = JSON.parse('{"'+_("Search")+'":"search","'+_("Navigation")+'":
 cpb.defaultSearchType = 'navigation';
 // orderBy filters and default entry
 cpb.orderBy_filters = JSON.parse('{"'+_("Date descending")+'":"date_desc","'+_("Date ascending")+'":"date_asc","'+_("Seeds")+'":"seeds"}');
-cpb.defaultOrderBy = 'date';
+cpb.defaultOrderBy = 'date_desc';
 // orderBy filters and default entry
 cpb.category_filters = JSON.parse('{"'+_("Movies")+'":"films","'+_("Series")+'":"series"}');
 cpb.defaultCategory = 'films';
@@ -142,7 +177,7 @@ cpb.search = function (query, options,gui) {
 		cpb.gui.current_page = 1;
 	}	
 	if(page == 0) {
-		$('#items_container').empty().append('<ul id="cpb_cont" class="list" style="margin:0;"></ul>').show();
+		$('#items_container').empty().append('<ul id="cpb_cont" class="list"></ul>').show();
 		cpb.itemsCount = 0;
 	}
 	cpb.gui.current_page += 1;
@@ -164,24 +199,25 @@ cpb.search = function (query, options,gui) {
 	} else {
 		url='http://www.cpasbien.pw/view_cat.php?categorie='+options.category+'&page='+page+'';
 	}
-	console.log(url)
-	$.when($.ajax(url)).then(function(data, textStatus, jqXHR ) {
+	$.get(url,function(data) {
 		var mlist=$('#centre div',data).get();
 		var list = [];
-		Iterator.iterate(mlist).forEach(function (item) {
+		Iterator.iterate(mlist).forEach(function (item,i) {
 			if($(item).hasClass('ligne0') || $(item).hasClass('ligne1')){
 				list.push(item);
 			}
 		});
-		if(list.length === 0 ) {
+		// add new items to total items count for lazy loading
+		cpb.itemsCount += list.length;
+
+		if(mlist.length == 0) {
 			$('#loading').hide();
 			$("#search_results p").empty().append(_("No results found..."));
 			$("#search").show();
 			$("#pagination").hide();
 			return;
 		}
-		// add new items to total items count for lazy loading
-		cpb.itemsCount += list.length;
+
 		try {
 			cpb.totalPages = parseInt($($('#pagination a',data)[$('#pagination a',data).length - 2]).text())
 			if(isNaN(cpb.totalPages)) {
@@ -201,37 +237,52 @@ cpb.search = function (query, options,gui) {
 
 function analyseResults(list) {
 	var arr = []
+	var favMainList = cpb.gui.sdb.find();
+	var favList = [];
+	Iterator.iterate(favMainList).forEach(function (item,index) {
+		if(item.hasOwnProperty('serieName')) {
+			favList.push(item);
+		}
+	});
 	Iterator.iterate(list).forEach(function (item,index) {
 		var video = {};
 		video.link = $(item).find('a')[0].href;
 		video.title = $(item).find('a')[0].innerHTML;
+		video.quality = video.title.match(/720|1080/) !== null ? 'glyphicon-hd-video' : 'glyphicon-sd-video';
+		video.hd = video.title.match(/720/) !== null ? '720p' : video.title.match(/1080/) !== null ? '1080p' : '';
 		video.size = $(item).find('.poid').text();
 		video.seeders = $(item).find('.up').text();
 		video.leechers = $(item).find('.down').text();
 		var c = checkDb(video);
-		video.viewed = c.next().value.length > 0 ? 'block' : 'none';
-		appendVideo(video);
-	});
-	$('#loading').hide();
-	var type = category !== 'series' ? 'movies' : 'chapters';
-	if(searchType === 'navigation') {
-		var type = category !== 'series' ? 'movies' : 'chapters'
-		$('#search_results p').empty().append(_("%s availables %s", cpb.totalItems,_(type))).show();
-		$('#search').show();
-	} else {
-		$('#search_results p').empty().append(_("%s results founds", cpb.totalItems,_(type))).show();
-		$('#search').show();
-	}
-}
-
-function wait(video,place) {
-	setTimeout(function() {
-		if($("#cpb_cont ul li").length + 1 !== place) {
-			wait(video,place)
+		var l = c.next().value.length;
+		video.css = l > 0 ? 'color:red;float: left;margin-top: 1px;display:block' : 'display:none;';
+		video.viewedTitle = l > 0 ? _("Already watched") : '';
+		video.isSerie = video.title.toLowerCase().match(/(.*)(s\d{1,3}e\d{1,3}|s\d{1,3}|saison \d{1,3})/) !== null ? true : false;
+		video.isFavorite = false;
+		video.favId = null;
+      	if(video.isSerie) {
+        	video.serieName = video.title.toLowerCase().match(/(.*)(s\d{1,3}|saison \d{1,3})/)[1].replace(/\(.*\)/,'').replace('-','').trim();
+			Iterator.iterate(favList).forEach(function (item,index) {
+				var re = new RegExp(item.query, 'g');
+				var re2 = new RegExp(item.serieName, 'g');
+				if(item.serieName == video.serieName || video.serieName == item.query || video.serieName.match(re) || video.serieName.match(re2)) {
+					video.isFavorite = true;
+					video.favId = item.id;
+				}
+			});
+			if(video.isFavorite) {
+				video.background = 'background: url('+cpb.gui.confDir+'/images/'+video.favId+'-fanart.jpg) no-repeat no-repeat scroll 0% 0% / 100% 100% padding-box border-box';
+				video.toggle = '<span style="float:right;"><a href="#" data=""><i class="glyphicon glyphicon-star" style="color:#F8963F" title="'+_('Already in your favorites')+'"></i></span></a>';
+			} else {
+				video.background = '';
+				video.toggle = '<span style="float:right;"><a href="#" style="cursor:pointer;" class="addToFavorites" data="'+video.serieName+'" title="'+_('Add to favorites')+'"><i class="glyphicon glyphicon-star"></i></span></a>';
+			}
+			appendVideo(video);
 		} else {
+			video.toggle = '';
 			appendVideo(video);
 		}
-	},100);
+	});
 }
  
 function* checkDb(video) {
@@ -246,29 +297,58 @@ function appendVideo(video) {
 	    var res = video.html;
 		var img = $("#bigcover img",res).attr('src');
 		video.id = ((Math.random() * 1e6) | 0);
-		var html = '<li id="'+video.id+'" class="list-row" style="margin:0;padding:0;"> \
+		if(video.title.length > 45){
+			text = video.title.substring(0,45)+'...';
+		} else {
+			text = video.title;
+		}
+		var html = '<li id="'+video.id+'" class="list-row"> \
+		<span class="optionsTop" style="display:none;"></span> \
+		<div id="optionsTopInfos" style="display:none;"> \
+		<span style="'+video.css+'" title="'+video.viewedTitle+'"><i class="glyphicon glyphicon-eye-open"></i></span> \
+		<span><i class="glyphicon glyphicon-cloud-upload"></i>'+video.seeders+'</span> \
+		<span style="float:right;"><i class="glyphicon glyphicon-hdd"></i>'+video.size+'</span> \
+		</div> \
 		<div class="mvthumb"> \
-		<span class="viewedItem" style="display:'+video.viewed+';"><i class="glyphicon glyphicon-eye-open"></i>'+_("Already watched")+'</span> \
-		<img src="" style="float:left;width:100px;height:125px;" /> \
+		<img class="cpbthumb" style="float:left;" /> \
 		</div> \
-		<div style="margin: 0 0 0 105px;"> \
-		<a href="#" class="preload_cpb_torrent item-title" data="'+encodeURIComponent(JSON.stringify(video))+'">'+video.title+'</a> \
-		<div class="item-info"> \
-		<span><b>'+_("Size: ")+'</b>'+video.size+'</span> \
+		<div> \
+			<img class="coverPlayImg preload_cpbPlay_torrent" style="display:none;" data="" /> \
 		</div> \
-		<div class="item-info"> \
-		<span><b>'+_("Seeders: ")+'</b>'+video.seeders+'</span> \
+		<span class="optionsBottom" style="display:none;"></span> \
+		<div id="optionsBottomInfos" style="display:none;"> \
+			<span><i class="glyphicon '+video.quality+'"></i>'+video.hd+'</span> \
+			<span style="float:right;"><a href="#" class="preload_cpb_torrent" data=""><i class="glyphicon glyphicon-info-sign"></i></a></span> \
+			'+video.toggle+' \
 		</div> \
-		</div>  \
-		<div id="torrent_'+video.id+'"> \
+		<div> \
+			<p class="coverInfosTitle" title="'+video.title+'">'+text+'</p> \
 		</div> \
 		</li>';
 		$("#cpb_cont").append(html);
 		$.get(video.link,function(res) {
 			var img = $("#bigcover img",res).attr('src');
-			$('#'+video.id+' img').attr('src',img)
+			$('#'+video.id+' .cpbthumb').attr('src',img);
+			//store img
+			video.cover = img;
+			//store description and torrent link
+			video.torrent = 'http://www.cpasbien.pw'+$("a#telecharger",res).attr('href');
+			video.synopsis = $('#textefiche p',res).last().text();
+			//save in data
+			$('#'+video.id+' .preload_cpb_torrent').attr('data',encodeURIComponent(JSON.stringify(video)));
+			$('#'+video.id+' .coverPlayImg').attr('data',encodeURIComponent(JSON.stringify(video)));
 		});
 		if($('#items_container ul li').length === cpb.itemsCount) {
+			$('#loading').hide();
+			var type = category !== 'series' ? 'movies' : 'chapters';
+			if(searchType === 'navigation') {
+				var type = category !== 'series' ? 'movies' : 'chapters'
+				$('#search_results p').empty().append(_("%s availables %s", cpb.totalItems,_(type))).show();
+				$('#search').show();
+			} else {
+				$('#search_results p').empty().append(_("%s results founds", cpb.totalItems,_(type))).show();
+				$('#search').show();
+			}
 			cpb.pageLoading = false;
 		}
 }
@@ -294,8 +374,8 @@ cpb.play_next = function() {
 cpb.search_type_changed = function() {
 	cpb.gui.current_page = 1;
 	$('#items_container').empty();
-	searchType = $("#searchTypes_select").val();
-	category = $("#categories_select").val();
+	searchType = $("#searchTypes_select a.active").attr("data-value");
+	category = $("#categories_select a.active").attr("data-value");
 	$('#search').hide();
 	if (searchType === 'navigation') {
 		$("#orderBy_select").hide();

@@ -33,5 +33,7 @@
 	"Already watched": "Déjà visionné",
 	"%s availables videos": "%s films/épisodes disponibles",
 	"%s results founds": "%s résultats trouvés",
-	"No dataults found...": "No dataults found..."
+	"No dataults found...": "No dataults found...",
+	"Keep torrent file after downloading ?": "Conserver les fichiers après téléchargement ?",
+	"Add to favorites": "Add to favorites"
 }

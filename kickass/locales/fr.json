@@ -31,5 +31,8 @@
 	"Leechers: ": "Clients: ",
 	"Start playing": "Démarrer la lecture",
 	"Already watched": "Déjà visionné",
-	"%s results founds": "%s résultats trouvés"
+	"%s results founds": "%s résultats trouvés",
+	"Keep torrent file after downloading ?": "Conserver les fichiers après téléchargement ?",
+	"Already in your favorites": "Already in your favorites",
+	"Add to favorites": "Add to favorites"
 }

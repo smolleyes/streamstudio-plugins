@@ -44,9 +44,9 @@ songza.init = function(gui,ht5) {
 		$('#loading').show();
 		$("#loading p").empty().append(_("Loading songs..."));
 		$("#search").hide();
-		$('#items_container').empty().append('<ul id="songza_cont" class="list" style="margin:0;"></ul>').show();
+		$('#items_container').empty().append('<ul id="songza_cont" class="list"></ul>').show();
 		var station = JSON.parse(decodeURIComponent($(this).attr("data")));
-		$("#search_results p").empty().append(_("Playing %s station <br /> %s sounds in this playlist",station.name,station.song_count))
+		$("#search_results p").empty().append(_("Playing %s station, %s sounds in this playlist",station.name,station.song_count))
 		songza.current_station_id = station.id;
 		songza.current_station_songsCount = station.song_count;
 		songza.load_next(station.id);
@@ -58,12 +58,12 @@ songza.init = function(gui,ht5) {
 		$('.highlight').toggleClass('highlight','false');
 		var song = JSON.parse(decodeURIComponent($(this).attr("data")));
 		var media= {};
+		console.log(song)
 		media.link = song.listen_url+"&external";
 		media.type='object.item.audioItem.musicTrack';
 		song.title = song.song.artist.name +' - '+ song.song.title;
 		media.title = song.title;
-		console.log("HEREEEEE")
-		console.log(media)
+		media.cover = $(this).closest('li').find('.mvthumb_small img').attr('src');
 		$('.mejs-overlay-button').hide();
 		$('#fbxMsg2').empty().remove();
 		$('.mejs-container').append('<div id="fbxMsg2"><div><img src="'+song.cover_url+' /><span>'+song.title+'</span>"</div></div>');
@@ -77,6 +77,27 @@ songza.init = function(gui,ht5) {
 			var title = song.title+'.mp3';
 			var id = song.id;
 			songza.gui.downloadFile(song.link,title,id,false);
+	});
+
+	$(ht5.document).off('mouseenter','#songza_cont .list-row_small');
+	$(ht5.document).on('mouseenter','#songza_cont .list-row_small',function(e){
+		var self = $(this);
+		if($(this).find('.optionsTop').is(':hidden')) {
+			setTimeout(function() {
+				if ($("li:hover").attr('id') == self.attr('id')) {
+					self.find('.optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos').fadeIn("fast");
+					self.find('.coverPlayImg').fadeIn('fast');
+				}
+			},100);
+		}
+	});
+
+	$(ht5.document).off('mouseleave','#songza_cont .list-row_small');
+	$(ht5.document).on('mouseleave','#songza_cont .list-row_small',function(e){
+		if($(this).find('.optionsTop').is(':visible')) {
+			$(this).find('.optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos').fadeOut("fast");
+			$(this).find('.coverPlayImg').fadeOut("fast");
+		}
 	});
 }
 
@@ -114,7 +135,7 @@ songza.has_related = false;
 }
 
 songza.search_type_changed = function() {
-	songza.searchType = $("#searchTypes_select option:selected").val();
+	songza.searchType = $("#searchTypes_select a.active").attr("data-value");
 	$('#video_search_query').prop('disabled', true);
 	if (songza.searchType === 'search') {
 		$('#video_search_query').prop('disabled', false);
@@ -211,7 +232,7 @@ songza.analyse_search_artists = function(datas,query) {
 	stations.station_ids = [];
 	$.each(datas,function(index,s) {
 		var link = encodeURIComponent(songza.gui.Base64.toBase64('http://songza.com/artist/'+s.id+'/'));
-		$.get('http://www.freeproxybrowse.com/index.php?q='+link,function(res){
+		$.get('http://rxproxy.com/index.php?rxproxyuri='+link,function(res){
 			var list = $("li.playable", res);
 			$.each(list,function(index2,s) {
 				var id = $(this).attr('data-sz-station-id');
@@ -244,20 +265,23 @@ songza.analyse_search = function(datas,query) {
 songza.load_genre = function(datas) {
 	$('#loading').hide();
 	$("#search").show();
-	$('#items_container').empty().append('<ul id="songza_cont" class="list" style="margin:0;"></ul>').show();
-	$("#search_results p").empty().append(_('Stations in the %s section ...',$('#searchTypes_select option:selected').text()));
+	$('#items_container').empty().append('<ul id="songza_cont" class="list"></ul>').show();
+	$("#search_results p").empty().append(_('Stations in the %s section ...',_(songza.searchType)));
 	$.each(datas,function(index,genre) {
+		var id = ((Math.random() * 1e6) | 0);
 		if ($('#songza_item_'+genre.id).length === 1) {return;}
-		var html = '<li class="list-row"> \
-			<div class="mvthumb"> \
-				<img src="images/Playlist.png" style="float:left;width:100px;height:100px;" /> \
+		var html = '<li class="list-row_small" id="'+id+'"> \
+			<span class="optionsTop" style="display:none;"></span> \
+			<div id="optionsTopInfos" style="display:none;"> \
+			<span><i class="glyphicon glyphicon-list-alt"></i>'+_("Stations: ")+genre.station_ids.length+'</span> \
 			</div> \
-			<div style="margin: 0 0 0 105px;"> \
-				<a href="#" class="load_genre item-title" data="'+encodeURIComponent(JSON.stringify(genre))+'">'+genre.name+'</a> \
-				<div class="item-info"> \
-					<b>'+_("Total stations : ")+'</b>'+genre.station_ids.length+' \
-				</div> \
-			</div>  \
+			<div class="mvthumb_small"> \
+				<img src="images/Playlist.png"  /> \
+			</div> \
+			<div> \
+				<img class="coverPlayImg load_genre" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(genre))+'" /> \
+			</div> \
+			<a href="#" style="bottom:-25px;" class="coverInfosTitle load_genre" title="'+genre.name+'" data="'+encodeURIComponent(JSON.stringify(genre))+'">'+genre.name+'</a> \
 			<div id="songza_item_'+genre.id+'"> \
 			</div> \
 		</li>';
@@ -272,24 +296,24 @@ songza.load_genre_stations = function(datas) {
 	if (songza.searchType !== 'search') {
 		$("#search_results p").empty().append(_('Browsing %s section ...',datas.name));
 	}
-	$('#items_container').empty().append('<ul id="songza_cont" class="list" style="margin:0;"></ul>');
+	$('#items_container').empty().append('<ul id="songza_cont" class="list"></ul>');
 	$.each(datas.station_ids,function(index,id) {
 		$.get('http://anonymouse.org/cgi-bin/anon-www.cgi/http://songza.com/api/1/station/'+id,function(res) {
 			var station=res;
 			if ($('#songza_item_'+station.id).length === 1) {return;}
-			var html = '<li class="list-row"> \
-			<div class="mvthumb"> \
-				<img src="'+station.cover_url+'" style="float:left;width:100px;height:100px;" /> \
+			var id = ((Math.random() * 1e6) | 0);
+			var html = '<li class="list-row_small" id="'+id+'"> \
+			<span class="optionsTop" style="display:none;"></span> \
+			<div id="optionsTopInfos" style="display:none;"> \
+			<span><i class="glyphicon glyphicon-music"></i>'+_("Total sounds: ")+station.song_count+'</span> \
 			</div> \
-			<div style="margin: 0 0 0 105px;"> \
-				<a href="#" class="load_station item-title" data="'+encodeURIComponent(JSON.stringify(station))+'">'+station.name+'</a> \
-				<div class="item-info"> \
-					<b>'+_("Total sounds: ")+'</b>'+station.song_count+' \
-				</div> \
-				<div class="item-info"> \
-					<b>'+_("Creator: ")+'</b>'+station.creator_name+' \
-				</div> \
-			</div>  \
+			<div class="mvthumb_small"> \
+				<img src="'+station.cover_url+'" /> \
+			</div> \
+			<div> \
+				<img class="coverPlayImg load_station" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(station))+'" /> \
+			</div> \
+			<a href="#" style="bottom:-25px;" class="coverInfosTitle load_station" title="'+station.name+'" data="'+encodeURIComponent(JSON.stringify(station))+'">'+station.name+'</a> \
 			<div id="songza_item_'+station.id+'"> \
 			</div> \
 		</li>';
@@ -302,23 +326,23 @@ songza.load_genre_stations = function(datas) {
 }
 
 songza.load_stations = function(stations) {
-	$("#search_results p").empty().append(_('Stations in the %s section ...',$('#searchTypes_select option:selected').text()));
-	$('#items_container').empty().append('<ul id="songza_cont" class="list" style="margin:0;"></ul>');
+	$("#search_results p").empty().append(_('Stations in the %s section ...',_(songza.searchType)));
+	$('#items_container').empty().append('<ul id="songza_cont" class="list"></ul>');
 	$.each(stations,function(index,station) {
+		var id = ((Math.random() * 1e6) | 0);
 		if ($('#songza_item_'+station.id).length === 1) {return;}
-		var html = '<li class="list-row"> \
-			<div class="mvthumb"> \
-				<img src="'+station.cover_url+'" style="float:left;width:100px;height:100px;" /> \
+		var html = '<li class="list-row_small" id="'+id+'"> \
+			<span class="optionsTop" style="display:none;"></span> \
+			<div id="optionsTopInfos" style="display:none;"> \
+			<span><i class="glyphicon glyphicon-music"></i>'+_("Total sounds: ")+station.song_count+'</span> \
 			</div> \
-			<div style="margin: 0 0 0 105px;"> \
-				<a href="#" class="load_station item-title" data="'+encodeURIComponent(JSON.stringify(station))+'">'+station.name+'</a> \
-				<div class="item-info"> \
-					<b>'+_("Total sounds: ")+'</b>'+station.song_count+' \
-				</div> \
-				<div class="item-info"> \
-					<b>'+_("Creator: ")+'</b>'+station.creator_name+' \
-				</div> \
-			</div>  \
+			<div class="mvthumb_small"> \
+				<img src="'+station.cover_url+'" /> \
+			</div> \
+			<div> \
+				<img class="coverPlayImg load_station" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(station))+'" /> \
+			</div> \
+			<p class="coverInfosTitle" style="bottom:-35px;" title="'+station.name+'">'+station.name+'</p> \
 			<div id="songza_item_'+station.id+'"> \
 			</div> \
 		</li>';
@@ -337,41 +361,50 @@ songza.load_next = function(id) {
 	$("#loading p").empty().append(_("Loading next song..."))
 	$("#search").hide();
 	$("#pagination").hide();
-	$("#loading").show();	
-	$('#items_container .well').removeClass('highlight well');
-	$.get('http://www.freeproxybrowse.com/index.php?q='+songza.gui.Base64.encode('http://songza.com/api/1/station/'+id+'/next')+'&hl=2ed',function(res) {
+	$("#loading").show();
+	console.log('http://songza.com/api/1/station/'+id+'/next')
+	$.get('http://rxproxy.com/index.php?rxproxyuri='+songza.gui.Base64.encode('http://songza.com/api/1/station/'+id+'/next'),function(res) {
+		console.log(res)
 		if ($('#songza_item_'+res.song.id).length === 1) {return;}
 		var media= {};
 		media.link = res.listen_url;
 		media.id = res.song.id;
 		media.title = res.song.artist.name +' - '+ res.song.title;
-		var html = '<li class="list-row"> \
-			<div class="mvthumb"> \
-				<img src="'+res.song.cover_url+'" style="float:left;width:100px;height:100px;" /> \
+		var id = ((Math.random() * 1e6) | 0);
+		var ftitle = res.song.artist.name+' - '+res.song.title;
+		if(ftitle.length > 40){
+			text = ftitle.substring(0,40)+'...';
+		} else {
+			text = ftitle;
+		}
+		var html = '<li class="list-row_small" id="songza_item_'+res.song.id+'"> \
+			<span class="optionsTop" style="display:none;"></span> \
+			<div id="optionsTopInfos" style="display:none;"> \
+			<span><i class="glyphicon glyphicon-user"></i>'+res.song.artist.name+'</span> \
 			</div> \
-			<div style="margin: 0 0 0 105px;"> \
-				<a href="#" class="load_gs_song item-title" data="'+encodeURIComponent(JSON.stringify(res))+'">'+res.song.title+'</a> \
-				<div class="item-info"> \
-					<b>'+_("Artist: ")+'</b>'+res.song.artist.name+' \
-				</div> \
-				<div class="item-info"> \
-					<b>'+_("album: ")+'</b>'+res.song.album+' \
-				</div> \
-			</div>  \
-			<div id="songza_item_'+res.song.id+'"> \
-				<a class="download_sgFile" style="margin-left:5px;" href="#" data="'+encodeURIComponent(JSON.stringify(media))+'" title="Download"><img src="images/down_arrow.png" width="16" height="16" />'+_("Download")+' mp3</a> \
+			<div class="mvthumb_small"> \
+				<img src="'+res.song.cover_url+'"/> \
 			</div> \
+			<div> \
+				<img class="coverPlayImg load_gs_song" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(res))+'" /> \
+			</div> \
+			<span class="optionsBottom" style="display:none;bottom:0;"></span> \
+			<div id="optionsBottomInfos" style="display:none;bottom:0;"> \
+				<a class="download_sgFile" href="#" style="margin-top:-3px;" data="'+encodeURIComponent(JSON.stringify(media))+'" title="'+_("Download")+'"><span><i class="glyphicon glyphicon-download"></i>'+_("Download")+'</span></a> \
+			</div> \
+			<p class="coverInfosTitle" style="bottom:-35px;" title="'+text+'">'+text+'</p> \
 		</li>';
 		$("#songza_cont").append(html);
 		$('#loading').hide();
 		$("#search").show();
 		$('#items_container').show();
+		songza.gui.activeItem($('#songza_item_'+res.song.id).closest('.list-row_small').find('.coverInfosTitle'));
 		var media= {};
 		media.link = res.listen_url+"&external";
 		media.title = res.song.artist.name +' - '+ res.song.title;
 		media.type='object.item.audioItem.musicTrack';
+		media.cover=res.song.cover_url;
 		songza.gui.startPlay(media);
-		$('#songza_item_'+res.song.id).closest('.list-row').addClass('highlight well');
 		$('.mejs-overlay-button').hide();
 		$('#fbxMsg2').empty();
 		var pos = "50%";

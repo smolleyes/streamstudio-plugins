@@ -14,7 +14,7 @@
 	"Stations in the %s section ...": "Stations dans la section %s ...",
 	"Browsing %s section ...": "Stations dans la Section %s ...",
 	"All songs already loaded in the playlist...": "Tous les morceaux de cette playlist déjà sont chargés...",
-	"Playing %s station <br /> %s sounds in this playlist": "Station : %s <br /> %s morceaux dans cette playlist",
+	"Playing %s station, %s sounds in this playlist": "Station : %s, %s morceaux dans cette playlist",
 	"Populars": "Populaires",
 	"Genres": "Genres",
 	"Activities": "Activitées",
@@ -38,5 +38,7 @@
 	"Loading culture playlists...": "Chargement de la playlist culture...",
 	"Download": "Télécharger",
 	"Loading next song...": "Chargement du morceau suivant...",
-	"Loading navigation playlist...": "Loading navigation playlist..."
+	"Stations: ": "Stations: ",
+	"populars": "populaires",
+	"genres": "genres"
 }

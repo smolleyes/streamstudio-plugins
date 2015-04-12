@@ -12,5 +12,12 @@
 	"Download": "Download",
 	"Télécharger avec freebox": "Télécharger avec freebox",
 	"Size: ": "Size: ",
-	"Seeders: ": "Seeders: "
+	"Seeders: ": "Seeders: ",
+	"Date descending": "Date descending",
+	"Date ascending": "Date ascending",
+	"Already watched": "Already watched",
+	"movies": "movies",
+	"%s availables %s": "%s availables %s",
+	"Start playing": "Start playing",
+	"Keep torrent file after downloading ?": "Keep torrent file after downloading ?"
 }

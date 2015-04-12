@@ -6,7 +6,6 @@
 	"Rating": "Notes",
 	"Date": "Date",
 	"Duration": "Durée",
-	"<p>cpasbien %s section</p>": "<p>cpasbien section %s</p>",
 	"Loading videos...": "Chargement des vidéos...",
 	"download": "Télécharger",
 	"Open in %s": "Ouvrir dans %",
@@ -29,9 +28,7 @@
 	"Télécharger avec freebox": "Télécharger avec freebox",
 	"Browse": "Browse",
 	"Searching mode...": "Mode recherche...",
-	"forum.t411.ws connexion ok !": "forum.t411.ws connexion ok !",
 	"t411 engine loaded successfully...": "Moteur t411 chargé avec succès...",
-	"t411.me connexion ok !": "t411.me connexion ok !",
 	"Please login to the website with the Always connected option checked then close the window to continue... !": "Connectez vous ou enregistrez un compte sur la page suivante en COCHANT \"rester connecté\" puis fermez la fenêtre, cliquez Ok pour continuer",
 	"Ok": "Ok",
 	"Top 100": "Top 100",
@@ -40,5 +37,11 @@
 	"Start playing": "Démarrer la lecture",
 	"Already watched": "Déjà visionné",
 	"showing %s results on 100 (scroll to show more...)": "%s résultats affichés sur 100 (scrollez pour en afficher plus...)",
-	"%s results found": "%s résultats trouvés"
+	"%s results found": "%s résultats trouvés",
+	"t411.io connexion ok !": "t411.io connexion ok !",
+	"%s results founds": "%s résultats trouvés",
+	"Keep torrent file after downloading ?": "Conserver les fichiers après téléchargement ?",
+	"Add to favorites": "Ajouter aux favories",
+	"Already in your favorites": "Déjà dans vos favories",
+	"t411.io connexion problem ! :  Invalid username or password...": "t411.io problème de connexion ! :  Mauvais utilisateur ou mot de passe..."
 }
