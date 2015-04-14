@@ -37,7 +37,7 @@ t411.init = function(gui, ht5, notif) {
         $.get('http://www.t411.io', function(res) {
             if ($('a:contains("Déconnexion")',res).length == 0) {
                 if(t411.gui.settings.t411Username && t411.gui.settings.t411Password) {
-                    $.post('http://www.t411.io/users/login/',{ login: t411.gui.settings.t411Username, password: t411.gui.settings.t411Password, remember: 1 })
+                    $.post('http://www.t411.io/users/login/',{ login: ''+t411.gui.settings.t411Username+'', password: ''+t411.gui.settings.t411Password+'', remember: 1 })
                     .done(function(data){
                         if ($('a:contains("Déconnexion")',data).length == 0) {
                             t411.initialized = false;
