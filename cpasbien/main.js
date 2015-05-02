@@ -54,7 +54,7 @@ $(ht5.document).on('mouseenter','#cpb_cont .list-row',function(e){
 	var self = $(this);
 	if($(this).find('.optionsTop').is(':hidden')) {
 		setTimeout(function() {
-			if ($("li:hover").attr('id') == self.attr('id')) {
+			if ($("#cpb_cont li:hover").attr('id') == self.attr('id')) {
 				self.find('.optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos').fadeIn("fast");
 				self.find('.coverPlayImg').fadeIn('fast');
 			}
