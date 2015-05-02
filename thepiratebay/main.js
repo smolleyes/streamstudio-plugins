@@ -143,7 +143,7 @@ tpb.menuEntries = ["orderBy"];
 tpb.defaultMenus = ["orderBy"];
 // orderBy filters and default entry
 tpb.orderBy_filters = JSON.parse('{"'+_("Name desc")+'":"1","'+_("Name asc")+'":"2","'+_("Date desc")+'":"3","'+_("Date asc")+'":"4","'+_("Size desc")+'":"5","'+_("Size asc")+'":"6","'+_("Seeds desc")+'":"7","'+_("Seeds asc")+'":"8","'+_("Leeches desc")+'":"9","'+_("Leeches asc")+'":"10"}');
-tpb.defaultOrderBy = '3';
+tpb.defaultOrderBy = '7';
 // others params
 tpb.has_related = false;
 tpb.orderFiltersLoaded = false;
@@ -168,7 +168,7 @@ tpb.search = function (query, options,gui) {
 		page: page,
 		orderBy: options.orderBy
 	}).then(function(results){
-		if(results.length === 0 ) {
+		if(parseInt(results[0].total) == 0 ) {
             $('#loading').hide();
             $("#search_results p").empty().append(_("No results found..."));
             $("#search").show();
@@ -176,22 +176,12 @@ tpb.search = function (query, options,gui) {
             return;
         }
         // add new items to total items count for lazy loading
-		tpb.itemsByPage = parseInt(results[0].byPage);
 		tpb.itemsCount += 30;
 		tpb.totalItems = parseInt(results[0].total);
-		if (tpb.totalItems < 30) {
-			tpb.totalPages = 1;
-		} else {
-			tpb.totalPages = tpb.totalItems / 30;
-		}
-		$("#search_results p").empty().append(_("%s results found for %s",tpb.totalItems,query));
+		$("#search_results p").empty().append(_("%s results found",tpb.totalItems));
 		analyseResults(results);
 	}).catch(function(err){
 		console.log(err)
-		$('#loading').hide();
-        $("#search_results p").empty().append(_("No results found..."));
-        $("#search").show();
-        $("#pagination").hide();
         return;
 	});
 }

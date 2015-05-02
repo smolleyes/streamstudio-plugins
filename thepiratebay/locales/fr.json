@@ -29,11 +29,11 @@
 	"Date asc": "Date asc",
 	"Size desc": "Taille desc",
 	"Size asc": "Taille asc",
-	"Seeds desc": "Seeds desc",
-	"Seeds asc": "Seeds asc",
-	"Leeches desc": "Leeches desc",
-	"Leeches asc": "Leeches asc",
-	"<p>Engine Thepiratebay ready...!</p>": "<p>Engine Thepiratebay ready...!</p>",
+	"Seeds desc": "Sources desc",
+	"Seeds asc": "Sources asc",
+	"Leeches desc": "Clients desc",
+	"Leeches asc": "Clients asc",
+	"<p>Engine Thepiratebay ready...!</p>": "<p>Moteur Thepiratebay chargé avec succès...!</p>",
 	"%s results found for %s": "%s résultats trouvés pour %s",
 	"Size: ": "Taille: ",
 	"Uploaded: ": "Uploadé: ",
@@ -43,7 +43,8 @@
 	"Start playing": "Démarrer la lecture",
 	"Already watched": "Déjà visionné",
 	"%s results founds": "%s résultats trouvés",
-	"Add to favorites": "Add to favorites",
-	"Keep torrent file after downloading ?": "Keep torrent file after downloading ?",
-	"Already in your favorites": "Already in your favorites"
+	"Add to favorites": "Ajouter aux favoris",
+	"Keep torrent file after downloading ?": "Conserver les fichiers après téléchargement ?",
+	"Already in your favorites": "Déjà dans vos favoris",
+	"%s results found": "%s results found"
 }
