@@ -174,7 +174,7 @@ cpb.search = function (query, options,gui) {
 		page = options.currentPage - 1;
 	} catch(err) {
 		page = 0;
-		cpb.gui.current_page = 1;
+		cpb.gui.current_page = 0;
 	}	
 	if(page == 0) {
 		$('#items_container').empty().append('<ul id="cpb_cont" class="list"></ul>').show();
