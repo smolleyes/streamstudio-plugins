@@ -193,7 +193,7 @@ kick.search = function(query, options, gui) {
             field: '' + options.orderBy + '', //seeders, leechers, time_add, files_count, empty for best match
             order: 'desc', //asc or desc
             page: page, //page count, obviously
-            url: 'http://kickass.to', //changes site default url (http://kick.to)
+            url: 'http://kat.cr', //changes site default url (http://kick.to)
         }, function(e, data) {
             if (e ||  data.total_results == 0) {
                 $('#loading').hide();

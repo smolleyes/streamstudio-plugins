@@ -219,12 +219,17 @@ cpb.search = function (query, options,gui) {
 		}
 
 		try {
-			cpb.totalPages = parseInt($($('#pagination a',data)[$('#pagination a',data).length - 2]).text())
-			if(isNaN(cpb.totalPages)) {
-				cpb.totalItems =  list.length;
-				cpb.totalPages = 1;
+			var pagesCount  = parseInt($('#pagination',data).find('a:last').prev().text());
+			if(isNaN(pagesCount) && cpb.itemsCount == 0) {
+				$('#loading').hide();
+				$("#search_results p").empty().append(_("No results found..."));
+				$("#search").show();
+				$("#pagination").hide();
+				return;
+			} else if (cpb.itemsCount < 30){
+				cpb.totalItems = cpb.itemsCount;
 			} else {
-				cpb.totalItems =  cpb.totalPages * 30;
+				cpb.totalItems = pagesCount * 30;
 			}
 			analyseResults(list);
 		} catch(err) {

@@ -329,9 +329,7 @@ t411.search = function(query, options) {
                     t411.itemsCount += list.length;
                     analyseResults(list);
                 } catch (err) {
-                    t411.totalItems = list.length;
-                    t411.itemsCount += list.length;
-                    analyseResults(list);
+                    console.log(err)
                 }
             });
         } else {
@@ -399,8 +397,6 @@ function analyseResults(list) {
             appendVideos(list);
         }
     } else {
-        $('#search_results p').empty().append(_("%s results founds", t411.totalItems)).show();
-        $('#search').show();
         appendVideos(arr);
     }
 }
@@ -483,12 +479,18 @@ function appendVideos(list) {
             $('#' + video.id + ' .coverPlayImg').attr('data', encodeURIComponent(JSON.stringify(video)));
             $('#' + video.id).show();
         });
-        if ($('#items_container ul li').length == t411.lazyStart) {
-                t411.pageLoading = false;
-        }
         if (t411.searchType === 'navigation') {
-            $("#search_results").empty().append('<p>' + _("showing %s results on 100 (scroll to show more...)", t411.lazyStart) + '</p>').show();
-            $('#search').show();
+            if ($('#items_container ul li').length == t411.lazyStart) {
+                t411.pageLoading = false;
+                $("#search_results").empty().append('<p>' + _("showing %s results on 100 (scroll to show more...)", t411.lazyStart) + '</p>').show();
+                $('#search').show();
+            }
+        } else {
+            if ($('#items_container ul li').length == t411.itemsCount) {
+                t411.pageLoading = false;
+                $('#search_results p').empty().append(_("%s results founds", t411.totalItems)).show();
+                $('#search').show();
+            }
         }
     });
 }
