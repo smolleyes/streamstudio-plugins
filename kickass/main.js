@@ -71,6 +71,8 @@ kick.init = function(gui, ht5) {
     $(ht5.document).off('click', '.preload_kickPlay_torrent');
     $(ht5.document).on('click', '.preload_kickPlay_torrent', function(e) {
         e.preventDefault();
+        kick.gui.saveTorrent = false;
+        kick.gui.torrentSaved = false;
         kick.gui.activeItem($(this).closest('.list-row').find('.coverInfosTitle'));
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = obj.link;

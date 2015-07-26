@@ -71,6 +71,8 @@ tpb.init = function(gui,ht5) {
     $(ht5.document).off('click','.preload_tpbPlay_torrent');
     $(ht5.document).on('click','.preload_tpbPlay_torrent',function(e){
         e.preventDefault();
+        tpb.gui.saveTorrent = false;
+        tpb.gui.torrentSaved = false;
         tpb.gui.activeItem($(this).closest('.list-row').find('.coverInfosTitle'));
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = obj.link;

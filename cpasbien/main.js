@@ -73,6 +73,8 @@ $(ht5.document).on('mouseleave','#cpb_cont .list-row',function(e){
 $(ht5.document).off('click','.preload_cpbPlay_torrent');
 $(ht5.document).on('click','.preload_cpbPlay_torrent',function(e){
 	e.preventDefault();
+	cpb.gui.saveTorrent = false;
+  cpb.gui.torrentSaved = false;
 	cpb.gui.activeItem($(this).closest('.list-row').find('.coverInfosTitle'));
 	var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
 	var link = obj.link;
