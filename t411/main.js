@@ -329,9 +329,15 @@ t411.search = function(query, options) {
                 try {
                     t411.totalItems = parseInt($('.pagebar a', res).last().prev().text().split('-')[1].trim());
                     t411.itemsCount += list.length;
+                    t411.pageLoading = false;
                     analyseResults(list);
                 } catch (err) {
                     console.log(err)
+                    if(!t411.totalItems) {
+                      t411.totalItems = $('.results tr', res).length -2;
+                    }
+                    t411.itemsCount += list.length;
+                    analyseResults(list);
                 }
             });
         } else {
