@@ -326,9 +326,15 @@ t411.search = function(query, options) {
                 try {
                     t411.totalItems = parseInt($('.pagebar a', res).last().prev().text().split('-')[1].trim());
                     t411.itemsCount += list.length;
+                    t411.pageLoading = false;
                     analyseResults(list);
                 } catch (err) {
+<<<<<<< HEAD
                     if(t411.totalItems == 0) {
+=======
+                    console.log(err)
+                    if(!t411.totalItems) {
+>>>>>>> d649035da0d42ee565638ce2e781b51611b25d2c
                       t411.totalItems = $('.results tr', res).length -2;
                     }
                     t411.itemsCount += list.length;
