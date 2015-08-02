@@ -277,10 +277,12 @@ t411.search = function(query, options) {
         page = options.currentPage - 1;
     } catch (err) {
         page = 0;
+        t411.totalItems = 0
         t411.gui.current_page = 1;
     }
     if (page == 0) {
         $('#items_container').empty().append('<ul id="t411_cont" class="list"></ul>').show();
+        t411.totalItems = 0
         t411.itemsCount = 0;
     }
     t411.gui.current_page += 1;
@@ -299,29 +301,24 @@ t411.search = function(query, options) {
                 $("#pagination").hide();
                 return;
             }
-            try {
-                t411.totalItems = 100;
-                t411.itemsCount = 10
-                analyseResults(list);
-            } catch (err) {
-                t411.totalItems = 100;
-                t411.itemsCount = 10
-                analyseResults(list);
-            }
+            t411.totalItems = 100;
+            t411.itemsCount = 10
+            analyseResults(list);
         });
     } else {
         if (query !== '') {
             $('#loading').show();
             $('#search').hide();
             var s = query.replace(/ /g, '+');
-
             var link = "http://www.t411.io/torrents/search/?search=" + s + "&description=&file=&user=&cat=210&subcat=&page=" + page+"&order="+options.orderBy+"&type=desc";
             var videos = {};
             $.get(link).done(function(res) {
                 var list = $('table.results tbody tr', res).get();
                 if (list.length === 0) {
                     $('#loading').hide();
-                    $("#search_results p").empty().append(_("No results found..."));
+                    if(t411.totalItems == 0) {
+                        $("#search_results p").empty().append(_("No results found..."));
+                    }
                     $("#search").show();
                     $("#pagination").hide();
                     return;
@@ -331,7 +328,11 @@ t411.search = function(query, options) {
                     t411.itemsCount += list.length;
                     analyseResults(list);
                 } catch (err) {
-                    console.log(err)
+                    if(t411.totalItems == 0) {
+                      t411.totalItems = $('.results tr', res).length -2;
+                    }
+                    t411.itemsCount += list.length;
+                    analyseResults(list);
                 }
             });
         } else {
@@ -391,6 +392,8 @@ function analyseResults(list) {
         }
     });
     $('#loading').hide();
+    $('#search_results p').empty().append(_("%s results founds", t411.totalItems)).show();
+    $('#search').show();
     if (t411.searchType === 'navigation') {
         if (t411.currentPage - 1 == 1) {
             t411.topArray = arr;
@@ -432,9 +435,11 @@ t411.loadMore = function() {
             t411.lazyStart += 10;
             t411.itemsCount += 10
             appendVideos(list);
-        },1000);
+        },2000);
     } else {
-        t411.gui.changePage();
+        setTimeout(function() {
+            t411.gui.changePage();
+        },2000);
     }
 }
 
@@ -480,20 +485,22 @@ function appendVideos(list) {
             $('#' + video.id + ' .preload_t411_torrent').attr('data', encodeURIComponent(JSON.stringify(video)));
             $('#' + video.id + ' .coverPlayImg').attr('data', encodeURIComponent(JSON.stringify(video)));
             $('#' + video.id).show();
+            if (t411.searchType === 'navigation') {
+                if ($('#items_container ul li').length == t411.lazyStart) {
+                    setTimeout(function() {
+                        t411.pageLoading = false;
+                    },2000);
+                    $("#search_results").empty().append('<p>' + _("showing %s results on 100 (scroll to show more...)", t411.lazyStart) + '</p>').show();
+                    $('#search').show();
+                }
+            } else {
+                if ($('#items_container ul li').length == t411.itemsCount) {
+                    setTimeout(function() {
+                        t411.pageLoading = false;
+                    },3000);
+                }
+            }
         });
-        if (t411.searchType === 'navigation') {
-            if ($('#items_container ul li').length == t411.lazyStart) {
-                t411.pageLoading = false;
-                $("#search_results").empty().append('<p>' + _("showing %s results on 100 (scroll to show more...)", t411.lazyStart) + '</p>').show();
-                $('#search').show();
-            }
-        } else {
-            if ($('#items_container ul li').length == t411.itemsCount) {
-                t411.pageLoading = false;
-                $('#search_results p').empty().append(_("%s results founds", t411.totalItems)).show();
-                $('#search').show();
-            }
-        }
     });
 }
 
