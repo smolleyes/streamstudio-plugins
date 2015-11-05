@@ -46,7 +46,7 @@ cpb.init = function(gui,ht5) {
 				<img src="'+obj.cover+'" /> \
 				<p style="margin-top:10px;font-weight:bold;">'+obj.synopsis+'</p> \
 			</div>';
-		cpb.gui.showPopup(html,'body')
+		cpb.gui.showPopup(html,'body');
 });
 
 $(ht5.document).off('mouseenter','#cpb_cont .list-row');
@@ -169,6 +169,7 @@ cpb.categoriesLoaded = true;
 
 // search videos
 cpb.search = function (query, options,gui) {
+	$("#search_results p").empty()
 	cpb.gui = gui;
 	cpb.pageLoading = true;
 	var page;
@@ -192,27 +193,20 @@ cpb.search = function (query, options,gui) {
 
 	if(options.searchType === "search") {
 		if(options.orderBy ==="date_asc") {
-			url='http://www.cpasbien.pw/recherche/'+query+'/page-'+page+',trie-date-a';
+			url='http://www.cpasbien.io/recherche/'+query+'/page-'+page+',trie-date-a';
 		} else if(options.orderBy ==="date_desc") {
-			url='http://www.cpasbien.pw/recherche/'+query+'/page-'+page+',trie-date-d';
+			url='http://www.cpasbien.io/recherche/'+query+'/page-'+page+',trie-date-d';
 		} else {
-			url='http://www.cpasbien.pw/recherche/'+query+'/page-'+page+',trie-'+options.orderBy+'-d';
+			url='http://www.cpasbien.io/recherche/'+query+'/page-'+page+',trie-'+options.orderBy+'-d';
 		}
 	} else {
-		url='http://www.cpasbien.pw/view_cat.php?categorie='+options.category+'&page='+page+'';
+		url='http://www.cpasbien.io/view_cat.php?categorie='+options.category+'&page='+page+'';
 	}
 	$.get(url,function(data) {
-		var mlist=$('#centre div',data).get();
-		var list = [];
-		Iterator.iterate(mlist).forEach(function (item,i) {
-			if($(item).hasClass('ligne0') || $(item).hasClass('ligne1')){
-				list.push(item);
-			}
-		});
-		// add new items to total items count for lazy loading
+		var list=$('.ligne0,.ligne1',data).get();
 		cpb.itemsCount += list.length;
 
-		if(mlist.length == 0) {
+		if(cpb.itemsCount == 0) {
 			$('#loading').hide();
 			$("#search_results p").empty().append(_("No results found..."));
 			$("#search").show();
@@ -220,25 +214,19 @@ cpb.search = function (query, options,gui) {
 			return;
 		}
 
-		try {
-			var pagesCount  = parseInt($('#pagination',data).find('a:last').prev().text());
-			if(isNaN(pagesCount) && cpb.itemsCount == 0) {
+		var pagesCount  = parseInt($('#pagination',data).find('a:last').prev().text());
+		if(isNaN(pagesCount) && cpb.itemsCount == 0) {
 				$('#loading').hide();
 				$("#search_results p").empty().append(_("No results found..."));
 				$("#search").show();
 				$("#pagination").hide();
 				return;
-			} else if (cpb.itemsCount < 30){
+		} else if (cpb.itemsCount < 30){
 				cpb.totalItems = cpb.itemsCount;
-			} else {
+		} else {
 				cpb.totalItems = pagesCount * 30;
-			}
-			analyseResults(list);
-		} catch(err) {
-			cpb.totalItems = list.length;
-			cpb.totalPages = 1;
-			analyseResults(list);
 		}
+		analyseResults(list);
 	});
 }
 
@@ -267,7 +255,7 @@ function analyseResults(list) {
 		video.isSerie = video.title.toLowerCase().match(/(.*)(s\d{1,3}e\d{1,3}|s\d{1,3}|saison \d{1,3})/) !== null ? true : false;
 		video.isFavorite = false;
 		video.favId = null;
-      	if(video.isSerie) {
+    if(video.isSerie) {
         	video.serieName = video.title.toLowerCase().match(/(.*)(s\d{1,3}|saison \d{1,3})/)[1].replace(/\(.*\)/,'').replace('-','').trim();
 			Iterator.iterate(favList).forEach(function (item,index) {
 				var re = new RegExp(item.query, 'g');
@@ -290,6 +278,16 @@ function analyseResults(list) {
 			appendVideo(video);
 		}
 	});
+	$('#loading').hide();
+	$('#search_results p').empty()
+	$('#search').show();
+	var type = category !== 'series' ? 'movies' : 'chapters';
+	var ctype = _(type)
+	if(searchType === 'navigation') {
+		$('#search_results p').empty().append(_("%s availables %s", cpb.totalItems,ctype)).show();
+	} else {
+		$('#search_results p').empty().append(_("%s results founds", cpb.totalItems)).show();
+	}
 }
  
 function* checkDb(video) {
@@ -339,28 +337,20 @@ function appendVideo(video) {
 			//store img
 			video.cover = img;
 			//store description and torrent link
-			video.torrent = 'http://www.cpasbien.pw'+$("a#telecharger",res).attr('href');
+			video.torrent = 'http://www.cpasbien.io'+$("a#telecharger",res).attr('href');
 			video.synopsis = $('#textefiche p',res).last().text();
 			//save in data
 			$('#'+video.id+' .preload_cpb_torrent').attr('data',encodeURIComponent(JSON.stringify(video)));
 			$('#'+video.id+' .coverPlayImg').attr('data',encodeURIComponent(JSON.stringify(video)));
-		});
-		if($('#items_container ul li').length === cpb.itemsCount) {
-			$('#loading').hide();
-			var type = category !== 'series' ? 'movies' : 'chapters';
-			if(searchType === 'navigation') {
-				var type = category !== 'series' ? 'movies' : 'chapters'
-				$('#search_results p').empty().append(_("%s availables %s", cpb.totalItems,_(type))).show();
-				$('#search').show();
-			} else {
-				$('#search_results p').empty().append(_("%s results founds", cpb.totalItems,_(type))).show();
-				$('#search').show();
+
+			if($('#items_container .cpbthumb:visible').length === cpb.itemsCount) {
+				cpb.pageLoading = false;
 			}
-			cpb.pageLoading = false;
-		}
+		});
 }
 
 cpb.loadMore = function() {
+	$('#search_results p').empty()
 	cpb.pageLoading = true;
 	cpb.gui.changePage();
 }

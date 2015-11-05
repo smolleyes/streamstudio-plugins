@@ -302,7 +302,7 @@ t411.search = function(query, options) {
                 return;
             }
             t411.totalItems = 100;
-            t411.itemsCount = 10
+            t411.itemsCount = 10;
             analyseResults(list);
         });
     } else {
@@ -326,7 +326,6 @@ t411.search = function(query, options) {
                 try {
                     t411.totalItems = parseInt($('.pagebar a', res).last().prev().text().split('-')[1].trim());
                     t411.itemsCount += list.length;
-                    t411.pageLoading = false;
                     analyseResults(list);
                 } catch (err) {
                     if(t411.totalItems == 0) {
@@ -393,7 +392,6 @@ function analyseResults(list) {
         }
     });
     $('#loading').hide();
-    $('#search_results p').empty().append(_("%s results founds", t411.totalItems)).show();
     $('#search').show();
     if (t411.searchType === 'navigation') {
         if (t411.currentPage - 1 == 1) {
@@ -403,6 +401,7 @@ function analyseResults(list) {
             appendVideos(list);
         }
     } else {
+        $('#search_results p').empty().append(_("%s results founds", t411.totalItems)).show();
         appendVideos(arr);
     }
 }
@@ -431,77 +430,73 @@ t411.loadMore = function() {
     var list;
     t411.pageLoading = true;
     if (t411.searchType === 'navigation') {
-        setTimeout(function() {
             list = t411.topArray.slice(t411.lazyStart, t411.lazyStart + 10);
             t411.lazyStart += 10;
-            t411.itemsCount += 10
+            t411.itemsCount += 10;
             appendVideos(list);
-        },2000);
     } else {
-        setTimeout(function() {
-            t411.gui.changePage();
-        },2000);
+        t411.gui.changePage();
     }
 }
 
 function appendVideos(list) {
     // load videos in the playlist
     $.each(list, function(index, video) {
-        video.id = ((Math.random() * 1e6) | 0);
-        if (video.title.length > 45) {
-            text = video.title.substring(0, 45) + '...';
-        } else {
-            text = video.title;
-        }
-        var html = '<li id="' + video.id + '" class="list-row" style="margin:0;padding:0;display:none;"> \
-    <span class="optionsTop" style="display:none;"></span> \
-    <div id="optionsTopInfos" style="display:none;"> \
-    <span style="' + video.css + '" title="' + video.viewedTitle + '"><i class="glyphicon glyphicon-eye-open"></i></span> \
-    <span><i class="glyphicon glyphicon-cloud-upload"></i>' + video.seeders + '</span> \
-    <span style="float:right;"><i class="glyphicon glyphicon-hdd"></i>' + video.size + '</span> \
-    </div> \
-    <div class="mvthumb"> \
-    <img class="t411thumb" style="float:left;" /> \
-    </div> \
-    <div> \
-      <img class="coverPlayImg preload_t411Play_torrent" style="display:none;" data="" /> \
-    </div> \
-    <span class="optionsBottom" style="display:none;"></span> \
-    <div id="optionsBottomInfos" style="display:none;"> \
-      <span><i class="glyphicon ' + video.quality + '"></i>' + video.hd + '</span> \
-      <span style="float:right;"><a href="#" class="preload_t411_torrent" data=""><i class="glyphicon glyphicon-info-sign"></i></a></span> \
-      ' + video.toggle + ' \
-    </div> \
-    <p class="coverInfosTitle" title="' + video.title + '">' + text + '</p> \
-    <div id="torrent_' + video.id + '"> \
-    </div> \
-    </li>';
-        $("#t411_cont").append(html);
-        $.get('http:' + video.link, function(res) {
-            video.synopsis = $("article,.accordion", res).html()
-            video.torrent = 'http://www.t411.in/torrents' + $('a.btn', res)[1].href.replace(/(.*?)\/torrents/, '');
-            var img = "images/T411.png";
-            video.cover = img;
-            $('#' + video.id + ' .t411thumb').attr('src', img)
-            $('#' + video.id + ' .preload_t411_torrent').attr('data', encodeURIComponent(JSON.stringify(video)));
-            $('#' + video.id + ' .coverPlayImg').attr('data', encodeURIComponent(JSON.stringify(video)));
-            $('#' + video.id).show();
-            if (t411.searchType === 'navigation') {
-                if ($('#items_container ul li').length == t411.lazyStart) {
-                    setTimeout(function() {
-                        t411.pageLoading = false;
-                    },2000);
-                    $("#search_results").empty().append('<p>' + _("showing %s results on 100 (scroll to show more...)", t411.lazyStart) + '</p>').show();
-                    $('#search').show();
-                }
+            video.id = ((Math.random() * 1e6) | 0);
+            if (video.title.length > 45) {
+                text = video.title.substring(0, 45) + '...';
             } else {
-                if ($('#items_container ul li').length == t411.itemsCount) {
-                    setTimeout(function() {
-                        t411.pageLoading = false;
-                    },3000);
-                }
+                text = video.title;
             }
-        });
+            var html = '<li id="' + video.id + '" class="list-row" style="margin:0;padding:0;display:none;"> \
+        <span class="optionsTop" style="display:none;"></span> \
+        <div id="optionsTopInfos" style="display:none;"> \
+        <span style="' + video.css + '" title="' + video.viewedTitle + '"><i class="glyphicon glyphicon-eye-open"></i></span> \
+        <span><i class="glyphicon glyphicon-cloud-upload"></i>' + video.seeders + '</span> \
+        <span style="float:right;"><i class="glyphicon glyphicon-hdd"></i>' + video.size + '</span> \
+        </div> \
+        <div class="mvthumb"> \
+        <img class="t411thumb" style="float:left;" /> \
+        </div> \
+        <div> \
+          <img class="coverPlayImg preload_t411Play_torrent" style="display:none;" data="" /> \
+        </div> \
+        <span class="optionsBottom" style="display:none;"></span> \
+        <div id="optionsBottomInfos" style="display:none;"> \
+          <span><i class="glyphicon ' + video.quality + '"></i>' + video.hd + '</span> \
+          <span style="float:right;"><a href="#" class="preload_t411_torrent" data=""><i class="glyphicon glyphicon-info-sign"></i></a></span> \
+          ' + video.toggle + ' \
+        </div> \
+        <p class="coverInfosTitle" title="' + video.title + '">' + text + '</p> \
+        <div id="torrent_' + video.id + '"> \
+        </div> \
+        </li>';
+            $("#t411_cont").append(html);
+            $.get('http:' + video.link, function(res) {
+                video.synopsis = $("article,.accordion", res).html()
+                video.torrent = 'http://www.t411.in/torrents' + $('a.btn', res)[1].href.replace(/(.*?)\/torrents/, '');
+                var img = "images/T411.png";
+                video.cover = img;
+                $('#' + video.id + ' .t411thumb').attr('src', img)
+                $('#' + video.id + ' .preload_t411_torrent').attr('data', encodeURIComponent(JSON.stringify(video)));
+                $('#' + video.id + ' .coverPlayImg').attr('data', encodeURIComponent(JSON.stringify(video)));
+                $('#' + video.id).show();
+                var count = $('#items_container .t411thumb:visible').length;
+                if (t411.searchType === 'navigation') {
+                    $("#search_results").empty().append('<p>' + _("showing %s results on 100 (scroll to show more...)", count) + '</p>').show();
+                    if (count === t411.lazyStart || count+1 === t411.lazyStart) {
+                        t411.pageLoading = false;
+                        $('#search').show();
+                        if(!$('.nano-slider').is(':visible')) {
+                            t411.loadMore();
+                        }
+                    }
+                } else {
+                    if (count === t411.itemsCount || count+1 === t411.itemsCount) {
+                        t411.pageLoading = false;
+                    }
+                }
+            });
     });
 }
 

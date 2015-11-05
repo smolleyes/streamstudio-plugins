@@ -97,7 +97,7 @@ kick.init = function(gui, ht5) {
 
     $(ht5.document).on('click', '#fbxMsg_content a', function(e) {
         e.preventDefault();
-        ht5.gui.Window.open('http://kickass.to' + $(this).attr('href').replace(/(.*)?\/\//, ''), {
+        ht5.gui.Window.open('http://kat.cr' + $(this).attr('href').replace(/(.*)?\/\//, ''), {
             "always-on-top": true,
             position: "center",
             toolbar: false,
@@ -194,9 +194,9 @@ kick.search = function(query, options, gui) {
             q: '' + query + '', //actual search term
             field: '' + options.orderBy + '', //seeders, leechers, time_add, files_count, empty for best match
             order: 'desc', //asc or desc
-            page: page, //page count, obviously
-            url: 'http://kat.cr', //changes site default url (http://kick.to)
-        }, function(e, data) {
+            page: page
+        }, function(e, res) {
+            var data = JSON.parse(res);
             if (e ||  data.total_results == 0) {
                 $('#loading').hide();
                 $("#search_results p").empty().append(_("No results found..."));
@@ -316,6 +316,9 @@ kick.play_next = function() {
 }
 
 kick.loadMore = function() {
+    if(kick.pageLoading) {
+        return;
+    }
     kick.pageLoading = true;
     kick.gui.changePage();
 }
@@ -386,7 +389,7 @@ function appendVideo(video) {
     $("#kick_cont").append(html);
     $.get(video.link, function(res) {
         try {
-            var img = 'http:' + $('.movieCover img', res).attr('src');
+            var img = 'http:' + $('.movieCover img', res).attr('src').replace("file://",'');
         } catch (err) {
             var img = "images/kick.png";
         }
@@ -395,7 +398,7 @@ function appendVideo(video) {
         }
         video.synopsis = $("#movieinfo", res).html();
         if (video.synopsis == undefined) {
-            video.synopsis = $("#tab-main", res).html().replace(/"\/img/g, '"http://kickass.to/img').replace(/"\/\//g, '"http://');
+            video.synopsis = $("#tab-main", res).html().replace(/"\/img/g, '"http://kat.cr/img').replace(/"\/\//g, '"http://').replace("file://",'');
         }
         video.synopsis += $("#desc", res).html();
         video.cover = img.replace('file:', 'http:');
