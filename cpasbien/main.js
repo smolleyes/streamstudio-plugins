@@ -170,6 +170,9 @@ cpb.categoriesLoaded = true;
 // search videos
 cpb.search = function (query, options,gui) {
 	$("#search_results p").empty()
+	if(options.searchType === "navigation" && !options.category) {
+		return;
+	}
 	cpb.gui = gui;
 	cpb.pageLoading = true;
 	var page;
@@ -202,6 +205,8 @@ cpb.search = function (query, options,gui) {
 	} else {
 		url='http://www.cpasbien.io/view_cat.php?categorie='+options.category+'&page='+page+'';
 	}
+
+	console.log(url)
 	$.get(url,function(data) {
 		var list=$('.ligne0,.ligne1',data).get();
 		cpb.itemsCount += list.length;
@@ -211,6 +216,7 @@ cpb.search = function (query, options,gui) {
 			$("#search_results p").empty().append(_("No results found..."));
 			$("#search").show();
 			$("#pagination").hide();
+			cpb.pageLoading = false;
 			return;
 		}
 
@@ -220,12 +226,14 @@ cpb.search = function (query, options,gui) {
 				$("#search_results p").empty().append(_("No results found..."));
 				$("#search").show();
 				$("#pagination").hide();
+				cpb.pageLoading = false;
 				return;
 		} else if (cpb.itemsCount < 30){
 				cpb.totalItems = cpb.itemsCount;
 		} else {
 				cpb.totalItems = pagesCount * 30;
 		}
+		console.log(cpb.totalItems)
 		analyseResults(list);
 	});
 }
@@ -283,6 +291,10 @@ function analyseResults(list) {
 	$('#search').show();
 	var type = category !== 'series' ? 'movies' : 'chapters';
 	var ctype = _(type)
+	if(isNaN(cpb.totalItems)) {
+		cpb.pageLoading = false;
+		return;
+	}
 	if(searchType === 'navigation') {
 		$('#search_results p').empty().append(_("%s availables %s", cpb.totalItems,ctype)).show();
 	} else {
