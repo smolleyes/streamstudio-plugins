@@ -101,7 +101,7 @@ tpb.init = function(gui,ht5) {
         e.preventDefault();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         console.log(obj)
-        tpb.gui.getAuthTorrent(decodeURIComponent(obj.magnet),true,false, obj.cover);
+        tpb.gui.getTorrent(decodeURIComponent(obj.magnet), obj.cover);
         $('#playerToggle')[0].click();
     });
     
