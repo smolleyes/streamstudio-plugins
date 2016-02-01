@@ -45,6 +45,10 @@ shoutcast.init = function(gui,ht5) {
 	$(ht5.document).on('click','.load_station',function(e){
 		e.preventDefault();
 		var station = JSON.parse(decodeURIComponent($(this).attr("data")));
+		shoutcast.gui.stopIceTimer()
+		shoutcast.gui.cleanffar();
+		shoutcast.gui.initPlayer();
+		shoutcast.gui.playFromIcecast = false;
 		if (station.listen_url) {
 			$("#search_results p").empty().append(_("Playing %s station",station.stream_name))
 			shoutcast.gui.iceCastStation = station.stream_name
