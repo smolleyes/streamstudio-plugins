@@ -44,5 +44,7 @@
 	"Add to favorites": "Ajouter aux favories",
 	"Already in your favorites": "Déjà dans vos favories",
 	"t411.io connexion problem ! :  Invalid username or password...": "t411.io problème de connexion ! :  Mauvais utilisateur ou mot de passe...",
-	"t411.in connexion ok !": "t411.in connexion ok !"
+	"t411.in connexion ok !": "t411.in connexion ok !",
+	"t411.in Tracker ON-LINE !": "t411.in Tracker OK !",
+	"t411.in Tracker DOWN" : "t411.in Tracker indisponible !"
 }

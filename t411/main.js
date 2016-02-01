@@ -113,6 +113,39 @@ t411.init = function(gui, ht5, notif) {
                 $("#search_results").empty().append('<p>' + _("t411 engine loaded successfully...") + '</p>');
                 //t411.loadMenus();
                 t411.initialized = true;
+
+                $.get('http://irc.t411.in/ip/index.php',function(res) {
+                    var state = $($(res).find('tr:contains("tracker")').find('th')[2]).text()
+                    console.log(state)
+                    if(state == "ON-LINE") {
+                        t411.notif({
+                            title: 'StreamStudio:',
+                            cls: 'green',
+                            icon: '&#10003;',
+                            content: _("t411.in Tracker ON-LINE !"),
+                            btnId: '',
+                            btnTitle: '',
+                            btnColor: '',
+                            btnDisplay: 'none',
+                            updateDisplay: 'none'
+                        });
+                    } else {
+                        t411.notif({
+                            title: 'StreamStudio:',
+                            cls: 'red',
+                            icon: '&#59256;',
+                            content: _("t411.in Tracker DOWN !"),
+                            btnId: '',
+                            btnTitle: '',
+                            btnColor: '',
+                            btnDisplay: 'none',
+                            updateDisplay: 'none',
+                            timeout: 0
+                        });
+                    }
+                })
+
+                
             } else {
                 t411.notif({
                     title: 'StreamStudio:',
@@ -125,6 +158,7 @@ t411.init = function(gui, ht5, notif) {
                     btnDisplay: 'none',
                     updateDisplay: 'none'
                 });
+
                 $('#search').show();
                 $("#search_results").empty().append('<p>' + _("t411 engine loaded successfully...") + '</p>');
                 t411.initialized = true;
