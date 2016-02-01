@@ -48,7 +48,6 @@ shoutcast.init = function(gui,ht5) {
 		shoutcast.gui.stopIceTimer()
 		shoutcast.gui.cleanffar();
 		shoutcast.gui.initPlayer();
-		shoutcast.gui.playFromIcecast = false;
 		if (station.listen_url) {
 			$("#search_results p").empty().append(_("Playing %s station",station.stream_name))
 			shoutcast.gui.iceCastStation = station.stream_name
@@ -394,7 +393,6 @@ shoutcast.parseShoutCastM3u = function() {
 };
 
 shoutcast.playShoutCast = function(stream) {
-  shoutcast.gui.playFromIcecast=true
   var t={}
   t.link=stream;
   t.title=shoutcast.gui.iceCastStation || '';
