@@ -356,8 +356,8 @@ shoutcast.load_stations = function(stations) {
 			<div id="optionsTopInfos" style="display:none;"> \
 			<span><i class="glyphicon glyphicon-music"></i>'+_("Total listeners: ")+station.Listeners+'</span> \
 			</div> \
-			<div class="mvthumb_small"> \
-				<img src="images/shoutcast.jpg" /> \
+			<div class="mvthumb_small" style="background:white;"> \
+				<img src="images/SHOUTcast_logo.svg" style="padding: 0 5px;" /> \
 			</div> \
 			<div> \
 				<img class="coverPlayImg load_station" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(station))+'" /> \
