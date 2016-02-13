@@ -290,11 +290,13 @@ function loadEngine() {
     }
 
     // menus needed by the module and menu(s) loaded by default
-    t411.menuEntries = ["searchTypes", "orderBy"];
-    t411.defaultMenus = ["searchTypes", "orderBy"];
+    t411.menuEntries = ["searchTypes", "searchFilters","orderBy"];
+    t411.defaultMenus = ["searchTypes", "searchFilters","orderBy"];
     // searchTypes menus and default entry
     t411.searchTypes = JSON.parse('{"' + _("Search") + '":"search","' + _("Top 100") + '":"navigation"}');
     t411.defaultSearchType = 'search';
+    t411.searchFilters = JSON.parse('{"'+_("Videos")+'":"210","'+_("Audio")+'":"395","'+_("xXx")+'":"456"}');
+    t411.defaultSearchFilter = "videos";
     // orderBy filters and default entry
     t411.orderBy_filters = JSON.parse('{"' + _("Date") + '":"added","' + _("Seeds") + '":"seeders","' + _("Size") + '":"size"}');
     t411.defaultOrderBy = 'added';
@@ -344,7 +346,7 @@ t411.search = function(query, options) {
             $('#loading').show();
             $('#search').hide();
             var s = query.replace(/ /g, '+');
-            var link = "http://www.t411.in/torrents/search/?search=" + s + "&description=&file=&user=&cat=210&subcat=&page=" + page+"&order="+options.orderBy+"&type=desc";
+            var link = "http://www.t411.in/torrents/search/?search=" + s + "&description=&file=&user=&cat="+options.searchFilter+"&subcat=&page=" + page+"&order="+options.orderBy+"&type=desc";
             var videos = {};
             $.get(link).done(function(res) {
                 var list = $('table.results tbody tr', res).get();
