@@ -69,23 +69,28 @@ tProject.init = function(gui,ht5) {
 		tProject.gui.activeItem($(this).closest('.list-row').find('.coverInfosTitle'));
 		var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
 		var link = obj.link;
-		var id = obj.id;
-		saveTorrent = false;
-		var html = '<div style="width:100%;height:100%;position:relative;top:0;left:0;'+obj.background+'"></div><div style="position: absolute;top: 50%;left: 50%;width: 500px;height: 500px;margin-top: -250px;margin-left: -250px;background: rgba(32, 32, 32, 0.63);border-radius: 3px;"><h3>'+obj.title+'</h3><br><img style="width:180;height:240px;" src="images/TorrentProjectAPI.jpg" /><br><br> \
-		<button type="button" id="tpj_play_'+id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" class="closePopup play_tpj_torrent btn btn-success"> \
-	    	<span class="glyphicon glyphicon-play-circle"><span class="fbxMsg_glyphText">'+_("Start playing")+'</span></span> \
-	    </button>  \
-	    <button type="button" class="closePopup download_tProjectFile downloadText btn btn-info" href="'+obj.link+'" id="tpj_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'">  \
-	    	<span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span>  \
-	    	</span>  \
-	    </button>';
+    var id = obj.id;
+    $.get(link,function(res) {
+      obj.torrent = $('.download_torrent',res).next().attr('href');
+      obj.magnet = $('.download_magnet',res).next().attr('href');
+      console.log(obj)
+      saveTorrent = false;
+      var html = '<div style="width:100%;height:100%;position:relative;top:0;left:0;'+obj.background+'"></div><div style="position: absolute;top: 50%;left: 50%;width: 500px;height: 500px;margin-top: -250px;margin-left: -250px;background: rgba(32, 32, 32, 0.63);border-radius: 3px;"><h3>'+obj.title+'</h3><br><img style="width:180;height:240px;" src="images/TorrentProjectAPI.jpg" /><br><br> \
+      <button type="button" id="tpj_play_'+id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" class="closePopup play_tpj_torrent btn btn-success"> \
+          <span class="glyphicon glyphicon-play-circle"><span class="fbxMsg_glyphText">'+_("Start playing")+'</span></span> \
+        </button>  \
+        <button type="button" class="closePopup download_tProjectFile downloadText btn btn-info" href="'+obj.link+'" id="tpj_downlink_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'">  \
+          <span class="glyphicon glyphicon-download"><span class="fbxMsg_glyphText">'+_("Download")+'</span>  \
+          </span>  \
+        </button>';
 
-		if(tProject.gui.freeboxAvailable) {
-			html += '<button type="button"  href="'+obj.link+'" class="closePopup download_tProjectFile_fbx downloadText btn btn-info" id="tpj_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>';
-		}
-		html += '<br/><br/><div><label>'+_("Keep torrent file after downloading ?")+'</label><input style="position:relative;left:10px;" type="checkbox" class="saveTorrentCheck" name="saveTorrentCheck"></input></div></div>';
-		// show
-		tProject.gui.showPopup(html,'body')
+      if(tProject.gui.freeboxAvailable) {
+        html += '<button type="button"  href="'+obj.link+'" class="closePopup download_tProjectFile_fbx downloadText btn btn-info" id="tpj_downlinkFbx_'+obj.id+'" data="'+encodeURIComponent(JSON.stringify(obj))+'" title="'+ _("Download")+'"><span class="glyphicon glyphicon-download-alt"><span class="fbxMsg_glyphText">'+_("Télécharger avec freebox")+'</span></span></button>';
+      }
+      html += '<br/><br/><div><label>'+_("Keep torrent file after downloading ?")+'</label><input style="position:relative;left:10px;" type="checkbox" class="saveTorrentCheck" name="saveTorrentCheck"></input></div></div>';
+      // show
+      tProject.gui.showPopup(html,'body')
+    })
 	});
 
 	$(ht5.document).off('click','.play_tpj_torrent');
@@ -93,7 +98,7 @@ tProject.init = function(gui,ht5) {
 	    e.preventDefault();
 	    var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
       console.log(obj)
-	    tProject.gui.getAuthTorrent(obj.link,true,false);
+	    tProject.gui.getAuthTorrent(obj.magnet,true,false,null);
 	    tProject.gui.itemTitle = obj.title;
 	    $('#playerToggle')[0].click();
 	});
@@ -103,7 +108,7 @@ tProject.init = function(gui,ht5) {
 	    e.preventDefault();
 	    console.log('download torrent clicked')
 	    var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
-	    tProject.gui.getAuthTorrent(obj.link,false,false);
+	    tProject.gui.getAuthTorrent(obj.magnet,false,false,null);
 	});
 
 	$(ht5.document).off('click','.download_tProjectFile_fbx');
@@ -111,7 +116,7 @@ tProject.init = function(gui,ht5) {
 	    e.preventDefault();
 	    console.log('download torrent clicked')
 	    var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
-	    tProject.gui.getAuthTorrent(obj.link,false,true);
+	    tProject.gui.getAuthTorrent(obj.magnet,false,true,null);
 	});
 }
 
@@ -188,11 +193,7 @@ tProject.search = function (query, options,gui) {
       $.map(l,function(item,i) {
         var obj = {}
         obj.title = $(item).find('a').attr('title')
-        if(searchType == "search" ){
-          obj.link = 'https://torrentproject.se/torrent/'+$(item).find('a').attr('href').match(/.se\/(.*?)\//)[1].toUpperCase()+'.torrent';
-        } else {
-          obj.link = 'https://torcache.net/torrent/'+$(item).find('a').attr('href').match(/.se\/(.*?)\//)[1].toUpperCase()+'.torrent';
-        }
+        obj.link = $(item).find('a').attr('href');
         obj.seeds = $(item).find('.seeders span').text()
         obj.leechs = $(item).find('.leechers span').text()
         obj.date = $(item).find('.cated').text().trim()
