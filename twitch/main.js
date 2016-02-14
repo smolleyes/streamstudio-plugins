@@ -2,7 +2,7 @@
  **************************************************************/
 
 var twitch = {};
-twitch.engine_name = 'twitch';
+twitch.engine_name = 'Twitch';
 var TwitchTv = require('../node_modules/twitchtv/lib/twitch'),
     tw = new TwitchTv;
 twitch.type = "video";

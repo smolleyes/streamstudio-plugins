@@ -2,7 +2,7 @@
  **************************************************************/
 
 var kick = {};
-kick.engine_name = 'kickass';
+kick.engine_name = 'Kickass';
 var kick_eng = require('kickass-torrent');
 kick.type = "video";
 kick.totalPages = 0;
