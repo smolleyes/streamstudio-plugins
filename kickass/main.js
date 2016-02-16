@@ -388,14 +388,7 @@ function appendVideo(video) {
 		</li>';
     $("#kick_cont").append(html);
     $.get(video.link, function(res) {
-        try {
-            var img = 'http:' + $('.movieCover img', res).attr('src').replace("file://",'');
-        } catch (err) {
-            var img = "images/kick.png";
-        }
-        if (img === "http:undefined") {
-            var img = "images/kick.png";
-        }
+        var img = "images/kick.png";
         video.synopsis = $("#movieinfo", res).html();
         if (video.synopsis == undefined) {
             video.synopsis = $("#tab-main", res).html().replace(/"\/img/g, '"http://kat.cr/img').replace(/"\/\//g, '"http://').replace("file://",'');
