@@ -2,7 +2,7 @@
 **************************************************************/
 
 var tProject = {};
-tProject.engine_name = 'tproject';
+tProject.engine_name = 'Torrent-project';
 tProject.type="video";
 tProject.totalPages = 0;
 tProject.currentPage = 0;
