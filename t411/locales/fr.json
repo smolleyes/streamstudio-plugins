@@ -48,5 +48,7 @@
 	"t411.in Tracker ON-LINE !": "t411.in Tracker OK !",
 	"t411.in Tracker DOWN": "t411.in Tracker indisponible !",
 	"Audio": "Audio",
-	"xXx": "xXx"
+	"xXx": "xXx",
+	"Select a filter" : "Sélectionnez un filtre",
+	"All categories" : "Toutes catégories"
 }

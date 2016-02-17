@@ -295,11 +295,11 @@ function loadEngine() {
     // searchTypes menus and default entry
     t411.searchTypes = JSON.parse('{"' + _("Search") + '":"search","' + _("Top 100") + '":"navigation"}');
     t411.defaultSearchType = 'search';
-    t411.searchFilters = JSON.parse('{"'+_("Videos")+'":"210","'+_("Audio")+'":"395","'+_("xXx")+'":"456"}');
-    t411.defaultSearchFilter = "videos";
+    t411.searchFilters = JSON.parse('{"' + _("All categories") + '":"","'+_("Videos")+'":"210","'+_("Audio")+'":"395","'+_("xXx")+'":"456"}');
+    t411.defaultSearchFilter = "";
     // orderBy filters and default entry
-    t411.orderBy_filters = JSON.parse('{"' + _("Date") + '":"added","' + _("Seeds") + '":"seeders","' + _("Size") + '":"size"}');
-    t411.defaultOrderBy = 'added';
+    t411.orderBy_filters = JSON.parse('{"' + _("Select a filter") + '":"","' + _("Date") + '":"added","' + _("Seeds") + '":"seeders","' + _("Size") + '":"size"}');
+    t411.defaultOrderBy = '';
 }
 
 
