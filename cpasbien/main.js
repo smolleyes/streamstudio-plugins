@@ -196,14 +196,14 @@ cpb.search = function (query, options,gui) {
 
 	if(options.searchType === "search") {
 		if(options.orderBy ==="date_asc") {
-			url='http://www.cpasbien.io/recherche/'+query+'/page-'+page+',trie-date-a';
+			url='http://www.cpasbien.cm/recherche/'+query+'/page-'+page+',trie-date-a';
 		} else if(options.orderBy ==="date_desc") {
-			url='http://www.cpasbien.io/recherche/'+query+'/page-'+page+',trie-date-d';
+			url='http://www.cpasbien.cm/recherche/'+query+'/page-'+page+',trie-date-d';
 		} else {
-			url='http://www.cpasbien.io/recherche/'+query+'/page-'+page+',trie-'+options.orderBy+'-d';
+			url='http://www.cpasbien.cm/recherche/'+query+'/page-'+page+',trie-'+options.orderBy+'-d';
 		}
 	} else {
-		url='http://www.cpasbien.io/view_cat.php?categorie='+options.category+'&page='+page+'';
+		url='http://www.cpasbien.cm/view_cat.php?categorie='+options.category+'&page='+page+'';
 	}
 
 	console.log(url)
@@ -349,7 +349,7 @@ function appendVideo(video) {
 			//store img
 			video.cover = img;
 			//store description and torrent link
-			video.torrent = 'http://www.cpasbien.io'+$("a#telecharger",res).attr('href');
+			video.torrent = 'http://www.cpasbien.cm'+$("a#telecharger",res).attr('href');
 			video.synopsis = $('#textefiche p',res).last().text();
 			//save in data
 			$('#'+video.id+' .preload_cpb_torrent').attr('data',encodeURIComponent(JSON.stringify(video)));
