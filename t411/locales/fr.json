@@ -51,5 +51,8 @@
 	"xXx": "xXx",
 	"Select a filter": "Sélectionnez un filtre",
 	"All categories": "Toutes catégories",
-	"t411.ch connexion ok !": "t411.ch connexion ok !"
+	"t411.ch connexion ok !": "t411.ch connexion ok !",
+	"t411.ch Tracker ON-LINE !": "t411.ch Tracker ON-LINE !",
+	"%s results found for your search %s": "%s results found for your search %s",
+	"Total listeners: ": "Total listeners: "
 }

@@ -27,6 +27,12 @@ var searchType = 'navigation';
 
 // init module
 tProject.init = function(gui,ht5) {
+	if(!ht5.tseWin) {
+		gui.Window.open('https://torrentproject.se', {
+  		show:false
+		});
+		ht5.tseWin = true;
+	}
 	$('#pagination').hide();
     $('#search').hide();
     tProject.gui = ht5;
@@ -193,14 +199,14 @@ tProject.search = function (query, options,gui) {
       $.map(l,function(item,i) {
         var obj = {}
         obj.title = $(item).find('a').attr('title')
-        obj.link = $(item).find('a').attr('href');
+        obj.link = 'https://torrentproject.se/'+$(item).find('a').attr('href');
         obj.seeds = $(item).find('.seeders span').text()
         obj.leechs = $(item).find('.leechers span').text()
         obj.date = $(item).find('.cated').text().trim()
         obj.type = $(item).find('.cate').text()
         obj.size = $(item).find('.torrent-size').text().trim()
         list.push(obj)
-      }); 
+      });
       if(list.length === 0 || $('.message.erreur',data).length > 0) {
           $('#loading').hide();
           $("#search_results p").empty().append(_("No results found..."));
@@ -229,7 +235,7 @@ tProject.search = function (query, options,gui) {
 }
 
 function analyseResults(list) {
-	Iterator.iterate(list).forEach(function (item) { 
+	Iterator.iterate(list).forEach(function (item) {
     appendVideo(item);
   });
   $('#loading').hide();
