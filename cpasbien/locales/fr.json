@@ -38,5 +38,6 @@
 	"Date descending": "Date descendant",
 	"Keep torrent file after downloading ?": "Conserver les fichiers après téléchargement ?",
 	"Add to favorites": "Add to favorites",
-	"Already in your favorites": "Already in your favorites"
+	"Already in your favorites": "Already in your favorites",
+	"No results found for your query %s": "No results found for your query %s"
 }

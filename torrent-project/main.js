@@ -28,7 +28,7 @@ var searchType = 'navigation';
 // init module
 tProject.init = function(gui,ht5) {
 	if(!ht5.tseWin) {
-		gui.Window.open('https://torrentproject.se', {
+			ht5.tseWindow = gui.Window.open('https://torrentproject.se', {
   		show:false
 		});
 		ht5.tseWin = true;
