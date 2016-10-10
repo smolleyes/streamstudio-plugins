@@ -28,11 +28,25 @@ var searchType = 'navigation';
 // init module
 tProject.init = function(gui,ht5) {
 	if(!ht5.tseWin) {
+      $('#video_search_query').attr('disabled',true)
 			ht5.tseWindow = gui.Window.open('https://torrentproject.se', {
   		show:false
 		});
+      ht5.tseWindow.on('loaded',function() {
+        $('#video_search_query').attr('disabled',false)
+      })
 		ht5.tseWin = true;
-	}
+	} else {
+    ht5.tseWindow.close()
+     $('#video_search_query').attr('disabled',true)
+    ht5.tseWindow = gui.Window.open('https://torrentproject.se', {
+      show:false
+    });
+    ht5.tseWindow.on('loaded',function() {
+        $('#video_search_query').attr('disabled',false)
+      })
+  }
+
 	$('#pagination').hide();
     $('#search').hide();
     tProject.gui = ht5;
