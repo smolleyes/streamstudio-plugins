@@ -1,0 +1,21 @@
+{
+	"Search": "Search",
+	"Navigation": "Navigation",
+	"Date": "Date",
+	"Seeds": "Seeds",
+	"Movies": "Movies",
+	"Series": "Series",
+	"<p>Cpasbien %s section</p>": "<p>Cpasbien %s section</p>",
+	"<p>Cpasbien %s category</p>": "<p>Cpasbien %s category</p>",
+	"Loading videos...": "Loading videos...",
+	"No results found...": "No results found...",
+	"Download": "Download",
+	"Télécharger avec freebox": "Télécharger avec freebox",
+	"Top 100": "Top 100",
+	"Size": "Size",
+	"Please login to the website with the Always connected option checked then close the window to continue... !": "Please login to the website with the Always connected option checked then close the window to continue... !",
+	"Ok": "Ok",
+	"t411 engine loaded successfully...": "t411 engine loaded successfully...",
+	"t411.io connexion ok !": "t411.io connexion ok !",
+	"t411.io connexion problem ! :  Invalid username or password...": "t411.io connexion problem ! :  Invalid username or password..."
+}
