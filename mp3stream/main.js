@@ -305,19 +305,19 @@ mp3stream.loadLayout = function() {
 	$('#items_container').empty().append(`
 		<div class="col-lg-12" id="mp3stream_cont">
 			<div class="row" style="margin-left: 0px;">
-				<div class="col-lg-3 mp3col">
+				<div class="col-xs-3 col-lg-3 mp3col">
 					<h5>${_("Artists")}</h5>
 					<div id="artists">
 						<ul></ul>
 					</div>
 				</div>
-				<div class="col-lg-3 mp3col">
+				<div class="col-xs-3 col-lg-3 mp3col">
 				  <h5>${_("Albums")}</h5>
 					<div id="albums">
 						<ul></ul>
 					</div>
 				</div>
-				<div class="col-lg-6 mp3col">
+				<div class="col-xs-6 col-lg-6 mp3col">
 					<h5>${_("Playlist")}</h5>
 					<div id="songs">
 						<ul></ul>
