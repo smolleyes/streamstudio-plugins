@@ -177,11 +177,11 @@ cpb.search = function (query, options,gui) {
 	cpb.pageLoading = true;
 	var page;
 	try {
-		page = options.currentPage - 1;
+		page = parseInt(options.currentPage) - 1;
 	} catch(err) {
 		page = 0;
 		cpb.gui.current_page = 0;
-	}	
+	}
 	if(page == 0) {
 		$('#items_container').empty().append('<ul id="cpb_cont" class="list"></ul>').show();
 		cpb.itemsCount = 0;
@@ -189,7 +189,7 @@ cpb.search = function (query, options,gui) {
 	cpb.gui.current_page += 1;
 	// plugin page must match gui current page for lazy loading
 	cpb.currentPage = cpb.gui.current_page;
-	
+
 	var query = query.replace(/ /g,'-');
 	var url;
 	var videos = {};
@@ -203,7 +203,7 @@ cpb.search = function (query, options,gui) {
 			url='http://www.cpasbien.cm/recherche/'+query+'/page-'+page+',trie-'+options.orderBy+'-d';
 		}
 	} else {
-		url='http://www.cpasbien.cm/view_cat.php?categorie='+options.category+'&page='+page+'';
+		url='http://www.cpasbien.cm/view_cat.php?categorie='+options.category+'&page='+page;
 	}
 
 	console.log(url)
@@ -301,7 +301,7 @@ function analyseResults(list) {
 		$('#search_results p').empty().append(_("%s results founds", cpb.totalItems)).show();
 	}
 }
- 
+
 function* checkDb(video) {
 	try {
 		yield cpb.gui.sdb.find({"title":video.title});
@@ -309,7 +309,7 @@ function* checkDb(video) {
 		return err;
 	}
 }
- 
+
 function appendVideo(video) {
 	    var res = video.html;
 		var img = $("#bigcover img",res).attr('src');
