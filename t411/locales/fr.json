@@ -28,7 +28,7 @@
 	"Télécharger avec freebox": "Télécharger avec freebox",
 	"Browse": "Browse",
 	"Searching mode...": "Mode recherche...",
-	"t411 engine loaded successfully...": "Moteur t411 chargé avec succès...",
+	"t411 engine loaded successfully...": "Moteur t411.liargé avec succès...",
 	"Please login to the website with the Always connected option checked then close the window to continue... !": "Connectez vous ou enregistrez un compte sur la page suivante en COCHANT \"rester connecté\" puis fermez la fenêtre, cliquez Ok pour continuer",
 	"Ok": "Ok",
 	"Top 100": "Top 100",
@@ -51,8 +51,8 @@
 	"xXx": "xXx",
 	"Select a filter": "Sélectionnez un filtre",
 	"All categories": "Toutes catégories",
-	"t411.ch connexion ok !": "t411.ch connexion ok !",
-	"t411.ch Tracker ON-LINE !": "t411.ch Tracker ON-LINE !",
+	"t411.li connexion ok !": "t411.li connexion ok !",
+	"t411.li Tracker ON-LINE !": "t411.li Tracker ON-LINE !",
 	"%s results found for your search %s": "%s results found for your search %s",
 	"Total listeners: ": "Total listeners: "
 }
