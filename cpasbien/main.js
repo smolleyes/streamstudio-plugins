@@ -382,6 +382,9 @@ cpb.play_next = function() {
 
 cpb.search_type_changed = function() {
 	cpb.gui.current_page = 1;
+	if(cpb.pageLoading) {
+		return;
+	}
 	$('#items_container').empty();
 	searchType = $("#searchTypes_select a.active").attr("data-value");
 	category = $("#categories_select a.active").attr("data-value");
