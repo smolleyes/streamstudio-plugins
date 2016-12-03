@@ -383,6 +383,11 @@ cpb.play_next = function() {
 cpb.search_type_changed = function() {
 	cpb.gui.current_page = 1;
 	if(cpb.pageLoading) {
+		if (searchType === 'navigation') {
+			$('#video_search_query').prop('disabled', true);
+		} else {
+			$('#video_search_query').prop('disabled', false);
+		}
 		return;
 	}
 	$('#items_container').empty();

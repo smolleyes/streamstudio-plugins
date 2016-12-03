@@ -265,7 +265,7 @@ function analyseResults(list) {
 		});
 		Iterator.iterate(list).forEach(function (item,index) {
 			var video = {};
-			video.link = 'http://www.torrent9.biz'+$(item).find('a')[0].href.replace('file://','');
+			video.link = 'http://www.torrent9.biz'+$(item).find('a')[0].href.replace(/.*?torrent/,'/torrent')
 			video.title = $($(item).find('a')[0]).text();
 			video.quality = video.title.match(/720|1080/) !== null ? 'glyphicon-hd-video' : 'glyphicon-sd-video';
 			video.hd = video.title.match(/720/) !== null ? '720p' : video.title.match(/1080/) !== null ? '1080p' : '';
@@ -403,6 +403,11 @@ tw9.play_next = function() {
 
 tw9.search_type_changed = function() {
 	if(tw9.pageLoading) {
+		if (searchType === 'navigation') {
+			$('#video_search_query').prop('disabled', true);
+		} else {
+			$('#video_search_query').prop('disabled', false);
+		}
 		return;
 	}
 	tw9.gui.current_page = 1;
