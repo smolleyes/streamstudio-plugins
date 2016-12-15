@@ -23,13 +23,15 @@ var browser_mode= false;
 mp3stream.current_station_id = '';
 
 // init module
-mp3stream.init = function(gui,ht5) {
-    mp3stream.gui = ht5;
+mp3stream.init = function(gui,win,doc) {
+	  $('#pagination',doc).hide();
+    $=win.$
+    mp3stream.gui = win;
     loadEngine();
     $("#loading p").empty().append(_("Loading stations..."));
     //play videos
-    $(ht5.document).off('click','.load_genre');
-    $(ht5.document).on('click','.load_genre',function(e){
+    $(doc).off('click','.load_genre');
+    $(doc).on('click','.load_genre',function(e){
 		e.preventDefault();
 		$('#loading').show();
 		$("#loading p").empty().append(_("Loading stations..."));
@@ -37,8 +39,8 @@ mp3stream.init = function(gui,ht5) {
 		$('#items_container').empty().hide();
 	});
 
-	$(ht5.document).off('click','.mp3-artist-row');
-	$(ht5.document).on('click','.mp3-artist-row',function(e){
+	$(doc).off('click','.mp3-artist-row');
+	$(doc).on('click','.mp3-artist-row',function(e){
 		e.preventDefault();
 		$('#loading').show();
 		$("#search").hide();
@@ -48,8 +50,8 @@ mp3stream.init = function(gui,ht5) {
 		mp3stream.load_artist_albums(artist);
 	});
 
- $(ht5.document).off('click','.mp3-album-row');
-	$(ht5.document).on('click','.mp3-album-row',function(e){
+ $(doc).off('click','.mp3-album-row');
+	$(doc).on('click','.mp3-album-row',function(e){
 		e.preventDefault();
 		$('#loading').show();
 		$("#search").hide();
@@ -59,16 +61,16 @@ mp3stream.init = function(gui,ht5) {
 		mp3stream.load_album_songs(album);
 	});
 
-	$(ht5.document).off('click','.mp3-song-row');
-	$(ht5.document).on('click','.mp3-song-row',function(e){
+	$(doc).off('click','.mp3-song-row');
+	$(doc).on('click','.mp3-song-row',function(e){
 		e.preventDefault();
 		var song = JSON.parse(decodeURIComponent($(this).attr("data")));
 		$("#loading p").empty().append(_("Loading song %s...",song.title));
 		mp3stream.gui.player.playTrackId(song.id)
 	});
 
-	$(ht5.document).off('click','.download_sgFile');
-	$(ht5.document).on('click','.download_sgFile',function(e){
+	$(doc).off('click','.download_sgFile');
+	$(doc).on('click','.download_sgFile',function(e){
 		e.preventDefault();
 		var song = JSON.parse(decodeURIComponent($(this).attr("data")));
 			var title = song.title+'.mp3';
@@ -76,8 +78,8 @@ mp3stream.init = function(gui,ht5) {
 			mp3stream.gui.downloadFile(song.link,title,id,false);
 	});
 
-	$(ht5.document).off('mouseenter','#mp3stream_cont .list-row_small');
-	$(ht5.document).on('mouseenter','#mp3stream_cont .list-row_small',function(e){
+	$(doc).off('mouseenter','#mp3stream_cont .list-row_small');
+	$(doc).on('mouseenter','#mp3stream_cont .list-row_small',function(e){
 		var self = $(this);
 		if($(this).find('.optionsTop').is(':hidden')) {
 			setTimeout(function() {
@@ -89,8 +91,8 @@ mp3stream.init = function(gui,ht5) {
 		}
 	});
 
-	$(ht5.document).off('mouseleave','#mp3stream_cont .list-row_small');
-	$(ht5.document).on('mouseleave','#mp3stream_cont .list-row_small',function(e){
+	$(doc).off('mouseleave','#mp3stream_cont .list-row_small');
+	$(doc).on('mouseleave','#mp3stream_cont .list-row_small',function(e){
 		if($(this).find('.optionsTop').is(':visible')) {
 			$(this).find('.optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos').fadeOut("fast");
 			$(this).find('.coverPlayImg').fadeOut("fast");

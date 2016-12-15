@@ -26,13 +26,14 @@ var Iterator = require('iterator').Iterator;
 var searchType = 'navigation';
 
 // init module
-tw9.init = function(gui,ht5) {
-	$('#pagination').hide();
-	tw9.gui = ht5;
+tw9.init = function(gui,win,doc) {
+	$('#pagination',doc).hide();
+  $=win.$
+	tw9.gui = win;
 	loadEngine();
     //play videos
-    $(ht5.document).off('click','.preload_tw9_torrent');
-    $(ht5.document).on('click','.preload_tw9_torrent',function(e){
+    $(doc).off('click','.preload_tw9_torrent');
+    $(doc).on('click','.preload_tw9_torrent',function(e){
     	e.preventDefault();
     	var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
     	var link = obj.link;
@@ -49,8 +50,8 @@ tw9.init = function(gui,ht5) {
 		tw9.gui.showPopup(html,'body');
 });
 
-$(ht5.document).off('mouseenter','#tw9_cont .list-row');
-$(ht5.document).on('mouseenter','#tw9_cont .list-row',function(e){
+$(doc).off('mouseenter','#tw9_cont .list-row');
+$(doc).on('mouseenter','#tw9_cont .list-row',function(e){
 	var self = $(this);
 	if($(this).find('.optionsTop').is(':hidden')) {
 		setTimeout(function() {
@@ -62,16 +63,16 @@ $(ht5.document).on('mouseenter','#tw9_cont .list-row',function(e){
 	}
 });
 
-$(ht5.document).off('mouseleave','#tw9_cont .list-row');
-$(ht5.document).on('mouseleave','#tw9_cont .list-row',function(e){
+$(doc).off('mouseleave','#tw9_cont .list-row');
+$(doc).on('mouseleave','#tw9_cont .list-row',function(e){
 	if($(this).find('.optionsTop').is(':visible')) {
 		$(this).find('.optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos').fadeOut("fast");
 		$(this).find('.coverPlayImg').fadeOut("fast");
 	}
 });
 
-$(ht5.document).off('click','.preload_tw9Play_torrent');
-$(ht5.document).on('click','.preload_tw9Play_torrent',function(e){
+$(doc).off('click','.preload_tw9Play_torrent');
+$(doc).on('click','.preload_tw9Play_torrent',function(e){
 	e.preventDefault();
 	tw9.gui.saveTorrent = false;
   tw9.gui.torrentSaved = false;
@@ -97,8 +98,8 @@ $(ht5.document).on('click','.preload_tw9Play_torrent',function(e){
 	tw9.gui.showPopup(html,'body')
 });
 
-$(ht5.document).off('click','.play_tw9_torrent');
-$(ht5.document).on('click','.play_tw9_torrent',function(e){
+$(doc).off('click','.play_tw9_torrent');
+$(doc).on('click','.play_tw9_torrent',function(e){
 	e.preventDefault();
 	var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
 	tw9.gui.getTorrent(obj.torrent,obj.cover);
@@ -106,22 +107,22 @@ $(ht5.document).on('click','.play_tw9_torrent',function(e){
 	$('#playerToggle')[0].click();
 });
 
-$(ht5.document).off('click','.download_tw9_torrentFile');
-$(ht5.document).on('click','.download_tw9_torrentFile',function(e){
+$(doc).off('click','.download_tw9_torrentFile');
+$(doc).on('click','.download_tw9_torrentFile',function(e){
 	e.preventDefault();
 	var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
 	tw9.gui.getAuthTorrent(obj.torrent,false,false);
 });
 
-$(ht5.document).off('click','.download_tw9_torrentFile_fbx');
-$(ht5.document).on('click','.download_tw9_torrentFile_fbx',function(e){
+$(doc).off('click','.download_tw9_torrentFile_fbx');
+$(doc).on('click','.download_tw9_torrentFile_fbx',function(e){
 	e.preventDefault();
 	var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
 	tw9.gui.getAuthTorrent(obj.torrent,false,true);
 });
 
-$(ht5.document).off('click','.addToFavorites');
-$(ht5.document).on('click','.addToFavorites',function(e){
+$(doc).off('click','.addToFavorites');
+$(doc).on('click','.addToFavorites',function(e){
 	e.preventDefault();
 	$(this).removeClass('addToFavorites');
 	$(this).attr('title',_("Already in your favorites"));
@@ -349,7 +350,7 @@ function appendVideo(video) {
 		<img class="tw9thumb" style="float:left;" /> \
 		</div> \
 		<div> \
-			<img class="coverPlayImg preload_tw9Play_torrent" style="display:none;" data="" /> \
+			<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg preload_tw9Play_torrent" style="display:none;" data="" /> \
 		</div> \
 		<span class="optionsBottom" style="display:none;"></span> \
 		<div id="optionsBottomInfos" style="display:none;"> \
@@ -378,6 +379,7 @@ function appendVideo(video) {
 
 			if($('#items_container .tw9thumb:visible').length === tw9.itemsCount) {
 				tw9.pageLoading = false;
+				tw9.gui.updateScroller();
 			}
 		});
 }
