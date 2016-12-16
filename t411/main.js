@@ -498,7 +498,7 @@ function appendVideos(list) {
         <img class="t411thumb" style="float:left;" /> \
         </div> \
         <div> \
-          <img class="coverPlayImg preload_t411Play_torrent" style="display:none;" data="" /> \
+          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg preload_t411Play_torrent" style="display:none;" data="" /> \
         </div> \
         <span class="optionsBottom" style="display:none;"></span> \
         <div id="optionsBottomInfos" style="display:none;"> \
