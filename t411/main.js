@@ -24,10 +24,12 @@ var Iterator = require('iterator').Iterator;
 var t411_win;
 var videos_responses = new Array();
 
-t411.init = function(gui, ht5, notif) {
+t411.init = function(gui, win, doc) {
+    $('#pagination',doc).hide();
+    $=win.$
     t411.mainWin = gui;
-    t411.gui = ht5;
-    t411.notif = notif;
+    t411.gui = win;
+    t411.notif = $.notif;
     t411.page;
     t411.ignore_section = false;
 
@@ -145,7 +147,7 @@ t411.init = function(gui, ht5, notif) {
                     }
                 })
 
-                
+
             } else {
                 t411.notif({
                     title: 'StreamStudio:',
@@ -168,9 +170,10 @@ t411.init = function(gui, ht5, notif) {
 
     // load engine
     loadEngine();
+    t411.gui.updateScroller();
     //play videos
-    $(ht5.document).off('click', '.preload_t411_torrent');
-    $(ht5.document).on('click', '.preload_t411_torrent', function(e) {
+    $(doc).off('click', '.preload_t411_torrent');
+    $(doc).on('click', '.preload_t411_torrent', function(e) {
         e.preventDefault();
         t411.gui.initPlayer();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
@@ -181,8 +184,8 @@ t411.init = function(gui, ht5, notif) {
         t411.gui.showPopup(obj.synopsis, 'body', changeCss)
     });
 
-    $(ht5.document).off('mouseenter', '#t411_cont .list-row');
-    $(ht5.document).on('mouseenter', '#t411_cont .list-row', function(e) {
+    $(doc).off('mouseenter', '#t411_cont .list-row');
+    $(doc).on('mouseenter', '#t411_cont .list-row', function(e) {
         var self = $(this);
         if ($(this).find('.optionsTop').is(':hidden')) {
             setTimeout(function() {
@@ -194,16 +197,16 @@ t411.init = function(gui, ht5, notif) {
         }
     });
 
-    $(ht5.document).off('mouseleave', '#t411_cont .list-row');
-    $(ht5.document).on('mouseleave', '#t411_cont .list-row', function(e) {
+    $(doc).off('mouseleave', '#t411_cont .list-row');
+    $(doc).on('mouseleave', '#t411_cont .list-row', function(e) {
         if ($(this).find('.optionsTop').is(':visible')) {
             $(this).find('.optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos').fadeOut("fast");
             $(this).find('.coverPlayImg').fadeOut("fast");
         }
     });
 
-    $(ht5.document).off('click', '.preload_t411Play_torrent');
-    $(ht5.document).on('click', '.preload_t411Play_torrent', function(e) {
+    $(doc).off('click', '.preload_t411Play_torrent');
+    $(doc).on('click', '.preload_t411Play_torrent', function(e) {
         e.preventDefault();
         t411.gui.saveTorrent = false;
         t411.gui.torrentSaved = false;
@@ -229,8 +232,8 @@ t411.init = function(gui, ht5, notif) {
         t411.gui.showPopup(html, 'body')
     });
 
-    $(ht5.document).off('click', '.play_t411_torrent');
-    $(ht5.document).on('click', '.play_t411_torrent', function(e) {
+    $(doc).off('click', '.play_t411_torrent');
+    $(doc).on('click', '.play_t411_torrent', function(e) {
         e.preventDefault();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         t411.gui.getAuthTorrent(obj.torrent, true, false, obj.cover);
@@ -238,24 +241,24 @@ t411.init = function(gui, ht5, notif) {
         $('#playerToggle')[0].click();
     });
 
-    $(ht5.document).off('click', '.download_t411_torrentFile');
-    $(ht5.document).on('click', '.download_t411_torrentFile', function(e) {
+    $(doc).off('click', '.download_t411_torrentFile');
+    $(doc).on('click', '.download_t411_torrentFile', function(e) {
         e.preventDefault();
         console.log('download torrent clicked')
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         t411.gui.getAuthTorrent(obj.torrent, false, false);
     });
 
-    $(ht5.document).off('click', '.download_t411_torrentFile_fbx');
-    $(ht5.document).on('click', '.download_t411_torrentFile_fbx', function(e) {
+    $(doc).off('click', '.download_t411_torrentFile_fbx');
+    $(doc).on('click', '.download_t411_torrentFile_fbx', function(e) {
         e.preventDefault();
         console.log('download torrent clicked')
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         t411.gui.getAuthTorrent(obj.torrent, false, true);
     });
 
-    $(ht5.document).off('click', '.addToFavorites');
-    $(ht5.document).on('click', '.addToFavorites', function(e) {
+    $(doc).off('click', '.addToFavorites');
+    $(doc).on('click', '.addToFavorites', function(e) {
         e.preventDefault();
         $(this).removeClass('addToFavorites');
         $(this).attr('title', _("Already in your favorites"));
@@ -520,8 +523,10 @@ function appendVideos(list) {
                 var count = $('#items_container .t411thumb:visible').length;
                 if (t411.searchType === 'navigation') {
                     $("#search_results").empty().append('<p>' + _("showing %s results on 100 (scroll to show more...)", count) + '</p>').show();
+                    t411.gui.updateScroller();
                     if (count === t411.lazyStart || count+1 === t411.lazyStart) {
                         t411.pageLoading = false;
+                        t411.gui.updateScroller();
                         $('#search').show();
                         if(!$('.nano-slider').is(':visible')) {
                             t411.loadMore();
@@ -530,6 +535,7 @@ function appendVideos(list) {
                 } else {
                     if (count === t411.itemsCount || count+1 === t411.itemsCount) {
                         t411.pageLoading = false;
+                        t411.gui.updateScroller();
                     }
                 }
             });
