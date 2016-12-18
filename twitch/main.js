@@ -2,7 +2,7 @@
  **************************************************************/
 
 var twitch = {};
-twitch.engine_name = 'Twitch';
+twitch.engine_name = 'twitch';
 var TwitchTv = require('../node_modules/twitchtv/lib/twitch'),
     tw = new TwitchTv;
 twitch.type = "video";
@@ -30,13 +30,14 @@ var Iterator = require('iterator').Iterator;
 var searchType = 'search';
 
 // init module
-twitch.init = function(gui, ht5) {
+twitch.init = function(gui, ht5,doc) {
     $('#pagination').hide();
-    twitch.gui = ht5;
+    $=win.s
+    twitch.gui = win;
     loadEngine();
     //play videos
-    $(ht5.document).off('click', '.preload_twitch_torrent');
-    $(ht5.document).on('click', '.preload_twitch_torrent', function(e) {
+    $(doc).off('click', '.preload_twitch_torrent');
+    $(doc).on('click', '.preload_twitch_torrent', function(e) {
         e.preventDefault();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         var link = obj.link;
@@ -73,7 +74,7 @@ twitch.init = function(gui, ht5) {
         })
     });
 
-    $(ht5.document).on('click', '#fbxMsg_content a', function(e) {
+    $(doc).on('click', '#fbxMsg_content a', function(e) {
         e.preventDefault();
         ht5.gui.Window.open('http://twitch.so' + $(this).attr('href').replace(/(.*)?\/\//, ''), {
             "always-on-top": true,
@@ -84,8 +85,8 @@ twitch.init = function(gui, ht5) {
         });
     })
 
-    $(ht5.document).off('click', '.play_twitch_torrent');
-    $(ht5.document).on('click', '.play_twitch_torrent', function(e) {
+    $(doc).off('click', '.play_twitch_torrent');
+    $(doc).on('click', '.play_twitch_torrent', function(e) {
         e.preventDefault();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         twitch.gui.getTorrent(obj.torrent);
@@ -93,24 +94,24 @@ twitch.init = function(gui, ht5) {
         $('#playerToggle')[0].click();
     });
 
-    $(ht5.document).off('click', '.download_twitch_torrentFile');
-    $(ht5.document).on('click', '.download_twitch_torrentFile', function(e) {
+    $(doc).off('click', '.download_twitch_torrentFile');
+    $(doc).on('click', '.download_twitch_torrentFile', function(e) {
         e.preventDefault();
         console.log('download torrent clicked')
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         twitch.gui.getAuthTorrent(obj.torrent, false, false)
     });
 
-    $(ht5.document).off('click', '.download_twitch_torrentFile_fbx');
-    $(ht5.document).on('click', '.download_twitch_torrentFile_fbx', function(e) {
+    $(doc).off('click', '.download_twitch_torrentFile_fbx');
+    $(doc).on('click', '.download_twitch_torrentFile_fbx', function(e) {
         e.preventDefault();
         console.log('download torrent clicked')
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         twitch.gui.getAuthTorrent(obj.torrent, false, true)
     });
 
-    $(ht5.document).off('click', '.showGamesChannels');
-    $(ht5.document).on('click', '.showGamesChannels', function(e) {
+    $(doc).off('click', '.showGamesChannels');
+    $(doc).on('click', '.showGamesChannels', function(e) {
         e.preventDefault();
         twitch.channelBrowsing = true;
         twitch.gui.current_page == 1;
@@ -120,8 +121,8 @@ twitch.init = function(gui, ht5) {
         twitch.loadGameChannels(obj.title.replace(' ', '+'));
     });
 
-    $(ht5.document).off('mouseenter', '#twitch_cont .list-row');
-    $(ht5.document).on('mouseenter', '#twitch_cont .list-row', function(e) {
+    $(doc).off('mouseenter', '#twitch_cont .list-row');
+    $(doc).on('mouseenter', '#twitch_cont .list-row', function(e) {
         var self = $(this);
         if ($(this).find('.optionsTop').is(':hidden')) {
             setTimeout(function() {
@@ -133,16 +134,16 @@ twitch.init = function(gui, ht5) {
         }
     });
 
-    $(ht5.document).off('mouseleave', '#twitch_cont .list-row');
-    $(ht5.document).on('mouseleave', '#twitch_cont .list-row', function(e) {
+    $(doc).off('mouseleave', '#twitch_cont .list-row');
+    $(doc).on('mouseleave', '#twitch_cont .list-row', function(e) {
         if ($(this).find('.optionsTop').is(':visible')) {
             $(this).find('.optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos').fadeOut("fast");
             $(this).find('.coverPlayImg').fadeOut("fast");
         }
     });
 
-    $(ht5.document).off('click', '.getChannelstreams');
-    $(ht5.document).on('click', '.getChannelstreams', function(e) {
+    $(doc).off('click', '.getChannelstreams');
+    $(doc).on('click', '.getChannelstreams', function(e) {
         e.preventDefault();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         obj.id = $(this).closest('.list-row').find('ul').attr('id');
@@ -184,8 +185,8 @@ twitch.init = function(gui, ht5) {
         });
     });
 
-    $(ht5.document).off('click', '.playChannel');
-    $(ht5.document).on('click', '.playChannel', function(e) {
+    $(doc).off('click', '.playChannel');
+    $(doc).on('click', '.playChannel', function(e) {
         e.preventDefault();
         twitch.gui.ffmpegLive = false;
         var obj = $(this).attr("data").split('::');
@@ -246,7 +247,7 @@ twitch.search = function(query, options, gui) {
     var videos = {};
     var offset = page * 20;
     if (options.searchType === "search") {
-        $.getJSON('http://' + twitch.gui.ipaddress + ':8081/?link=https://api.twitch.tv/kraken/search/streams?limit=20&offset=' + offset + '&q=' + query.replace(' ', '+'), function(data) {
+        $.getJSON('http://' + twitch.gui.ipaddress + ':8081/?link=https://api.twitch.tv/kraken/search/streams?limit=20&client_id=etzhxu868r53vbzh76wwd0o3fogdwn&offset=' + offset + '&q=' + query.replace(' ', '+'), function(data) {
             if (data._total == 0 || data.streams.length == 0) {
                 $('#loading').hide();
                 $("#search_results p").empty().append(_("No results found..."));
@@ -279,7 +280,7 @@ twitch.search = function(query, options, gui) {
         if (category === 'games') {
             if (!twitch.channelBrowsing) {
                 twitch.gui.current_page == 1;
-                twitch.next = "https://api.twitch.tv/kraken/games/top?limit=10&offset=0";
+                twitch.next = "https://api.twitch.tv/kraken/games/top?limit=10&offset=0&client_id=etzhxu868r53vbzh76wwd0o3fogdwn";
                 $('#items_container').empty().append('<ul id="twitch_cont" class="list" style="margin:0;"></ul>').show();
                 twitch.loadGamesPage();
             }
@@ -330,7 +331,7 @@ twitch.parseGamesPage = function(data) {
 // load game channels
 twitch.loadGameChannels = function(name) {
     twitch.gui.current_page == 1;
-    twitch.next = 'https://api.twitch.tv/kraken/streams?broadcaster_language=&game=' + name + '&limit=20&offset=0';
+    twitch.next = 'https://api.twitch.tv/kraken/streams?broadcaster_language=&game=' + name + '&limit=20&offset=0&client_id=etzhxu868r53vbzh76wwd0o3fogdwn';
     twitch.loadGameChannelsPage();
 }
 
@@ -463,21 +464,21 @@ twitch.search_type_changed = function() {
             twitch.itemsCount = 0;
             twitch.channelBrowsing = false;
             twitch.gui.current_page == 1;
-            twitch.next = "https://api.twitch.tv/kraken/games/top?limit=10&offset=0";
+            twitch.next = "https://api.twitch.tv/kraken/games/top?limit=10&offset=0&client_id=etzhxu868r53vbzh76wwd0o3fogdwn";
             $('#items_container').empty().append('<ul id="twitch_cont" class="list" style="margin:0;"></ul>').show();
             twitch.loadGamesPage();
         } else if (category === 'featured') {
             twitch.itemsCount = 0;
             twitch.channelBrowsing = false;
             twitch.gui.current_page == 1;
-            twitch.next = "https://api.twitch.tv/kraken/streams/featured?limit=30&offset=0";
+            twitch.next = "https://api.twitch.tv/kraken/streams/featured?limit=30&offset=0&client_id=etzhxu868r53vbzh76wwd0o3fogdwn";
             $('#items_container').empty().append('<ul id="twitch_cont" class="list" style="margin:0;"></ul>').show();
             twitch.loadGameChannelsPage();
         } else if (category === 'channels') {
             twitch.itemsCount = 0;
             twitch.channelBrowsing = false;
             twitch.gui.current_page == 1;
-            twitch.next = "https://api.twitch.tv/kraken/streams?limit=20&offset=0";
+            twitch.next = "https://api.twitch.tv/kraken/streams?limit=20&offset=0&client_id=etzhxu868r53vbzh76wwd0o3fogdwn";
             $('#items_container').empty().append('<ul id="twitch_cont" class="list" style="margin:0;"></ul>').show();
             twitch.loadGameChannelsPage();
         }
