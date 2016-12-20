@@ -30,11 +30,11 @@ var Iterator = require('iterator').Iterator;
 var searchType = 'search';
 
 // init module
-twitch.init = function(gui, ht5,doc) {
-    $('#pagination').hide();
-    $=win.s
-    twitch.gui = win;
-    loadEngine();
+twitch.init = function(gui,win,doc,console) {
+	$('#pagination',doc).hide();
+  $=win.$
+	twitch.gui = win;
+	loadEngine();
     //play videos
     $(doc).off('click', '.preload_twitch_torrent');
     $(doc).on('click', '.preload_twitch_torrent', function(e) {
@@ -147,16 +147,19 @@ twitch.init = function(gui, ht5,doc) {
         e.preventDefault();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
         obj.id = $(this).closest('.list-row').find('ul').attr('id');
-        $('#'+obj.id).empty().append('<span style="text-align:center;font-size:12px;">'+_("Loading...")+'</span>').show();
-        var st = spawn(twitch.gui.livestreamerPath, ['--stream-url', obj.link]);
+        var path = require('path')
+        $('#'+obj.id,doc).empty().append('<span style="text-align:center;font-size:12px;">'+_("Loading...")+'</span>').show();
+        var url = 'http://www.twitch.tv/'+path.basename(obj.link)
+        var st = spawn(twitch.gui.livestreamerPath, ['--twitch-oauth-token','7r98hdtbfxnivxrgwwenr0n3sjnc3n', url]);
         var out = '';
         st.stdout.on('data', function(data) {
             out = data.toString();
+            console.log(out)
         });
         st.on('exit', function(code) {
             if (code == 0) {
                 if (out.indexOf('Available streams:') !== -1) {
-                	$('#'+obj.id).empty();
+                	$('#'+obj.id,doc).empty();
                     var list = out.replace('Available streams:', '').replace(/\(.*?\)/g, '').split(',');
                     Iterator.iterate(list).forEach(function(item) {
                         var item = item.trim();
@@ -177,10 +180,10 @@ twitch.init = function(gui, ht5,doc) {
                         btnDisplay: 'block',
                         updateDisplay: 'none'
                     })
-                    $('#'+obj.id).empty().hide;
+                    $('#'+obj.id,doc).empty().hide;
                 }
             } else {
-            	$('#'+obj.id).empty().hide;
+            	$('#'+obj.id,doc).empty().hide;
             }
         });
     });
@@ -247,7 +250,7 @@ twitch.search = function(query, options, gui) {
     var videos = {};
     var offset = page * 20;
     if (options.searchType === "search") {
-        $.getJSON('http://' + twitch.gui.ipaddress + ':8081/?link=https://api.twitch.tv/kraken/search/streams?limit=20&client_id=etzhxu868r53vbzh76wwd0o3fogdwn&offset=' + offset + '&q=' + query.replace(' ', '+'), function(data) {
+        $.getJSON('http://' + twitch.gui.ipaddress + ':8091/?link=https://api.twitch.tv/kraken/search/streams?limit=20&client_id=etzhxu868r53vbzh76wwd0o3fogdwn&offset=' + offset + '&q=' + query.replace(' ', '+'), function(data) {
             if (data._total == 0 || data.streams.length == 0) {
                 $('#loading').hide();
                 $("#search_results p").empty().append(_("No results found..."));
@@ -280,7 +283,7 @@ twitch.search = function(query, options, gui) {
         if (category === 'games') {
             if (!twitch.channelBrowsing) {
                 twitch.gui.current_page == 1;
-                twitch.next = "https://api.twitch.tv/kraken/games/top?limit=10&offset=0&client_id=etzhxu868r53vbzh76wwd0o3fogdwn";
+                twitch.next = "https://api.twitch.tv/kraken/games/top?limit=20&offset=0&client_id=etzhxu868r53vbzh76wwd0o3fogdwn";
                 $('#items_container').empty().append('<ul id="twitch_cont" class="list" style="margin:0;"></ul>').show();
                 twitch.loadGamesPage();
             }
@@ -308,7 +311,7 @@ function analyseResults(list) {
 twitch.loadGamesPage = function() {
     $('#loading').show();
     $("#search").hide();
-    $.get('http://' + twitch.gui.ipaddress + ':8081/?link=' + twitch.next.replace('http:', 'https:'), function(data) {
+    $.get('http://' + twitch.gui.ipaddress + ':8091/?link=' + twitch.next.replace('http:', 'https:')+'&client_id=etzhxu868r53vbzh76wwd0o3fogdwn', function(data) {
         twitch.parseGamesPage(data);
     })
 }
@@ -338,7 +341,7 @@ twitch.loadGameChannels = function(name) {
 twitch.loadGameChannelsPage = function() {
     $('#loading').show();
     $("#search").hide();
-    $.get('http://' + twitch.gui.ipaddress + ':8081/?link=' + twitch.next.replace('http:', 'https:'), function(data) {
+    $.get('http://' + twitch.gui.ipaddress + ':8091/?link=' + twitch.next.replace('http:', 'https:')+'&client_id=etzhxu868r53vbzh76wwd0o3fogdwn', function(data) {
         if (searchType == "navigation" && category == "featured") {
             twitch.parseFeaturedChannelsPage(data);
         } else {
@@ -422,7 +425,7 @@ function appendChannel(video) {
 		<img style="width:180px;"" src="' + video.thumbnail + '" /> \
 	</div> \
 	<div> \
-		<img class="coverPlayImg ' + video.class + '" style="display:none;margin: -65px 0 0 -100px;" data="' + encodeURIComponent(JSON.stringify(video)) + '" /> \
+		<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg ' + video.class + '" style="display:none;margin: -65px 0 0 -100px;" data="' + encodeURIComponent(JSON.stringify(video)) + '" /> \
 	</div> \
 	<span class="optionsBottom" style="display:none;bottom:30px;"></span> \
 	<div id="optionsBottomInfos" style="display:none;bottom:30px;"> \
@@ -441,6 +444,7 @@ function appendChannel(video) {
     $('#' + video.id).show();
     if ($('#items_container ul li').length === twitch.itemsCount) {
         twitch.pageLoading = false;
+        twitch.gui.updateScroller();
     }
 }
 
@@ -464,7 +468,7 @@ twitch.search_type_changed = function() {
             twitch.itemsCount = 0;
             twitch.channelBrowsing = false;
             twitch.gui.current_page == 1;
-            twitch.next = "https://api.twitch.tv/kraken/games/top?limit=10&offset=0&client_id=etzhxu868r53vbzh76wwd0o3fogdwn";
+            twitch.next = "https://api.twitch.tv/kraken/games/top?limit=20&offset=0&client_id=etzhxu868r53vbzh76wwd0o3fogdwn";
             $('#items_container').empty().append('<ul id="twitch_cont" class="list" style="margin:0;"></ul>').show();
             twitch.loadGamesPage();
         } else if (category === 'featured') {
@@ -536,7 +540,7 @@ function appendVideo(video) {
 			<img src="' + video.thumbnail + '" /> \
 		</div> \
 		<div> \
-			<img class="coverPlayImg ' + video.class + '" style="display:none;" data="' + encodeURIComponent(JSON.stringify(video)) + '" /> \
+			<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg ' + video.class + '" style="display:none;" data="' + encodeURIComponent(JSON.stringify(video)) + '" /> \
 		</div> \
 		<span class="optionsBottom" style="display:none;"></span> \
 		<div id="optionsBottomInfos" style="display:none;"> \
