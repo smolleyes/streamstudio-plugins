@@ -417,8 +417,8 @@ function appendChannel(video) {
     video.cover = video.thumbnail;
     var vid = ((Math.random() * 1e6) | 0);
     var html = '<li id="' + video.id + '" class="list-row" style="width:180px !important;height:220px;margin:0;padding:0"> \
-	<span class="optionsTop" style="display:none;"></span> \
-	<div id="optionsTopInfos" style="display:none;"> \
+	<span class="optionsTop" style="display:none;width:180px;"></span> \
+	<div id="optionsTopInfos" style="display:none;width:180px;"> \
 		<span><i class="glyphicon glyphicon-eye-open"></i>' + _("Viewers: ") + video.viewers + '</span> \
 	</div> \
 	<div class="mvthumb"> \
@@ -532,8 +532,8 @@ twitch.loadMore = function() {
 function appendVideo(video) {
     video.id = ((Math.random() * 1e6) | 0);
     var html = '<li id="' + video.id + '" class="list-row" style="margin:0;padding:0;"> \
-		<span class="optionsTop" style="display:none;"></span> \
-		<div id="optionsTopInfos" style="display:none;"> \
+		<span class="optionsTop" style="display:none;width:180px;"></span> \
+		<div id="optionsTopInfos" style="display:none;width:180px;"> \
 			<span><i class="glyphicon glyphicon-facetime-video"></i>' + _("Channels: ") + video.channels + '</span> \
 		</div> \
 		<div class="mvthumb"> \
