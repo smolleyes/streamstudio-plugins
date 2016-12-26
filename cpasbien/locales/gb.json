@@ -1,0 +1,23 @@
+{
+	"Search": "Search",
+	"Navigation": "Navigation",
+	"Date": "Date",
+	"Seeds": "Seeds",
+	"Movies": "Movies",
+	"Series": "Series",
+	"<p>Cpasbien %s section</p>": "<p>Cpasbien %s section</p>",
+	"<p>Cpasbien %s category</p>": "<p>Cpasbien %s category</p>",
+	"Loading videos...": "Loading videos...",
+	"No results found...": "No results found...",
+	"Download": "Download",
+	"Télécharger avec freebox": "Télécharger avec freebox",
+	"Size: ": "Size: ",
+	"Seeders: ": "Seeders: ",
+	"Date descending": "Date descending",
+	"Date ascending": "Date ascending",
+	"Already watched": "Already watched",
+	"movies": "movies",
+	"%s availables %s": "%s availables %s",
+	"Start playing": "Start playing",
+	"Keep torrent file after downloading ?": "Keep torrent file after downloading ?"
+}
