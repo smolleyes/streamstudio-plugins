@@ -25,13 +25,15 @@ var browser_mode= false;
 shoutcast.current_station_id = '';
 
 // init module
-shoutcast.init = function(gui,ht5) {
-    shoutcast.gui = ht5;
-    loadEngine();
+shoutcast.init = function(gui,win,doc) {
+  	$('#pagination',doc).hide();
+    $=win.$
+  	shoutcast.gui = win;
+  	loadEngine();
     $("#loading p").empty().append(_("Loading stations..."));
     //play videos
-    $(ht5.document).off('click','.load_genre');
-    $(ht5.document).on('click','.load_genre',function(e){
+    $(doc).off('click','.load_genre');
+    $(doc).on('click','.load_genre',function(e){
 		e.preventDefault();
 		$('#loading').show();
 		$("#loading p").empty().append(_("Loading stations..."));
@@ -40,9 +42,9 @@ shoutcast.init = function(gui,ht5) {
 		var station = JSON.parse(decodeURIComponent($(this).attr("data")));
 		shoutcast.load_genre_stations(station);
 	});
-	
-	$(ht5.document).off('click','.load_station');
-	$(ht5.document).on('click','.load_station',function(e){
+
+	$(doc).off('click','.load_station');
+	$(doc).on('click','.load_station',function(e){
 		e.preventDefault();
 		var station = JSON.parse(decodeURIComponent($(this).attr("data")));
 		shoutcast.gui.stopIceTimer()
@@ -59,9 +61,9 @@ shoutcast.init = function(gui,ht5) {
 			shoutcast.load_stream(station.ID);
 		}
 	});
-	
-	$(ht5.document).off('click','.load_gs_song');
-	$(ht5.document).on('click','.load_gs_song',function(e){
+
+	$(doc).off('click','.load_gs_song');
+	$(doc).on('click','.load_gs_song',function(e){
 		e.preventDefault();
 		$('.highlight').toggleClass('highlight','false');
 		var song = JSON.parse(decodeURIComponent($(this).attr("data")));
@@ -77,9 +79,9 @@ shoutcast.init = function(gui,ht5) {
 		$('.mejs-container').append('<div id="fbxMsg2"><div><img src="'+song.cover_url+' /><span>'+song.title+'</span>"</div></div>');
 		shoutcast.gui.startPlay(media);
 	});
-	
-	$(ht5.document).off('click','.download_sgFile');
-	$(ht5.document).on('click','.download_sgFile',function(e){
+
+	$(doc).off('click','.download_sgFile');
+	$(doc).on('click','.download_sgFile',function(e){
 		e.preventDefault();
 		var song = JSON.parse(decodeURIComponent($(this).attr("data")));
 			var title = song.title+'.mp3';
@@ -87,8 +89,8 @@ shoutcast.init = function(gui,ht5) {
 			shoutcast.gui.downloadFile(song.link,title,id,false);
 	});
 
-	$(ht5.document).off('mouseenter','#shoutcast_cont .list-row_small');
-	$(ht5.document).on('mouseenter','#shoutcast_cont .list-row_small',function(e){
+	$(doc).off('mouseenter','#shoutcast_cont .list-row_small');
+	$(doc).on('mouseenter','#shoutcast_cont .list-row_small',function(e){
 		var self = $(this);
 		if($(this).find('.optionsTop').is(':hidden')) {
 			setTimeout(function() {
@@ -100,8 +102,8 @@ shoutcast.init = function(gui,ht5) {
 		}
 	});
 
-	$(ht5.document).off('mouseleave','#shoutcast_cont .list-row_small');
-	$(ht5.document).on('mouseleave','#shoutcast_cont .list-row_small',function(e){
+	$(doc).off('mouseleave','#shoutcast_cont .list-row_small');
+	$(doc).on('mouseleave','#shoutcast_cont .list-row_small',function(e){
 		if($(this).find('.optionsTop').is(':visible')) {
 			$(this).find('.optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos').fadeOut("fast");
 			$(this).find('.coverPlayImg').fadeOut("fast");
@@ -182,13 +184,13 @@ shoutcast.search = function (query, options, gui){
 				$("#loading p").empty().append(_("Searching icecast for %s", query));
 				var list;
 				$.getJSON('http://api.include-once.org/xiph/cache.php',function(res) {
-					list = __.filter(res,function(station) { 
+					list = __.filter(res,function(station) {
 						return station.current_song.toLowerCase().indexOf(query) !== -1 || station.genre.toLowerCase().indexOf(query) !== -1 || station.stream_name.toLowerCase().indexOf(query) !== -1;
 					})
-					list = __.uniq(list, function(item, key, a) { 
+					list = __.uniq(list, function(item, key, a) {
 					    return item.stream_name;
 					});
-					list = __.sortBy(list, function(item, key, a) { 
+					list = __.sortBy(list, function(item, key, a) {
 					    return item.bitrate;
 					});
 					console.log(list)
@@ -276,7 +278,7 @@ shoutcast.load_genre = function(datas) {
 				<img src="images/Playlist.png"  /> \
 			</div> \
 			<div> \
-				<img class="coverPlayImg load_genre" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(genre))+'" /> \
+				<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg load_genre" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(genre))+'" /> \
 			</div> \
 			<a href="#" style="bottom:-25px;" class="coverInfosTitle load_genre" title="'+genre.name+'" data="'+encodeURIComponent(JSON.stringify(genre))+'">'+genre.name+'</a> \
 			<div id="shoutcast_item_'+genre.id+'"> \
@@ -308,7 +310,7 @@ shoutcast.load_genre_stations = function(datas) {
 				<img src="'+station.cover_url+'" /> \
 			</div> \
 			<div> \
-				<img class="coverPlayImg load_station" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(station))+'" /> \
+				<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg load_station" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(station))+'" /> \
 			</div> \
 			<a href="#" style="bottom:-25px;" class="coverInfosTitle load_station" title="'+station.name+'" data="'+encodeURIComponent(JSON.stringify(station))+'">'+station.name+'</a> \
 			<div id="shoutcast_item_'+station.id+'"> \
@@ -336,14 +338,14 @@ shoutcast.load_icecast_stations = function(stations) {
 				<img src="images/Icecast_Logo.svg" /> \
 			</div> \
 			<div> \
-				<img class="coverPlayImg load_station" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(station))+'" /> \
+				<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg load_station" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(station))+'" /> \
 			</div> \
 			<p class="coverInfosTitle" style="bottom:-35px;" title="'+station.stream_name+'">'+station.stream_name+'</p> \
 			<div id="shoutcast_item_'+id+'"> \
 			</div> \
 		</li>';
 		$("#shoutcast_cont").append(html);
-		$('#loading').hide();	
+		$('#loading').hide();
 		$("#search").show();
 		$('#items_container').show();
 	});
@@ -360,17 +362,17 @@ shoutcast.load_stations = function(stations) {
 			<span><i class="glyphicon glyphicon-music"></i>'+_("Total listeners: ")+station.Listeners+'</span> \
 			</div> \
 			<div class="mvthumb_small" style="background:white;"> \
-				<img src="images/SHOUTcast_logo.svg" style="padding: 0 5px;" /> \
+				<img src="images/shoutcast.jpg" style="padding: 0 5px;" /> \
 			</div> \
 			<div> \
-				<img class="coverPlayImg load_station" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(station))+'" /> \
+				<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg load_station" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(station))+'" /> \
 			</div> \
 			<p class="coverInfosTitle" style="bottom:-35px;" title="'+station.Name+'">'+station.Name+'</p> \
 			<div id="shoutcast_item_'+station.id+'"> \
 			</div> \
 		</li>';
 		$("#shoutcast_cont").append(html);
-		$('#loading').hide();	
+		$('#loading').hide();
 		$("#search").show();
 		$('#items_container').show();
 	});
@@ -380,7 +382,7 @@ shoutcast.load_stream = function(id) {
 	var xhr = new XMLHttpRequest();
 	console.log(shoutcast.gui, id)
   xhr.open("GET", 'http://yp.shoutcast.com/sbin/tunein-station.m3u?id='+id);
-  xhr.overrideMimeType("audio/x-mpegurl"); // Needed, see below. 
+  xhr.overrideMimeType("audio/x-mpegurl"); // Needed, see below.
   xhr.onload = shoutcast.parseShoutCastM3u;
   xhr.send();
 }
@@ -432,7 +434,7 @@ shoutcast.load_next = function(id) {
 				<img src="'+res.song.cover_url+'"/> \
 			</div> \
 			<div> \
-				<img class="coverPlayImg load_gs_song" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(res))+'" /> \
+				<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg load_gs_song" style="display:none;margin: -50px 0 0 -100px;" data="'+encodeURIComponent(JSON.stringify(res))+'" /> \
 			</div> \
 			<span class="optionsBottom" style="display:none;bottom:0;"></span> \
 			<div id="optionsBottomInfos" style="display:none;bottom:0;"> \
