@@ -53,7 +53,7 @@ shoutcast.init = function(gui,win,doc) {
 		if (station.listen_url) {
 			$("#search_results p").empty().append(_("Playing %s station",station.stream_name))
 			shoutcast.gui.iceCastStation = station.stream_name
-			shoutcast.playShoutCast(station.listen_url);
+			shoutcast.playShoutCast(station.listen_url+'/&shoutcast');
 		} else {
 			$("#search_results p").empty().append(_("Playing %s station",station.Name))
 			shoutcast.gui.iceCastStation = station.Name
@@ -69,7 +69,7 @@ shoutcast.init = function(gui,win,doc) {
 		var song = JSON.parse(decodeURIComponent($(this).attr("data")));
 		var media= {};
 		console.log(song)
-		media.link = song.listen_url+"&external";
+		media.link = song.listen_url+"&shoutcast";
 		media.type='object.item.audioItem.musicTrack';
 		song.title = song.song.artist.name +' - '+ song.song.title;
 		media.title = song.title;
@@ -396,7 +396,7 @@ shoutcast.parseShoutCastM3u = function() {
 
 shoutcast.playShoutCast = function(stream) {
   var t={}
-  t.link=stream;
+  t.link=stream+'/&shoutcast';
   t.title=shoutcast.gui.iceCastStation || '';
   shoutcast.gui.startPlay(t)
 }
@@ -448,7 +448,7 @@ shoutcast.load_next = function(id) {
 		$('#items_container').show();
 		shoutcast.gui.activeItem($('#shoutcast_item_'+res.song.id).closest('.list-row_small').find('.coverInfosTitle'));
 		var media= {};
-		media.link = res.listen_url+"&external";
+		media.link = res.listen_url+"&shoutcast";
 		media.title = res.song.artist.name +' - '+ res.song.title;
 		media.type='object.item.audioItem.musicTrack';
 		media.cover=res.song.cover_url;
