@@ -8,7 +8,7 @@ tw9.totalPages = 0;
 tw9.currentPage = 0;
 tw9.itemsCount = 0;
 tw9.pageLoading = false;
-
+tw9.init = false;
 /********************* Node modules *************************/
 
 var http = require('http');
@@ -30,7 +30,16 @@ tw9.init = function(gui,win,doc) {
 	$('#pagination',doc).hide();
   $=win.$
 	tw9.gui = win;
-	loadEngine();
+	if(!tw9.init) {
+		console.log('init tw9')
+		tw9.pageLoading = true
+		var url = "http://www.torrent9.biz"
+		fetch(url).then((res) => {
+			tw9.pageLoading = false;
+			tw9.init=true
+		})
+	}
+	tw9.loadEngine()
     //play videos
     $(doc).off('click','.preload_tw9_torrent');
     $(doc).on('click','.preload_tw9_torrent',function(e){
@@ -134,7 +143,7 @@ $(doc).on('click','.addToFavorites',function(e){
 
 }
 
-function loadEngine() {
+tw9.loadEngine = function() {
 	/********************* Configure locales *********************/
 	var localeList = ['en', 'fr'];
 	i18n.configure({

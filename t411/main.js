@@ -117,7 +117,7 @@ t411.init = function(gui, win, doc) {
                 t411.initialized = true;
 
                 $.get('http://irc.t411.li/ip/index.php',function(res) {
-                    var state = $($(res).find('tr:contains("tracker")').find('th')[2]).text()
+                    var state = $($(res).find('tr:contains("t411.download")').find('th')[2]).text()
                     console.log(state)
                     if(state == "ON-LINE") {
                         t411.notif({
