@@ -8,7 +8,8 @@ tw9.totalPages = 0;
 tw9.currentPage = 0;
 tw9.itemsCount = 0;
 tw9.pageLoading = false;
-
+tw9.protected = true;
+tw9.url = "http://www.torrent9.biz"
 /********************* Node modules *************************/
 
 var http = require('http');
@@ -28,7 +29,7 @@ var searchType = 'navigation';
 // init module
 tw9.init = function(gui,win,doc) {
 	$('#pagination',doc).hide();
-  $=win.$
+  	$=win.$
 	tw9.gui = win;
 	loadEngine();
     //play videos
@@ -285,7 +286,7 @@ function analyseResults(list) {
 				Iterator.iterate(favList).forEach(function (item,index) {
 					var re = new RegExp(item.query, 'g');
 					var re2 = new RegExp(item.serieName, 'g');
-					if(item.serieName == video.serieName || video.serieName == item.query || video.serieName.match(re) || video.serieName.match(re2)) {
+					if(item.serieName == video.serieName || video.serieName == item.query || video.serieName.match(re) || video.serieName.match(re2)) {
 						video.isFavorite = true;
 						video.favId = item.id;
 					}
