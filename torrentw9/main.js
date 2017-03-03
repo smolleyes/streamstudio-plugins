@@ -8,8 +8,14 @@ tw9.totalPages = 0;
 tw9.currentPage = 0;
 tw9.itemsCount = 0;
 tw9.pageLoading = false;
+<<<<<<< HEAD
 tw9.protected = true;
 tw9.url = "http://www.torrent9.biz"
+=======
+tw9.initialized = false;
+tw9.Win = null;
+
+>>>>>>> 854931be1810dd2bd5beb4764bd1c83720b4c5d9
 /********************* Node modules *************************/
 
 var http = require('http');
@@ -27,11 +33,22 @@ var Iterator = require('iterator').Iterator;
 var searchType = 'navigation';
 
 // init module
-tw9.init = function(gui,win,doc) {
+tw9.init = function(gui,win,doc,console) {
 	$('#pagination',doc).hide();
   	$=win.$
 	tw9.gui = win;
-	loadEngine();
+	tw9.mainWin = gui;
+	if(!tw9.initialized) {
+		tw9.Win = tw9.mainWin.Window
+		tw9.Win.open('http://www.torrent9.biz', {show:false},function(win) {
+			win.on('loaded',function() {
+				$("#searchTypes_select [data-value='navigation']",doc).addClass('active').click();
+				tw9.initialized = true;
+				win.close()
+			});
+		})
+	}
+	loadEngine()
     //play videos
     $(doc).off('click','.preload_tw9_torrent');
     $(doc).on('click','.preload_tw9_torrent',function(e){
@@ -157,7 +174,7 @@ tw9.menuEntries = ["searchTypes","orderBy","categories"];
 tw9.defaultMenus = ["searchTypes","orderBy"];
 // searchTypes menus and default entry
 tw9.searchTypes = JSON.parse('{"'+_("Search")+'":"search","'+_("Navigation")+'":"navigation"}');
-tw9.defaultSearchType = 'navigation';
+tw9.defaultSearchType = '';
 // orderBy filters and default entry
 tw9.orderBy_filters = JSON.parse('{"'+_("Date descending")+'":"trie-date-d","'+_("Date ascending")+'":"trie-date-a","'+_("Seeds descending")+'":"trie-seeds-d","'+_("Seeds ascending")+'":"trie-seeds-a"}');
 tw9.defaultOrderBy = 'trie-date-d';
