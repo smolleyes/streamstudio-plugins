@@ -8,14 +8,11 @@ tw9.totalPages = 0;
 tw9.currentPage = 0;
 tw9.itemsCount = 0;
 tw9.pageLoading = false;
-<<<<<<< HEAD
 tw9.protected = true;
 tw9.url = "http://www.torrent9.biz"
-=======
 tw9.initialized = false;
 tw9.Win = null;
 
->>>>>>> 854931be1810dd2bd5beb4764bd1c83720b4c5d9
 /********************* Node modules *************************/
 
 var http = require('http');
