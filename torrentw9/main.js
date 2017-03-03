@@ -117,7 +117,7 @@ $(doc).off('click','.play_tw9_torrent');
 $(doc).on('click','.play_tw9_torrent',function(e){
 	e.preventDefault();
 	var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
-	tw9.gui.getTorrent(obj.torrent,obj.cover);
+	tw9.gui.getAuthTorrent(obj.torrent,true,false,obj.cover);
 	tw9.gui.itemTitle = obj.title;
 	$('#playerToggle')[0].click();
 });
