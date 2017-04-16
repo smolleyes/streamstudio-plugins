@@ -39,7 +39,7 @@ t411.init = function(gui,win,doc,console) {
         $.get('https://www.t411.ai', function(res) {
             if ($('a:contains("Déconnexion")',res).length == 0) {
                 if(t411.gui.settings.t411Username && t411.gui.settings.t411Password) {
-                    $.post('httpss://www.t411.ai/users/login/',{ login: ''+t411.gui.settings.t411Username+'', password: ''+t411.gui.settings.t411Password+'', remember: 1 })
+                    $.post('https://www.t411.ai/users/login/',{ login: ''+t411.gui.settings.t411Username+'', password: ''+t411.gui.settings.t411Password+'', remember: 1 })
                     .done(function(data){
                         console.log(data,$('a:contains("Déconnexion")',data))
                         if ($('a:contains("Déconnexion")',data).length == 0) {
