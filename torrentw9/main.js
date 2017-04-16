@@ -23,6 +23,7 @@ var i18n = require("i18n");
 var fs = require('fs');
 var _ = i18n.__;
 var Iterator = require('iterator').Iterator;
+var cloudscraper = require('cloudscraper');
 
 /****************************/
 
@@ -238,7 +239,10 @@ tw9.search = function (query, options,gui) {
 		url+=',page-'+page+'&'+options.orderBy;
 	}
 
-	$.get(url,function(data) {
+	cloudscraper.get(url, function(error, response, data) {
+		if (error) {
+			console.log('Error occurred');
+		} else {
 		var list=$('.cust-table tr',data).get().slice(1)
 		tw9.itemsCount += list.length;
 
@@ -266,6 +270,7 @@ tw9.search = function (query, options,gui) {
 		}
 		console.log(tw9.totalItems)
 		analyseResults(list);
+		}
 	});
 }
 
@@ -378,7 +383,7 @@ function appendVideo(video) {
 		</div> \
 		</li>';
 		$("#tw9_cont").append(html);
-		$.get(video.link,function(res) {
+		cloudscraper.get(video.link, function(error, response, res) {
 			var img = $(".movie-img img",res).attr('src');
 			$('#'+video.id+' .tw9thumb').attr('src',img);
 			//store img

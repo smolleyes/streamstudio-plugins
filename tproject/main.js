@@ -19,6 +19,8 @@ var i18n = require("i18n");
 var fs = require('fs');
 var _ = i18n.__;
 var Iterator = require('iterator').Iterator;
+tw9.protected = true;
+tw9.url = "https://torrentproject.se"
 
 /****************************/
 
