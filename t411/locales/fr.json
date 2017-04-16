@@ -56,5 +56,6 @@
 	"%s results found for your search %s": "%s results found for your search %s",
 	"Total listeners: ": "Total listeners: ",
 	"t411.li Tracker DOWN !": "t411.li Tracker DOWN !",
-	"t411.ai connexion problem ! :  Invalid username or password...": "t411.ai connexion problem ! :  Invalid username or password..."
+	"t411.ai connexion problem ! :  Invalid username or password...": "t411.ai connexion problem ! :  Invalid username or password...",
+	"t411.ai connexion ok !": "t411.ai connexion ok !"
 }

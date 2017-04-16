@@ -11,7 +11,7 @@ t411.pageLoading = false;
 
 /********************* Node modules *************************/
 
-var http = require('http');
+var https = require('https');
 var $ = require('jquery');
 var path = require('path');
 var i18n = require("i18n");
@@ -29,18 +29,19 @@ t411.init = function(gui,win,doc,console) {
     $=win.$
     t411.mainWin = gui;
     t411.gui = win;
-    t411.notif = t411.gui.$.notif;
+    t411.notif = $.notif;
     t411.page;
     t411.ignore_section = false;
 
     if (t411.initialized === false) {
         $('#items_container').empty()
         //load page
-        $.get('http://www.t411.ai', function(res) {
+        $.get('https://www.t411.ai', function(res) {
             if ($('a:contains("Déconnexion")',res).length == 0) {
                 if(t411.gui.settings.t411Username && t411.gui.settings.t411Password) {
-                    $.post('http://www.t411.ai/users/login/',{ login: ''+t411.gui.settings.t411Username+'', password: ''+t411.gui.settings.t411Password+'', remember: 1 })
+                    $.post('httpss://www.t411.ai/users/login/',{ login: ''+t411.gui.settings.t411Username+'', password: ''+t411.gui.settings.t411Password+'', remember: 1 })
                     .done(function(data){
+                        console.log(data,$('a:contains("Déconnexion")',data))
                         if ($('a:contains("Déconnexion")',data).length == 0) {
                             t411.initialized = false;
                             t411.notif({
@@ -116,7 +117,7 @@ t411.init = function(gui,win,doc,console) {
                 //t411.loadMenus();
                 t411.initialized = true;
 
-                $.get('http://irc.t411.ai/ip/index.php',function(res) {
+                $.get('https://irc.t411.ai/ip/index.php',function(res) {
                     var state = $($(res).find('tr:contains("t411.download")').find('th')[2]).text()
                     console.log(state)
                     if(state == "ON-LINE") {
@@ -177,7 +178,7 @@ t411.init = function(gui,win,doc,console) {
         e.preventDefault();
         t411.gui.initPlayer();
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
-        var link = 'http://' + obj.link;
+        var link = 'https://' + obj.link;
         var id = obj.id;
         //$('.highlight').removeClass('highlight well');
         //$(this).closest('li').addClass('highlight well');
@@ -212,7 +213,7 @@ t411.init = function(gui,win,doc,console) {
         t411.gui.torrentSaved = false;
         t411.gui.activeItem($(this).closest('.list-row').find('.coverInfosTitle'));
         var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
-        var link = 'http://' + obj.link;
+        var link = 'https://' + obj.link;
         var id = obj.id;
         saveTorrent = false;
         var html = '<div style="width:100%;height:100%;position:relative;top:0;left:0;'+obj.background+'"></div><div style="position: absolute;top: 50%;left: 50%;width: 500px;height: 500px;margin-top: -250px;margin-left: -250px;background: rgba(32, 32, 32, 0.63);border-radius: 3px;"><h3>'+obj.title+'</h3><br><img style="width:180;height:240px;" src="'+obj.cover+'" /><br><br> \
@@ -329,7 +330,7 @@ t411.search = function(query, options) {
     t411.currentPage = t411.gui.current_page;
 
     if (t411.searchType === 'navigation') {
-        var link = "http://www.t411.ai/top/100/";
+        var link = "https://www.t411.ai/top/100/";
         var videos = {};
         $.get(link, function(res) {
             var list = $('table.results tbody tr', res).get();
@@ -349,7 +350,7 @@ t411.search = function(query, options) {
             $('#loading').show();
             $('#search').hide();
             var s = query.replace(/ /g, '+');
-            var link = "http://www.t411.ai/torrents/search/?search=" + s + "&description=&file=&user=&cat="+options.searchFilter+"&subcat=&page=" + page+"&order="+options.orderBy+"&type=desc";
+            var link = "https://www.t411.ai/torrents/search/?search=" + s + "&description=&file=&user=&cat="+options.searchFilter+"&subcat=&page=" + page+"&order="+options.orderBy+"&type=desc";
             var videos = {};
             $.get(link).done(function(res) {
                 var list = $('table.results tbody tr', res).get();
@@ -511,9 +512,9 @@ function appendVideos(list) {
         </div> \
         </li>';
             $("#t411_cont").append(html);
-            $.get('http:' + video.link, function(res) {
+            $.get('https:' + video.link, function(res) {
                 video.synopsis = $("article,.accordion", res).html()
-                video.torrent = 'http://www.t411.ai/torrents' + $('a.btn', res)[1].href.replace(/(.*?)\/torrents/, '');
+                video.torrent = 'https://www.t411.ai/torrents' + $('a.btn', res)[1].href.replace(/(.*?)\/torrents/, '');
                 var img = "images/T411.png";
                 video.cover = img;
                 $('#' + video.id + ' .t411thumb').attr('src', img)

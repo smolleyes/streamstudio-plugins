@@ -8,6 +8,10 @@ tProject.totalPages = 0;
 tProject.currentPage = 0;
 tProject.itemsCount = 0;
 tProject.pageLoading = false;
+tProject.protected = true;
+tProject.url = "https://torrentproject.se"
+tProject.initialized = false;
+tProject.Win = null;
 
 /********************* Node modules *************************/
 
@@ -26,14 +30,27 @@ var cloudscraper = require('cloudscraper');
 var searchType = 'navigation';
 
 // init module
-tProject.init = function(gui,ht5) {
-	$('#pagination').hide();
+tProject.init = function(gui,win,doc,console) {
+	$('#pagination',doc).hide();
     $('#search').hide();
     tProject.gui = ht5;
+	$=win.$
+	tProject.gui = win;
+	tProject.mainWin = gui;
+	if(!tProject.initialized) {
+		tProject.Win = tProject.mainWin.Window
+		tProject.Win.open(tProject.url, {show:false},function(win) {
+			win.on('loaded',function() {
+				$("#searchTypes_select [data-value='navigation']",doc).addClass('active').click();
+				tProject.initialized = true;
+				win.close()
+			});
+		})
+	}
     loadEngine();
     //play videos
-    $(ht5.document).off('click','.preload_tpj_torrent');
-    $(ht5.document).on('click','.preload_tpj_torrent',function(e){
+    $(doc).off('click','.preload_tpj_torrent');
+    $(doc).on('click','.preload_tpj_torrent',function(e){
       console.log($(this))
         e.preventDefault();
         //var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
@@ -42,8 +59,8 @@ tProject.init = function(gui,ht5) {
 	    tProject.gui.showPopup(obj.synopsis,'body',changeCss)
 	});
 
-	$(ht5.document).off('mouseenter','#tproject_cont .list-row');
-	$(ht5.document).on('mouseenter','#tproject_cont .list-row',function(e){
+	$(doc).off('mouseenter','#tproject_cont .list-row');
+	$(doc).on('mouseenter','#tproject_cont .list-row',function(e){
 		var self = $(this);
 		if($(this).find('.optionsTop').is(':hidden')) {
 			setTimeout(function() {
@@ -55,16 +72,16 @@ tProject.init = function(gui,ht5) {
 		}
 	});
 
-	$(ht5.document).off('mouseleave','#tproject_cont .list-row');
-	$(ht5.document).on('mouseleave','#tproject_cont .list-row',function(e){
+	$(doc).off('mouseleave','#tproject_cont .list-row');
+	$(doc).on('mouseleave','#tproject_cont .list-row',function(e){
 		if($(this).find('.optionsTop').is(':visible')) {
 			$(this).find('.optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos').fadeOut("fast");
 			$(this).find('.coverPlayImg').fadeOut("fast");
 		}
 	});
 
-	$(ht5.document).off('click','.preload_tProjectPlay_torrent');
-	$(ht5.document).on('click','.preload_tProjectPlay_torrent',function(e){
+	$(doc).off('click','.preload_tProjectPlay_torrent');
+	$(doc).on('click','.preload_tProjectPlay_torrent',function(e){
 		e.preventDefault();
 		tProject.gui.activeItem($(this).closest('.list-row').find('.coverInfosTitle'));
 		var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
@@ -93,8 +110,8 @@ tProject.init = function(gui,ht5) {
     })
 	});
 
-	$(ht5.document).off('click','.play_tpj_torrent');
-	$(ht5.document).on('click','.play_tpj_torrent',function(e){
+	$(doc).off('click','.play_tpj_torrent');
+	$(doc).on('click','.play_tpj_torrent',function(e){
 	    e.preventDefault();
 	    var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
       console.log(obj)
@@ -103,16 +120,16 @@ tProject.init = function(gui,ht5) {
 	    $('#playerToggle')[0].click();
 	});
 
-	$(ht5.document).off('click','.download_tProjectFile');
-	$(ht5.document).on('click','.download_tProjectFile',function(e){
+	$(doc).off('click','.download_tProjectFile');
+	$(doc).on('click','.download_tProjectFile',function(e){
 	    e.preventDefault();
 	    console.log('download torrent clicked')
 	    var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
 	    tProject.gui.getAuthTorrent(obj.magnet,false,false,null);
 	});
 
-	$(ht5.document).off('click','.download_tProjectFile_fbx');
-	$(ht5.document).on('click','.download_tProjectFile_fbx',function(e){
+	$(doc).off('click','.download_tProjectFile_fbx');
+	$(doc).on('click','.download_tProjectFile_fbx',function(e){
 	    e.preventDefault();
 	    console.log('download torrent clicked')
 	    var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
