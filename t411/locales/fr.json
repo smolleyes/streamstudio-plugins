@@ -55,5 +55,6 @@
 	"t411.li Tracker ON-LINE !": "t411.li Tracker ON-LINE !",
 	"%s results found for your search %s": "%s results found for your search %s",
 	"Total listeners: ": "Total listeners: ",
-	"t411.li Tracker DOWN !": "t411.li Tracker DOWN !"
+	"t411.li Tracker DOWN !": "t411.li Tracker DOWN !",
+	"t411.ai connexion problem ! :  Invalid username or password...": "t411.ai connexion problem ! :  Invalid username or password..."
 }
