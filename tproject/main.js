@@ -19,9 +19,7 @@ var i18n = require("i18n");
 var fs = require('fs');
 var _ = i18n.__;
 var Iterator = require('iterator').Iterator;
-tw9.protected = true;
-tw9.url = "https://torrentproject.se"
-
+var cloudscraper = require('cloudscraper');
 /****************************/
 
 // module global vars
@@ -189,7 +187,7 @@ tProject.search = function (query, options,gui) {
       var category = options.category;
       url='https://torrentproject.se/?hl=en&num=20&start='+page+'&filter='+options.category+'&safe=off&orderby='+options.orderBy+'&s=file%3A'+query.replace(/\s+/g,'+');
   }
-  $.when($.ajax(url)).then(function(data, textStatus, jqXHR ) {
+  cloudscraper.get(url, function(error, response, data) {
       var list = [];
       var l =$($('.torrent',data)).get();
       $.map(l,function(item,i) {

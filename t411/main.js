@@ -24,12 +24,12 @@ var Iterator = require('iterator').Iterator;
 var t411_win;
 var videos_responses = new Array();
 
-t411.init = function(gui, win, doc) {
+t411.init = function(gui,win,doc,console) {
     $('#pagination',doc).hide();
     $=win.$
     t411.mainWin = gui;
     t411.gui = win;
-    t411.notif = $.notif;
+    t411.notif = t411.gui.$.notif;
     t411.page;
     t411.ignore_section = false;
 
