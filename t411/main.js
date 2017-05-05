@@ -36,10 +36,10 @@ t411.init = function(gui,win,doc,console) {
     if (t411.initialized === false) {
         $('#items_container').empty()
         //load page
-        $.get('https://www.t411.ai', function(res) {
+        $.get('https://www.t411.al', function(res) {
             if ($('a:contains("Déconnexion")',res).length == 0) {
                 if(t411.gui.settings.t411Username && t411.gui.settings.t411Password) {
-                    $.post('https://www.t411.ai/users/login/',{ login: ''+t411.gui.settings.t411Username+'', password: ''+t411.gui.settings.t411Password+'', remember: 1 })
+                    $.post('https://www.t411.al/users/login/',{ login: ''+t411.gui.settings.t411Username+'', password: ''+t411.gui.settings.t411Password+'', remember: 1 })
                     .done(function(data){
                         console.log(data,$('a:contains("Déconnexion")',data))
                         if ($('a:contains("Déconnexion")',data).length == 0) {
@@ -48,7 +48,7 @@ t411.init = function(gui,win,doc,console) {
                                 title: 'StreamStudio:',
                                 cls: 'red',
                                 icon: '&#59256;',
-                                content: _("t411.ai connexion problem ! :  Invalid username or password..."),
+                                content: _("t411.al connexion problem ! :  Invalid username or password..."),
                                 btnId: '',
                                 btnTitle: '',
                                 btnColor: '',
@@ -62,7 +62,7 @@ t411.init = function(gui,win,doc,console) {
                                 title: 'StreamStudio:',
                                 cls: 'green',
                                 icon: '&#10003;',
-                                content: _("t411.ai connexion ok !"),
+                                content: _("t411.al connexion ok !"),
                                 btnId: '',
                                 btnTitle: '',
                                 btnColor: '',
@@ -78,7 +78,7 @@ t411.init = function(gui,win,doc,console) {
                             title: 'StreamStudio:',
                             cls: 'red',
                             icon: '&#59256;',
-                            content: _("t411.ai connexion problem ! : "+ error),
+                            content: _("t411.al connexion problem ! : "+ error),
                             btnId: '',
                             btnTitle: '',
                             btnColor: '',
@@ -105,7 +105,7 @@ t411.init = function(gui,win,doc,console) {
                     title: 'StreamStudio:',
                     cls: 'green',
                     icon: '&#10003;',
-                    content: _("t411.ai connexion ok !"),
+                    content: _("t411.al connexion ok !"),
                     btnId: '',
                     btnTitle: '',
                     btnColor: '',
@@ -117,7 +117,7 @@ t411.init = function(gui,win,doc,console) {
                 //t411.loadMenus();
                 t411.initialized = true;
 
-                $.get('https://irc.t411.ai/ip/index.php',function(res) {
+                $.get('https://irc.t411.al/ip/index.php',function(res) {
                     var state = $($(res).find('tr:contains("t411.download")').find('th')[2]).text()
                     console.log(state)
                     if(state == "ON-LINE") {
@@ -125,7 +125,7 @@ t411.init = function(gui,win,doc,console) {
                             title: 'StreamStudio:',
                             cls: 'green',
                             icon: '&#10003;',
-                            content: _("t411.ai Tracker ON-LINE !"),
+                            content: _("t411.al Tracker ON-LINE !"),
                             btnId: '',
                             btnTitle: '',
                             btnColor: '',
@@ -137,7 +137,7 @@ t411.init = function(gui,win,doc,console) {
                             title: 'StreamStudio:',
                             cls: 'red',
                             icon: '&#59256;',
-                            content: _("t411.ai Tracker DOWN !"),
+                            content: _("t411.al Tracker DOWN !"),
                             btnId: '',
                             btnTitle: '',
                             btnColor: '',
@@ -154,7 +154,7 @@ t411.init = function(gui,win,doc,console) {
                     title: 'StreamStudio:',
                     cls: 'green',
                     icon: '&#10003;',
-                    content: _("t411.ai connexion ok !"),
+                    content: _("t411.al connexion ok !"),
                     btnId: '',
                     btnTitle: '',
                     btnColor: '',
@@ -330,7 +330,7 @@ t411.search = function(query, options) {
     t411.currentPage = t411.gui.current_page;
 
     if (t411.searchType === 'navigation') {
-        var link = "https://www.t411.ai/top/100/";
+        var link = "https://www.t411.al/top/100/";
         var videos = {};
         $.get(link, function(res) {
             var list = $('table.results tbody tr', res).get();
@@ -350,7 +350,7 @@ t411.search = function(query, options) {
             $('#loading').show();
             $('#search').hide();
             var s = query.replace(/ /g, '+');
-            var link = "https://www.t411.ai/torrents/search/?search=" + s + "&description=&file=&user=&cat="+options.searchFilter+"&subcat=&page=" + page+"&order="+options.orderBy+"&type=desc";
+            var link = "https://www.t411.al/torrents/search/?search=" + s + "&description=&file=&user=&cat="+options.searchFilter+"&subcat=&page=" + page+"&order="+options.orderBy+"&type=desc";
             var videos = {};
             $.get(link).done(function(res) {
                 var list = $('table.results tbody tr', res).get();
@@ -514,7 +514,7 @@ function appendVideos(list) {
             $("#t411_cont").append(html);
             $.get('https:' + video.link, function(res) {
                 video.synopsis = $("article,.accordion", res).html()
-                video.torrent = 'https://www.t411.ai/torrents' + $('a.btn', res)[1].href.replace(/(.*?)\/torrents/, '');
+                video.torrent = 'https://www.t411.al/torrents' + $('a.btn', res)[1].href.replace(/(.*?)\/torrents/, '');
                 var img = "images/T411.png";
                 video.cover = img;
                 $('#' + video.id + ' .t411thumb').attr('src', img)
