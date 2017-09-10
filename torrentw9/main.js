@@ -9,7 +9,7 @@ tw9.currentPage = 0;
 tw9.itemsCount = 0;
 tw9.pageLoading = false;
 tw9.protected = true;
-tw9.url = "http://www.torrent9.biz"
+tw9.url = "http://www.torrent9.cc"
 tw9.initialized = false;
 tw9.Win = null;
 
@@ -38,7 +38,7 @@ tw9.init = function(gui,win,doc,console) {
 	tw9.mainWin = gui;
 	if(!tw9.initialized) {
 		tw9.Win = tw9.mainWin.Window
-		tw9.Win.open('http://www.torrent9.biz', {show:false},function(win) {
+		tw9.Win.open('http://www.torrent9.cc', {show:false},function(win) {
 			win.on('loaded',function() {
 				$("#searchTypes_select [data-value='navigation']",doc).addClass('active').click();
 				tw9.initialized = true;
@@ -212,10 +212,10 @@ tw9.search = function (query, options,gui) {
 	var videos = {};
 
 	if(options.searchType === "search") {
-		url='http://www.torrent9.biz/search_torrent/'+query;
+		url='http://www.torrent9.cc/search_torrent/'+query;
 		url+='/page-'+page+','+options.orderBy;
 	} else {
-		var baseUrl = "http://www.torrent9.biz"
+		var baseUrl = "http://www.torrent9.cc"
 		var url = ""
 		if(options.category == "films") {
 			url = baseUrl+"/torrents_films.html"
@@ -286,7 +286,7 @@ function analyseResults(list) {
 		});
 		Iterator.iterate(list).forEach(function (item,index) {
 			var video = {};
-			video.link = 'http://www.torrent9.biz'+$(item).find('a')[0].href.replace(/.*?torrent/,'/torrent')
+			video.link = 'http://www.torrent9.cc'+$(item).find('a')[0].href.replace(/.*?torrent/,'/torrent')
 			video.title = $($(item).find('a')[0]).text();
 			video.quality = video.title.match(/720|1080/) !== null ? 'glyphicon-hd-video' : 'glyphicon-sd-video';
 			video.hd = video.title.match(/720/) !== null ? '720p' : video.title.match(/1080/) !== null ? '1080p' : '';
@@ -389,7 +389,7 @@ function appendVideo(video) {
 			//store img
 			video.cover = img;
 			//store description and torrent link
-			video.torrent = 'http://www.torrent9.biz'+$($('.download-btn a',res)[0]).attr('href')
+			video.torrent = 'http://www.torrent9.cc'+$($('.download-btn a',res)[0]).attr('href')
 			var r = $('.movie-information',res)
 			r.find('strong').remove()
 			video.synopsis = r.find('p').text()
