@@ -10,7 +10,7 @@ tw9.itemsCount = 0;
 tw9.pageLoading = false;
 tw9.protected = true;
 tw9.url = "http://www.torrent9.pe"
-tw9.initialized = false;
+tw9.initialized = true;
 tw9.Win = null;
 
 /********************* Node modules *************************/
@@ -36,16 +36,6 @@ tw9.init = function(gui,win,doc,console) {
   	$=win.$
 	tw9.gui = win;
 	tw9.mainWin = gui;
-	if(!tw9.initialized) {
-		tw9.Win = tw9.mainWin.Window
-		tw9.Win.open('http://www.torrent9.pe', {show:false},function(win) {
-			win.on('loaded',function() {
-				$("#searchTypes_select [data-value='navigation']",doc).addClass('active').click();
-				tw9.initialized = true;
-				win.close()
-			});
-		})
-	}
 	loadEngine()
     //play videos
     $(doc).off('click','.preload_tw9_torrent');
@@ -255,18 +245,18 @@ tw9.search = function (query, options,gui) {
 			return;
 		}
 
-		var pagesCount  = $('ul.pagination li',data).length
-		if(isNaN(pagesCount) && tw9.itemsCount == 0) {
+		tw9.totalPages = parseInt($('ul.pagination li:last', data).prev().text()) || "";
+		if(isNaN(tw9.totalPages) && tw9.itemsCount == 0) {
 				$('#loading').hide();
 				$("#search_results p").empty().append(_("No results found..."));
 				$("#search").show();
 				$("#pagination").hide();
 				tw9.pageLoading = false;
 				return;
-		} else if (tw9.itemsCount < 60){
-				tw9.totalItems = tw9.itemsCount;
+		} else if (!tw9.totalPages){
+			tw9.totalItems = tw9.itemsCount;
 		} else {
-				tw9.totalItems = pagesCount * 60;
+			tw9.totalItems = tw9.totalPages * 50;
 		}
 		console.log(tw9.totalItems)
 		analyseResults(list);
@@ -336,9 +326,9 @@ function analyseResults(list) {
 		return;
 	}
 	if(searchType === 'navigation') {
-		$('#search_results p').empty().append(_("%s availables %s", tw9.totalItems,ctype)).show();
+		$('#search_results p').empty().append(_("Showing results Page %s / %s", tw9.currentPage - 1,tw9.totalPages,ctype)).show();
 	} else {
-		$('#search_results p').empty().append(_("%s results founds", tw9.totalItems)).show();
+		$('#search_results p').empty().append(_("%s results founds", tw9.itemsCount)).show();
 	}
 }
 
@@ -399,7 +389,7 @@ function appendVideo(video) {
 
 			if($('#items_container .tw9thumb:visible').length === tw9.itemsCount) {
 				tw9.pageLoading = false;
-				tw9.gui.updateScroller();
+				tw9.gui.searchComplete();
 			}
 		});
 }
