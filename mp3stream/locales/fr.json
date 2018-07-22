@@ -7,6 +7,7 @@
 	"6": 6,
 	"29": 29,
 	"100": 100,
+	"9999": 9999,
 	"Total stations : ": "Total de stations : ",
 	"Views: ": "Vues: ",
 	"Downloading: ": "Téléchargement: ",
@@ -67,5 +68,6 @@
 	"Loading Nas's albums...": "Loading Nas's albums...",
 	"Loading Wu-Tang Clan's albums...": "Loading Wu-Tang Clan's albums...",
 	"Total listeners: ": "Total listeners: ",
-	"Loading Busta Rhymes's albums...": "Loading Busta Rhymes's albums..."
+	"Loading Busta Rhymes's albums...": "Loading Busta Rhymes's albums...",
+	"Loading Marty Robbins's albums...": "Loading Marty Robbins's albums..."
 }

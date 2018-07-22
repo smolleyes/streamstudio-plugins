@@ -9,7 +9,7 @@ tw9.currentPage = 0;
 tw9.itemsCount = 0;
 tw9.pageLoading = false;
 tw9.protected = true;
-tw9.url = "http://www.torrent9.pe"
+tw9.url = "https://www.torrent9.blue"
 tw9.initialized = true;
 tw9.Win = null;
 
@@ -36,6 +36,7 @@ tw9.init = function(gui,win,doc,console) {
   	$=win.$
 	tw9.gui = win;
 	tw9.mainWin = gui;
+	tw9.url = tw9.gui.TORRENT9_URL
 	loadEngine()
     //play videos
     $(doc).off('click','.preload_tw9_torrent');
@@ -162,7 +163,7 @@ tw9.menuEntries = ["searchTypes","orderBy","categories"];
 tw9.defaultMenus = ["searchTypes","orderBy"];
 // searchTypes menus and default entry
 tw9.searchTypes = JSON.parse('{"'+_("Search")+'":"search","'+_("Navigation")+'":"navigation"}');
-tw9.defaultSearchType = '';
+tw9.defaultSearchType = 'navigation';
 // orderBy filters and default entry
 tw9.orderBy_filters = JSON.parse('{"'+_("Date descending")+'":"trie-date-d","'+_("Date ascending")+'":"trie-date-a","'+_("Seeds descending")+'":"trie-seeds-d","'+_("Seeds ascending")+'":"trie-seeds-a"}');
 tw9.defaultOrderBy = 'trie-date-d';
@@ -202,10 +203,10 @@ tw9.search = function (query, options,gui) {
 	var videos = {};
 
 	if(options.searchType === "search") {
-		url='http://www.torrent9.pe/search_torrent/'+query;
+		url=tw9.url+'/search_torrent/'+query;
 		url+='/page-'+page+','+options.orderBy;
 	} else {
-		var baseUrl = "http://www.torrent9.pe"
+		var baseUrl = tw9.url
 		var url = ""
 		if(options.category == "films") {
 			url = baseUrl+"/torrents_films.html"
@@ -276,7 +277,7 @@ function analyseResults(list) {
 		});
 		Iterator.iterate(list).forEach(function (item,index) {
 			var video = {};
-			video.link = 'http://www.torrent9.pe'+$(item).find('a')[0].href.replace(/.*?torrent/,'/torrent')
+			video.link = tw9.url+$(item).find('a')[0].href.replace(/.*?torrent/,'/torrent')
 			video.title = $($(item).find('a')[0]).text();
 			video.quality = video.title.match(/720|1080/) !== null ? 'glyphicon-hd-video' : 'glyphicon-sd-video';
 			video.hd = video.title.match(/720/) !== null ? '720p' : video.title.match(/1080/) !== null ? '1080p' : '';
@@ -379,7 +380,7 @@ function appendVideo(video) {
 			//store img
 			video.cover = img;
 			//store description and torrent link
-			video.torrent = 'http://www.torrent9.pe'+$($('.download-btn a',res)[0]).attr('href')
+			video.torrent = tw9.url+$($('.download-btn a',res)[0]).attr('href')
 			var r = $('.movie-information',res)
 			r.find('strong').remove()
 			video.synopsis = r.find('p').text()
