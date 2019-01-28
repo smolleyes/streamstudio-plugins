@@ -276,8 +276,9 @@ function analyseResults(list) {
 			}
 		});
 		Iterator.iterate(list).forEach(function (item,index) {
+			console.log(item)
 			var video = {};
-			video.link = tw9.url+$(item).find('a')[0].href.replace(/.*?torrent/,'/torrent')
+			video.link = tw9.url+$(item).find('a')[0].href.replace(/.*?\/torrent/,'torrent');
 			video.title = $($(item).find('a')[0]).text();
 			video.quality = video.title.match(/720|1080/) !== null ? 'glyphicon-hd-video' : 'glyphicon-sd-video';
 			video.hd = video.title.match(/720/) !== null ? '720p' : video.title.match(/1080/) !== null ? '1080p' : '';
@@ -343,7 +344,7 @@ function* checkDb(video) {
 
 function appendVideo(video) {
 	    var res = video.html
-		var img = $("#bigcover img",res).attr('src');
+		var img = $(".movie-img img",res).attr('src');
 		video.id = ((Math.random() * 1e6) | 0);
 		if(video.title.length > 45){
 			text = video.title.substring(0,45)+'...';
@@ -374,13 +375,18 @@ function appendVideo(video) {
 		</div> \
 		</li>';
 		$("#tw9_cont").append(html);
-		cloudscraper.get(video.link, function(error, response, res) {
-			var img = $(".movie-img img",res).attr('src');
+		console.log(video.link)
+		cloudscraper.request({method: 'GET',
+					  url:video.link, 
+					  Referer:tw9.url}, function(error, response, res) {
+			var img = $(".movie-img img", res).attr('src');
 			$('#'+video.id+' .tw9thumb').attr('src',img);
+			console.log('image link', img)
 			//store img
 			video.cover = img;
 			//store description and torrent link
-			video.torrent = tw9.url+$($('.download-btn a',res)[0]).attr('href')
+			video.torrent = tw9.url+$($('.download',res)[0]).attr('href')
+			console.log('torrent link', video.torrent )
 			var r = $('.movie-information',res)
 			r.find('strong').remove()
 			video.synopsis = r.find('p').text()
