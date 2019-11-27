@@ -377,7 +377,7 @@ function appendVideo(video) {
 		$("#tw9_cont").append(html);
 		console.log(video.link)
 		cloudscraper.request({method: 'GET',
-					  url:video.link, 
+					  url:video.link,
 					  Referer:tw9.url}, function(error, response, res) {
 			var img = $(".movie-img img", res).attr('src');
 			$('#'+video.id+' .tw9thumb').attr('src',img);
