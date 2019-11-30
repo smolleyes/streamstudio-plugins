@@ -347,7 +347,7 @@ function analyseResults(list) {
     return;
   }
   if (searchType === 'navigation') {
-    $('#search_results p').empty().append(_("Showing results Page %s / %s", oxtorrent.currentPage - 1, oxtorrent.totalPages, ctype)).show();
+    $('#search_results p').empty().append(_("Showing results Page %s / %s", oxtorrent.currentPage , oxtorrent.totalPages, ctype)).show();
   } else {
     $('#search_results p').empty().append(_("%s results founds", oxtorrent.itemsCount)).show();
   }
