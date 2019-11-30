@@ -12,6 +12,7 @@ oxtorrent.protected = true;
 oxtorrent.url = "https://www.oxtorrent.com"
 oxtorrent.initialized = true;
 oxtorrent.Win = null;
+oxtorrent.init = false;
 
 /********************* Node modules *************************/
 
@@ -164,10 +165,10 @@ function loadEngine() {
   oxtorrent.searchTypes = JSON.parse('{"' + _("Search") + '":"search","' + _("Navigation") + '":"navigation"}');
   oxtorrent.defaultSearchType = 'navigation';
   // orderBy filters and default entry
-  oxtorrent.orderBy_filters = JSON.parse('{"' + _("Date descending") + '":"trie-date-d","' + _("Date ascending") + '":"trie-date-a","' + _("Seeds descending") + '":"trie-seeds-d","' + _("Seeds ascending") + '":"trie-seeds-a"}');
-  oxtorrent.defaultOrderBy = 'trie-date-d';
+  oxtorrent.orderBy_filters = JSON.parse('{"' + _("Date descending") + '":"date/desc","' + _("Date ascending") + '":"date/asc","' + _("Seeds descending") + '":"seeds/desc","' + _("Seeds ascending") + '":"seeds/asc"}');
+  oxtorrent.defaultOrderBy = 'date/desc';
   // orderBy filters and default entry
-  oxtorrent.category_filters = JSON.parse('{"' + _("Movies") + '":"films","' + _("Movies DVDRIP") + '":"films DVDRIP (.avi)","' + _("Movies DVDRIP (x264)") + '":"films DVDRIP (x264)","' + _("Movies 1080p") + '":"films 1080p","' + _("Movies 720p") + '":"films 720p","' + _("Movies VOSTFR") + '":"films VOSTFR","' + _("Series") + '":"series","' + _("Series FRENCH") + '":"series FRENCH","' + _("Series VOSTFR") + '":"series VOSTFR"}');
+  oxtorrent.category_filters = JSON.parse('{"' + _("Movies") + '":"films","' + _("Series") + '":"series"}');
   oxtorrent.defaultCategory = 'films';
   // others params
   oxtorrent.has_related = false;
@@ -177,25 +178,33 @@ function loadEngine() {
 // search videos
 oxtorrent.search = function(query, options, gui) {
   $("#search_results p").empty()
+  console.log('INIT SEARCH', oxtorrent, options)
   if (options.searchType === "navigation" && !options.category) {
     return;
   }
   oxtorrent.gui = gui;
   oxtorrent.pageLoading = true;
   var page;
-  try {
-    page = parseInt(options.currentPage) - 1;
-  } catch (err) {
-    page = 0;
-    oxtorrent.gui.current_page = 0;
-  }
-  if (page == 0) {
+  // try {
+  //   page = parseInt(options.currentPage);
+  // } catch (err) {
+  //   page = 0;
+  //   oxtorrent.gui.current_page = 0;
+  // }
+  if (!$("#oxtorrent_cont").length) {
     $('#items_container').empty().append('<ul id="oxtorrent_cont" class="list"></ul>').show();
     oxtorrent.itemsCount = 0;
+    oxtorrent.init = true;
+    oxtorrent.gui.current_page = 0;
+    page = 0;
+  } else {
+    console.log("ALREADY LOADED", options, oxtorrent)
+    oxtorrent.gui.current_page += 1;
+    page = oxtorrent.gui.current_page
   }
-  oxtorrent.gui.current_page += 1;
+  //oxtorrent.gui.current_page += 1;
   // plugin page must match gui current page for lazy loading
-  oxtorrent.currentPage = oxtorrent.gui.current_page;
+  oxtorrent.currentPage = oxtorrent.gui.current_page + 1;
 
   var query = encodeURIComponent(query);
   var url;
@@ -203,7 +212,7 @@ oxtorrent.search = function(query, options, gui) {
 
   if (options.searchType === "search") {
     url = 'https://www.oxtorrent.com/recherche/' + query;
-    url += '/page/' + page + '/' + options.orderBy + '/desc';
+    url += '/' + ((page * 50) + 1);
   } else {
     var baseUrl = oxtorrent.url
     var url = ""
@@ -226,7 +235,7 @@ oxtorrent.search = function(query, options, gui) {
     } else if (options.category == "series VOSTFR") {
       url = baseUrl + "/torrents/series/vostfr"
     }
-    url += '/page/' + page + '/' + options.orderBy + '/desc';
+    url += '/' + ((page * 50) + 1);
   }
 
   console.log('url', url)
@@ -248,7 +257,7 @@ oxtorrent.search = function(query, options, gui) {
         return;
       }
 
-      oxtorrent.totalPages = parseInt($('ul.pagination li:last', data).prev().text()) || "";
+      oxtorrent.totalPages = $('ul.pagination li', data).length - 1 || "";
       if (isNaN(oxtorrent.totalPages) && oxtorrent.itemsCount == 0) {
         $('#loading').hide();
         $("#search_results p").empty().append(_("No results found..."));
@@ -357,58 +366,63 @@ function* checkDb(video) {
 var tordata = ''
 
 function appendVideo(video) {
-  video.id = ((Math.random() * 1e6) | 0);
-  if (video.title.length > 45) {
-    text = video.title.substring(0, 45) + '...';
-  } else {
-    text = video.title;
-  }
-  var html = '<li id="' + video.id + '" class="list-row"> \
-		<span class="optionsTop" style="display:none;"></span> \
-		<div id="optionsTopInfos" style="display:none;"> \
-		<span style="' + video.css + '" title="' + video.viewedTitle + '"><i class="glyphicon glyphicon-eye-open"></i></span> \
-		<span><i class="glyphicon glyphicon-cloud-upload"></i>' + video.seeders + '</span> \
-		<span style="float:right;"><i class="glyphicon glyphicon-hdd"></i>' + video.size + '</span> \
-		</div> \
-		<div class="mvthumb"> \
-		<img class="oxtorrentThumb" style="float:left;" /> \
-		</div> \
-		<div> \
-			<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg preload_oxtorrentPlay_torrent" style="display:none;" data="" /> \
-		</div> \
-		<span class="optionsBottom" style="display:none;"></span> \
-		<div id="optionsBottomInfos" style="display:none;"> \
-			<span><i class="glyphicon ' + video.quality + '"></i>' + video.hd + '</span> \
-			<span style="float:right;"><a href="#" class="preload_oxtorrent_torrent" data=""><i class="glyphicon glyphicon-info-sign"></i></a></span> \
-			' + video.toggle + ' \
-		</div> \
-		<div> \
-			<p class="coverInfosTitle" title="' + video.title + '">' + text + '</p> \
-		</div> \
-		</li>';
-  $("#oxtorrent_cont").append(html);
-  console.log(video.link)
-  cloudscraper.get(video.link, function(error, response, res) {
-    var img = oxtorrent.url + res.replace(/\r?\n|\r/g).match(/.*?torrentsimage.*?src='(.*?)'/)[1]
-    $('#' + video.id + ' .oxtorrentThumb').attr('src', img);
-    console.log('image link', img)
-    //store img
-    video.cover = img;
-    //store description and torrent link
-    video.torrent = oxtorrent.url + res.match(/location.href='(.*?)'/)[1]
-    console.log('torrent link', video.torrent)
-    var r = $('.movie-information', res)
-    r.find('strong').remove()
-    video.synopsis = r.find('p').text()
-    //save in data
-    $('#' + video.id + ' .preload_oxtorrent_torrent').attr('data', encodeURIComponent(JSON.stringify(video)));
-    $('#' + video.id + ' .coverPlayImg').attr('data', encodeURIComponent(JSON.stringify(video)));
-
-    if ($('#items_container .oxtorrentThumb:visible').length === oxtorrent.itemsCount) {
-      oxtorrent.pageLoading = false;
-      oxtorrent.gui.searchComplete();
+  try {
+    video.id = ((Math.random() * 1e6) | 0);
+    if (video.title.length > 45) {
+      text = video.title.substring(0, 45) + '...';
+    } else {
+      text = video.title;
     }
-  });
+    var html = '<li id="' + video.id + '" class="list-row"> \
+      <span class="optionsTop" style="display:none;"></span> \
+      <div id="optionsTopInfos" style="display:none;"> \
+      <span style="' + video.css + '" title="' + video.viewedTitle + '"><i class="glyphicon glyphicon-eye-open"></i></span> \
+      <span><i class="glyphicon glyphicon-cloud-upload"></i>' + video.seeders + '</span> \
+      <span style="float:right;"><i class="glyphicon glyphicon-hdd"></i>' + video.size + '</span> \
+      </div> \
+      <div class="mvthumb"> \
+      <img class="oxtorrentThumb" style="float:left;" /> \
+      </div> \
+      <div> \
+        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg preload_oxtorrentPlay_torrent" style="display:none;" data="" /> \
+      </div> \
+      <span class="optionsBottom" style="display:none;"></span> \
+      <div id="optionsBottomInfos" style="display:none;"> \
+        <span><i class="glyphicon ' + video.quality + '"></i>' + video.hd + '</span> \
+        <span style="float:right;"><a href="#" class="preload_oxtorrent_torrent" data=""><i class="glyphicon glyphicon-info-sign"></i></a></span> \
+        ' + video.toggle + ' \
+      </div> \
+      <div> \
+        <p class="coverInfosTitle" title="' + video.title + '">' + text + '</p> \
+      </div> \
+      </li>';
+    $("#oxtorrent_cont").append(html);
+    console.log(video.link)
+    cloudscraper.get(video.link, function(error, response, res) {
+      console.log(oxtorrent.itemsCount, oxtorrent.totalItems)
+      var img = oxtorrent.url + res.replace(/\r?\n|\r/g).match(/.*?torrentsimage.*?src='(.*?)'/)[1]
+      $('#' + video.id + ' .oxtorrentThumb').attr('src', img);
+      console.log('image link', img)
+      //store img
+      video.cover = img;
+      //store description and torrent link
+      video.torrent = oxtorrent.url + res.match(/location.href='(.*?)'/)[1]
+      console.log('torrent link', video.torrent)
+      var r = $('.movie-information', res)
+      r.find('strong').remove()
+      video.synopsis = r.find('p').text()
+      //save in data
+      $('#' + video.id + ' .preload_oxtorrent_torrent').attr('data', encodeURIComponent(JSON.stringify(video)));
+      $('#' + video.id + ' .coverPlayImg').attr('data', encodeURIComponent(JSON.stringify(video)));
+
+      if ($('#items_container .oxtorrentThumb').length === oxtorrent.itemsCount) {
+        oxtorrent.pageLoading = false;
+        oxtorrent.gui.searchComplete();
+      }
+    });
+  } catch(err){
+    console.log('ERROR IN APPENVIDEO', err)
+  }
 }
 
 oxtorrent.loadMore = function() {
