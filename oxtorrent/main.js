@@ -406,7 +406,7 @@ function appendVideo(video) {
       //store img
       video.cover = img;
       //store description and torrent link
-      video.torrent = oxtorrent.url + $('.btn-download', res).find('a')[0].href.replace(/chrome-.*?\/telecharger/, "/telecharger")
+      video.torrent = oxtorrent.url + $('.btn-download', res).find('a')[0].href.replace(/chrome.*?\/(telecharger|get_torrent)/, "$1")
       console.log('torrent link', video.torrent)
       var r = $('.movie-information', res)
       r.find('strong').remove()
