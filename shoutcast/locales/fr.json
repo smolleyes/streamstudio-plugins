@@ -52,5 +52,6 @@
 	"Total listeners: ": "Auditeurs: ",
 	"No results found for your query %s": "Aucun résultat trouvé pour votre recherche %s",
 	"Playing %s station": "Lecture de la station %s",
-	"Bitrate: ": "Bitrate: "
+	"Bitrate: ": "Bitrate: ",
+	"No results found...": "No results found..."
 }

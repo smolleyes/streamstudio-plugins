@@ -1,18 +1,18 @@
 /********************* engine config *************************
  **************************************************************/
 
-var oxtorrent = {};
-oxtorrent.engine_name = "oxtorrent";
-oxtorrent.type = "video";
-oxtorrent.totalPages = 0;
-oxtorrent.currentPage = 0;
-oxtorrent.itemsCount = 0;
-oxtorrent.pageLoading = false;
-oxtorrent.protected = true;
-oxtorrent.url = "https://www.oxtorrent.ac/";
-oxtorrent.initialized = true;
-oxtorrent.Win = null;
-oxtorrent.init = false;
+var yggtorrent = {};
+yggtorrent.engine_name = "yggtorrent";
+yggtorrent.type = "video";
+yggtorrent.totalPages = 0;
+yggtorrent.currentPage = 0;
+yggtorrent.itemsCount = 0;
+yggtorrent.pageLoading = false;
+yggtorrent.protected = true;
+yggtorrent.url = "https://www2.yggtorrent.co";
+yggtorrent.initialized = true;
+yggtorrent.Win = null;
+yggtorrent.init = false;
 
 /********************* Node modules *************************/
 
@@ -32,17 +32,18 @@ var cloudscraper = require("cloudscraper");
 var searchType = "navigation";
 
 // init module
-oxtorrent.init = function (gui, win, doc, console) {
+yggtorrent.init = function (gui, win, doc, console) {
   $("#pagination", doc).hide();
   $ = win.$;
-  oxtorrent.gui = win;
-  oxtorrent.mainWin = gui;
+  yggtorrent.gui = win;
+  yggtorrent.mainWin = gui;
   loadEngine();
   //play videos
-  $(doc).off("click", ".preload_oxtorrent_torrent");
-  $(doc).on("click", ".preload_oxtorrent_torrent", function (e) {
+  $(doc).off("click", ".preload_yggtorrent_torrent");
+  $(doc).on("click", ".preload_yggtorrent_torrent", function (e) {
     e.preventDefault();
     var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
+    console.log(obj);
     var link = obj.link;
     var id = obj.id;
     //$('.highlight').removeClass('highlight well');
@@ -61,15 +62,15 @@ oxtorrent.init = function (gui, win, doc, console) {
       obj.synopsis +
       "</p> \
 			</div>";
-    oxtorrent.gui.showPopup(html, "body");
+    yggtorrent.gui.showPopup(html, "body");
   });
 
-  $(doc).off("mouseenter", "#oxtorrent_cont .list-row");
-  $(doc).on("mouseenter", "#oxtorrent_cont .list-row", function (e) {
+  $(doc).off("mouseenter", "#yggtorrent_cont .list-row");
+  $(doc).on("mouseenter", "#yggtorrent_cont .list-row", function (e) {
     var self = $(this);
     if ($(this).find(".optionsTop").is(":hidden")) {
       setTimeout(function () {
-        if ($("#oxtorrent_cont li:hover").attr("id") == self.attr("id")) {
+        if ($("#yggtorrent_cont li:hover").attr("id") == self.attr("id")) {
           self
             .find(
               ".optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos"
@@ -81,8 +82,8 @@ oxtorrent.init = function (gui, win, doc, console) {
     }
   });
 
-  $(doc).off("mouseleave", "#oxtorrent_cont .list-row");
-  $(doc).on("mouseleave", "#oxtorrent_cont .list-row", function (e) {
+  $(doc).off("mouseleave", "#yggtorrent_cont .list-row");
+  $(doc).on("mouseleave", "#yggtorrent_cont .list-row", function (e) {
     if ($(this).find(".optionsTop").is(":visible")) {
       $(this)
         .find(".optionsTop,#optionsTopInfos,.optionsBottom,#optionsBottomInfos")
@@ -91,12 +92,12 @@ oxtorrent.init = function (gui, win, doc, console) {
     }
   });
 
-  $(doc).off("click", ".preload_oxtorrentPlay_torrent");
-  $(doc).on("click", ".preload_oxtorrentPlay_torrent", function (e) {
+  $(doc).off("click", ".preload_yggtorrentPlay_torrent");
+  $(doc).on("click", ".preload_yggtorrentPlay_torrent", function (e) {
     e.preventDefault();
-    oxtorrent.gui.saveTorrent = false;
-    oxtorrent.gui.torrentSaved = false;
-    oxtorrent.gui.activeItem(
+    yggtorrent.gui.saveTorrent = false;
+    yggtorrent.gui.torrentSaved = false;
+    yggtorrent.gui.activeItem(
       $(this).closest(".list-row").find(".coverInfosTitle")
     );
     var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
@@ -111,18 +112,18 @@ oxtorrent.init = function (gui, win, doc, console) {
       '</h3><br><img style="width:180;height:240px;" src="' +
       obj.cover +
       '" /><br><br> \
-	<button type="button" id="oxtorrent_play_' +
+	<button type="button" id="yggtorrent_play_' +
       id +
       '" data="' +
       encodeURIComponent(JSON.stringify(obj)) +
-      '" class="closePopup play_oxtorrent_torrent btn btn-success"> \
+      '" class="closePopup play_yggtorrent_torrent btn btn-success"> \
     	<span class="glyphicon glyphicon-play-circle"><span class="fbxMsg_glyphText">' +
       _("Start playing") +
       '</span></span> \
     </button>  \
-    <button type="button" class="closePopup download_oxtorrent_torrentFile downloadText btn btn-info" href="' +
+    <button type="button" class="closePopup download_yggtorrent_torrentFile downloadText btn btn-info" href="' +
       obj.torrent +
-      '" id="oxtorrent_downlink_' +
+      '" id="yggtorrent_downlink_' +
       obj.id +
       '" data="' +
       encodeURIComponent(JSON.stringify(obj)) +
@@ -135,11 +136,11 @@ oxtorrent.init = function (gui, win, doc, console) {
     	</span>  \
     </button>";
 
-    if (oxtorrent.gui.freeboxAvailable) {
+    if (yggtorrent.gui.freeboxAvailable) {
       html +=
         '<button type="button"  href="' +
         obj.torrent +
-        '" class="closePopup download_oxtorrent_torrentFile_fbx downloadText btn btn-info" id="oxtorrent_downlinkFbx_' +
+        '" class="closePopup download_yggtorrent_torrentFile_fbx downloadText btn btn-info" id="yggtorrent_downlinkFbx_' +
         obj.id +
         '" data="' +
         encodeURIComponent(JSON.stringify(obj)) +
@@ -154,30 +155,31 @@ oxtorrent.init = function (gui, win, doc, console) {
       _("Keep torrent file after downloading ?") +
       '</label><input style="position:relative;left:10px;" type="checkbox" class="saveTorrentCheck" name="saveTorrentCheck"></input></div></div>';
     // show
-    oxtorrent.gui.showPopup(html, "body");
+    yggtorrent.gui.showPopup(html, "body");
   });
 
-  $(doc).off("click", ".play_oxtorrent_torrent");
-  $(doc).on("click", ".play_oxtorrent_torrent", function (e) {
+  $(doc).off("click", ".play_yggtorrent_torrent");
+  $(doc).on("click", ".play_yggtorrent_torrent", function (e) {
     e.preventDefault();
     var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
-    oxtorrent.gui.getAuthTorrent(obj.torrent, true, false);
-    oxtorrent.gui.itemTitle = obj.title;
+    console.log(obj);
+    yggtorrent.gui.getAuthTorrent(obj.torrent, true, false);
+    yggtorrent.gui.itemTitle = obj.title;
     $("#playerToggle")[0].click();
   });
 
-  $(doc).off("click", ".download_oxtorrent_torrentFile");
-  $(doc).on("click", ".download_oxtorrent_torrentFile", function (e) {
+  $(doc).off("click", ".download_yggtorrent_torrentFile");
+  $(doc).on("click", ".download_yggtorrent_torrentFile", function (e) {
     e.preventDefault();
     var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
-    oxtorrent.gui.getAuthTorrent(obj.torrent, false, false);
+    yggtorrent.gui.getAuthTorrent(obj.torrent, false, false);
   });
 
-  $(doc).off("click", ".download_oxtorrent_torrentFile_fbx");
-  $(doc).on("click", ".download_oxtorrent_torrentFile_fbx", function (e) {
+  $(doc).off("click", ".download_yggtorrent_torrentFile_fbx");
+  $(doc).on("click", ".download_yggtorrent_torrentFile_fbx", function (e) {
     e.preventDefault();
     var obj = JSON.parse(decodeURIComponent($(this).attr("data")));
-    oxtorrent.gui.getAuthTorrent(obj.torrent, false, true);
+    yggtorrent.gui.getAuthTorrent(obj.torrent, false, true);
   });
 
   $(doc).off("click", ".addToFavorites");
@@ -188,7 +190,7 @@ oxtorrent.init = function (gui, win, doc, console) {
     $(this).find("i").css("color", "#F8963F");
     var title = $(this).attr("data");
     $("#favoritesToggle")[0].click();
-    oxtorrent.gui.addSerieToDb(title);
+    yggtorrent.gui.addSerieToDb(title);
   });
 };
 
@@ -198,29 +200,29 @@ function loadEngine() {
   i18n.configure({
     defaultLocale: "en",
     locales: localeList,
-    directory: oxtorrent.gui.pluginsDir + "oxtorrent/locales",
+    directory: yggtorrent.gui.pluginsDir + "yggtorrent/locales",
     updateFiles: true,
   });
 
-  if ($.inArray(oxtorrent.gui.settings.locale, localeList) > -1) {
+  if ($.inArray(yggtorrent.gui.settings.locale, localeList) > -1) {
     console.log(
-      "Loading oxtorrent engine with locale" + oxtorrent.gui.settings.locale
+      "Loading yggtorrent engine with locale" + yggtorrent.gui.settings.locale
     );
-    i18n.setLocale(oxtorrent.gui.settings.locale);
+    i18n.setLocale(yggtorrent.gui.settings.locale);
   } else {
     i18n.setLocale("en");
   }
 
   // menus needed by the module and menu(s) loaded by default
-  oxtorrent.menuEntries = ["searchTypes", "orderBy", "categories"];
-  oxtorrent.defaultMenus = ["searchTypes", "orderBy"];
+  yggtorrent.menuEntries = ["searchTypes", "orderBy", "categories"];
+  yggtorrent.defaultMenus = ["searchTypes", "orderBy"];
   // searchTypes menus and default entry
-  oxtorrent.searchTypes = JSON.parse(
+  yggtorrent.searchTypes = JSON.parse(
     '{"' + _("Search") + '":"search","' + _("Navigation") + '":"navigation"}'
   );
-  oxtorrent.defaultSearchType = "navigation";
+  yggtorrent.defaultSearchType = "navigation";
   // orderBy filters and default entry
-  oxtorrent.orderBy_filters = JSON.parse(
+  yggtorrent.orderBy_filters = JSON.parse(
     '{"' +
       _("Date descending") +
       '":"date/desc","' +
@@ -231,116 +233,103 @@ function loadEngine() {
       _("Seeds ascending") +
       '":"seeds/asc"}'
   );
-  oxtorrent.defaultOrderBy = "date/desc";
+  yggtorrent.defaultOrderBy = "date/desc";
   // orderBy filters and default entry
-  oxtorrent.category_filters = JSON.parse(
+  yggtorrent.category_filters = JSON.parse(
     '{"' + _("Movies") + '":"films","' + _("Series") + '":"series"}'
   );
-  oxtorrent.defaultCategory = "films";
+  yggtorrent.defaultCategory = "films";
   // others params
-  oxtorrent.has_related = false;
-  oxtorrent.categoriesLoaded = true;
+  yggtorrent.has_related = false;
+  yggtorrent.categoriesLoaded = true;
+  console.log(yggtorrent);
 }
 
 // search videos
-oxtorrent.search = function (query, options, gui) {
+yggtorrent.search = function (query, options, gui) {
   $("#search_results p").empty();
-  console.log("INIT SEARCH", oxtorrent, options);
+  console.log("INIT SEARCH", yggtorrent, options);
   if (options.searchType === "navigation" && !options.category) {
     return;
   }
-  oxtorrent.gui = gui;
-  oxtorrent.pageLoading = true;
+  yggtorrent.gui = gui;
+  yggtorrent.pageLoading = true;
   var page;
   // try {
   //   page = parseInt(options.currentPage);
   // } catch (err) {
   //   page = 0;
-  //   oxtorrent.gui.current_page = 0;
+  //   yggtorrent.gui.current_page = 0;
   // }
-  if (!$("#oxtorrent_cont").length) {
+  if (!$("#yggtorrent_cont").length) {
     $("#items_container")
       .empty()
-      .append('<ul id="oxtorrent_cont" class="list"></ul>')
+      .append('<ul id="yggtorrent_cont" class="list"></ul>')
       .show();
-    oxtorrent.itemsCount = 0;
-    oxtorrent.init = true;
-    oxtorrent.gui.current_page = 0;
+    yggtorrent.itemsCount = 0;
+    yggtorrent.init = true;
+    yggtorrent.gui.current_page = 0;
     page = 0;
   } else {
-    console.log("ALREADY LOADED", options, oxtorrent);
-    oxtorrent.gui.current_page += 1;
-    page = oxtorrent.gui.current_page;
+    console.log("ALREADY LOADED", options, yggtorrent);
+    yggtorrent.gui.current_page += 1;
+    page = yggtorrent.gui.current_page;
   }
-  //oxtorrent.gui.current_page += 1;
+  //yggtorrent.gui.current_page += 1;
   // plugin page must match gui current page for lazy loading
-  oxtorrent.currentPage = oxtorrent.gui.current_page + 1;
+  yggtorrent.currentPage = yggtorrent.gui.current_page + 1;
 
   var query = encodeURIComponent(query);
   var url;
   var videos = {};
 
   if (options.searchType === "search") {
-    url = "https://www.oxtorrent.ac/recherche/" + query;
-    url += "/" + (page * 50 + 1);
+    url = yggtorrent.url + "/search_torrent/" + query;
+    url += "/page-" + page;
   } else {
-    var baseUrl = oxtorrent.url;
+    var baseUrl = yggtorrent.url;
     var url = "";
     if (options.category == "films") {
-      url = baseUrl + "/torrents/films";
-    } else if (options.category == "films DVDRIP (.avi)") {
-      url = baseUrl + "/torrents/films/dvdrip-avi";
-    } else if (options.category == "films DVDRIP (x264)") {
-      url = baseUrl + "/torrents/films/dvdrip-x264";
-    } else if (options.category == "films 1080p") {
-      url = baseUrl + "/torrents/films/1080p";
-    } else if (options.category == "films 720p") {
-      url = baseUrl + "/torrents/films/720p";
-    } else if (options.category == "films VOSTFR") {
-      url = baseUrl + "/torrents/films/vostfr";
+      url = baseUrl + "/torrents_films.html";
     } else if (options.category == "series") {
-      url = baseUrl + "/torrents/series";
-    } else if (options.category == "series FRENCH") {
-      url = baseUrl + "/torrents/series/french";
-    } else if (options.category == "series VOSTFR") {
-      url = baseUrl + "/torrents/series/vostfr";
+      url = baseUrl + "/torrents_series.html";
     }
-    url += "/" + (page * 50 + 1);
+    url += ",page-" + page;
   }
 
   console.log("url", url);
 
   cloudscraper.get(url, function (error, response, data) {
     if (error) {
-      console.log("Error occurred");
+      console.log("Error occurred", error);
     } else {
       console.log("result", data);
       var list = $(".table tr", data).get().slice(1);
-      oxtorrent.itemsCount += list.length;
+      yggtorrent.itemsCount += list.length;
 
-      if (oxtorrent.itemsCount == 0) {
+      if (yggtorrent.itemsCount == 0) {
         $("#loading").hide();
         $("#search_results p").empty().append(_("No results found..."));
         $("#search").show();
         $("#pagination").hide();
-        oxtorrent.pageLoading = false;
+        yggtorrent.pageLoading = false;
         return;
       }
 
-      oxtorrent.totalPages = $("ul.pagination li", data).length - 1 || "";
-      if (isNaN(oxtorrent.totalPages) && oxtorrent.itemsCount == 0) {
+      yggtorrent.totalPages = $("ul.pagination li", data).length - 1 || "";
+      if (isNaN(yggtorrent.totalPages) && yggtorrent.itemsCount == 0) {
         $("#loading").hide();
         $("#search_results p").empty().append(_("No results found..."));
         $("#search").show();
         $("#pagination").hide();
-        oxtorrent.pageLoading = false;
+        yggtorrent.pageLoading = false;
         return;
-      } else if (!oxtorrent.totalPages) {
-        oxtorrent.totalItems = oxtorrent.itemsCount;
+      } else if (!yggtorrent.totalPages) {
+        yggtorrent.totalItems = yggtorrent.itemsCount;
       } else {
-        oxtorrent.totalItems = oxtorrent.totalPages * 50;
+        yggtorrent.totalItems = yggtorrent.totalPages * 50;
       }
-      console.log(oxtorrent.totalItems);
+      console.log(yggtorrent.totalItems);
       analyseResults(list);
     }
   });
@@ -348,7 +337,7 @@ oxtorrent.search = function (query, options, gui) {
 
 function analyseResults(list) {
   var arr = [];
-  var favMainList = oxtorrent.gui.sdb.find();
+  var favMainList = yggtorrent.gui.sdb.find();
   var favList = [];
   try {
     Iterator.iterate(favMainList).forEach(function (item, index) {
@@ -367,7 +356,7 @@ function analyseResults(list) {
       console.log(item);
       var video = {};
       video.link =
-        oxtorrent.url +
+        yggtorrent.url +
         $(item)
           .find("a")[0]
           .href.replace(/.*?\/torrent/, "/torrent");
@@ -423,7 +412,7 @@ function analyseResults(list) {
         if (video.isFavorite) {
           video.background =
             "background: url(" +
-            oxtorrent.gui.confDir +
+            yggtorrent.gui.confDir +
             "/images/" +
             video.favId +
             "-fanart.jpg) no-repeat no-repeat scroll 0% 0% / 100% 100% padding-box border-box";
@@ -454,8 +443,8 @@ function analyseResults(list) {
   $("#search").show();
   var type = category !== "series" ? "movies" : "chapters";
   var ctype = _(type);
-  if (isNaN(oxtorrent.totalItems)) {
-    oxtorrent.pageLoading = false;
+  if (isNaN(yggtorrent.totalItems)) {
+    yggtorrent.pageLoading = false;
     return;
   }
   if (searchType === "navigation") {
@@ -464,8 +453,8 @@ function analyseResults(list) {
       .append(
         _(
           "Showing results Page %s / %s",
-          oxtorrent.currentPage,
-          oxtorrent.totalPages,
+          yggtorrent.currentPage,
+          yggtorrent.totalPages,
           ctype
         )
       )
@@ -473,14 +462,14 @@ function analyseResults(list) {
   } else {
     $("#search_results p")
       .empty()
-      .append(_("%s results founds", oxtorrent.itemsCount))
+      .append(_("%s results founds", yggtorrent.itemsCount))
       .show();
   }
 }
 
 function* checkDb(video) {
   try {
-    yield oxtorrent.gui.sdb.find({
+    yield yggtorrent.gui.sdb.find({
       title: video.title,
     });
   } catch (err) {
@@ -491,6 +480,7 @@ function* checkDb(video) {
 var tordata = "";
 
 function appendVideo(video) {
+  console.log(video);
   try {
     video.id = (Math.random() * 1e6) | 0;
     if (video.title.length > 45) {
@@ -517,10 +507,10 @@ function appendVideo(video) {
       '</span> \
       </div> \
       <div class="mvthumb"> \
-      <img class="oxtorrentThumb" style="float:left;" /> \
+      <img class="yggtorrentThumb" style="float:left;" /> \
       </div> \
       <div> \
-        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg preload_oxtorrentPlay_torrent" style="display:none;" data="" /> \
+        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="coverPlayImg preload_yggtorrentPlay_torrent" style="display:none;" data="" /> \
       </div> \
       <span class="optionsBottom" style="display:none;"></span> \
       <div id="optionsBottomInfos" style="display:none;"> \
@@ -529,7 +519,7 @@ function appendVideo(video) {
       '"></i>' +
       video.hd +
       '</span> \
-        <span style="float:right;"><a href="#" class="preload_oxtorrent_torrent" data=""><i class="glyphicon glyphicon-info-sign"></i></a></span> \
+        <span style="float:right;"><a href="#" class="preload_yggtorrent_torrent" data=""><i class="glyphicon glyphicon-info-sign"></i></a></span> \
         ' +
       video.toggle +
       ' \
@@ -542,29 +532,27 @@ function appendVideo(video) {
       "</p> \
       </div> \
       </li>";
-    $("#oxtorrent_cont").append(html);
+    $("#yggtorrent_cont").append(html);
     console.log(video.link);
     cloudscraper.get(video.link, function (error, response, res) {
-      console.log(oxtorrent.itemsCount, oxtorrent.totalItems);
-      var img = res
-        .replace(/\r?\n|\r/g)
-        .match(/.*?torrentsimage.*?src='(.*?)'/)[1];
-      $("#" + video.id + " .oxtorrentThumb").attr("src", img);
+      console.log(yggtorrent.itemsCount, yggtorrent.totalItems);
+      var img = yggtorrent.url + $(".movie-img img", res).attr("src");
+
+      $("#" + video.id + " .yggtorrentThumb").attr("src", img);
       console.log("image link", img);
       //store img
       video.cover = img;
       //store description and torrent link
-      video.torrent =
-        oxtorrent.url +
-        $(".btn-download", res)
-          .find("a")[0]
-          .href.replace(/chrome.*?\/(telecharger|get_torrent)/, "$1");
-      console.log("torrent link", video.torrent);
+
+      video.torrent = $(".btn.download", res)[1].href;
+
+      console.log(video.link, video.torrent);
+
       var r = $(".movie-information", res);
       r.find("strong").remove();
       video.synopsis = r.find("p").text();
       //save in data
-      $("#" + video.id + " .preload_oxtorrent_torrent").attr(
+      $("#" + video.id + " .preload_yggtorrent_torrent").attr(
         "data",
         encodeURIComponent(JSON.stringify(video))
       );
@@ -574,10 +562,10 @@ function appendVideo(video) {
       );
 
       if (
-        $("#items_container .oxtorrentThumb").length === oxtorrent.itemsCount
+        $("#items_container .yggtorrentThumb").length === yggtorrent.itemsCount
       ) {
-        oxtorrent.pageLoading = false;
-        oxtorrent.gui.searchComplete();
+        yggtorrent.pageLoading = false;
+        yggtorrent.gui.searchComplete();
       }
     });
   } catch (err) {
@@ -585,27 +573,27 @@ function appendVideo(video) {
   }
 }
 
-oxtorrent.loadMore = function () {
+yggtorrent.loadMore = function () {
   $("#search_results p").empty();
-  oxtorrent.pageLoading = true;
-  oxtorrent.gui.changePage();
+  yggtorrent.pageLoading = true;
+  yggtorrent.gui.changePage();
 };
 
-oxtorrent.play_next = function () {
+yggtorrent.play_next = function () {
   try {
     $("li.highlight").next().find("a.start_media").click();
   } catch (err) {
     console.log("end of playlist reached");
     try {
-      oxtorrent.gui.changePage();
+      yggtorrent.gui.changePage();
     } catch (err) {
       console.log("no more videos to play");
     }
   }
 };
 
-oxtorrent.search_type_changed = function () {
-  if (oxtorrent.pageLoading) {
+yggtorrent.search_type_changed = function () {
+  if (yggtorrent.pageLoading) {
     if (searchType === "navigation") {
       $("#video_search_query").prop("disabled", true);
     } else {
@@ -613,7 +601,7 @@ oxtorrent.search_type_changed = function () {
     }
     return;
   }
-  oxtorrent.gui.current_page = 1;
+  yggtorrent.gui.current_page = 1;
   $("#items_container").empty();
   searchType = $("#searchTypes_select a.active").attr("data-value");
   category = $("#categories_select a.active").attr("data-value");
@@ -639,4 +627,4 @@ oxtorrent.search_type_changed = function () {
   }
 };
 
-module.exports = oxtorrent;
+module.exports = yggtorrent;
