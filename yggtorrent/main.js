@@ -316,7 +316,8 @@ yggtorrent.search = function (query, options, gui) {
         return;
       }
 
-      yggtorrent.totalPages = $("ul.pagination li", data).length - 1 || "";
+      yggtorrent.totalPages =
+        parseInt($("ul.pagination li:last", data)[0].outerText) || "";
       if (isNaN(yggtorrent.totalPages) && yggtorrent.itemsCount == 0) {
         $("#loading").hide();
         $("#search_results p").empty().append(_("No results found..."));
