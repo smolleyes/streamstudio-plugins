@@ -545,7 +545,7 @@ function appendVideo(video) {
       video.cover = img;
       //store description and torrent link
 
-      video.torrent = $(".btn.download", res)[1].href;
+      video.torrent = $(".btn.download", res)[2].href;
 
       console.log(video.link, video.torrent);
 
